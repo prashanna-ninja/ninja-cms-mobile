@@ -1,56 +1,54 @@
-# Welcome to your Expo app 👋
+# Ninja CMS — Mobile
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+The native (iOS + Android) companion app for **Ninja CMS**, the adviser portal and content-management
+platform (the Next.js app in `ref/cms`). Built with **Expo SDK 57 + React Native + TanStack Query**,
+authenticating against the CMS's existing **better-auth** backend.
 
-## Get started
+> **Status (2026-09-30):** 🚧 Project initialised — Expo SDK 57 scaffold + docs. Next: the login flow.
+> See **[HANDOVER.md](HANDOVER.md)** for current status, how to run, and next steps.
 
-1. Install dependencies
+## What this app does (planned, built page by page)
 
-   ```bash
-   npm install
-   ```
+1. **Sign in** — email + password against the CMS (same accounts as the web; no sign-up, invite-only).
+2. **Forgot password** — request a reset email (the reset itself completes on the web link).
+3. **Dashboard / home** — role-aware landing screen (scope to be confirmed page by page).
+4. …further screens are added one at a time, in the order the user gives them — see
+   [docs/01-OVERVIEW.md](docs/01-OVERVIEW.md) §5 for the candidate list.
 
-2. Start the app
+## Tech stack
 
-   ```bash
-   npx expo start
-   ```
+| Layer | Choice | Why |
+|---|---|---|
+| Framework | **Expo SDK 57** (React Native 0.86, React 19.2) | Latest stable SDK (SDK 58 is still `next`/beta). CNG — no hand-edited `ios/`/`android/`. |
+| Routing | **Expo Router** (file-based, typed routes) | Same mental model as Next.js App Router; `Stack.Protected` for the auth guard. |
+| Server state | **TanStack Query v5** | Fetching, caching, retries, invalidation. Same library the CMS web uses. |
+| Auth | **better-auth** + `@better-auth/expo` client, **expo-secure-store** | The CMS already runs better-auth; the session cookie is kept in the Keychain/Keystore. |
+| Styling | **NativeWind v4** (Tailwind 3) + React Native Reusables | Tailwind classes like the web; shadcn-style owned components. Same as Ninja CRM mobile. |
+| Forms | **react-hook-form + zod** | Same schemas/validation rules as the web forms. |
+| Language | TypeScript (strict) | |
 
-In the output, you'll find options to open the app in a
+## Documentation
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+Read in order — written so someone new to React Native can follow along.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+| Doc | What's in it |
+|---|---|
+| [HANDOVER.md](HANDOVER.md) | **Start here.** Status, how to run, gotchas, next steps. |
+| [docs/README.md](docs/README.md) | Docs index. |
+| [docs/01-OVERVIEW.md](docs/01-OVERVIEW.md) | What we're building + a plain-English map of the CMS. |
+| [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE.md) | Setup, folder structure, patterns, order of work. |
+| [docs/03-DESIGN-SYSTEM.md](docs/03-DESIGN-SYSTEM.md) | Colours, fonts, tokens (from the CMS portal). |
+| [docs/04-BACKEND-REFERENCE.md](docs/04-BACKEND-REFERENCE.md) | CMS API endpoints the app will call. |
+| [docs/05-ROLES-AND-ACCESS.md](docs/05-ROLES-AND-ACCESS.md) | Roles, orgs (`Advice`), where each role lands. |
+| [docs/06-AUTH.md](docs/06-AUTH.md) | Login design + the small backend change it needs. |
+| [docs/IMPLEMENTATION-LOG.md](docs/IMPLEMENTATION-LOG.md) | Running diary of changes and decisions. |
+| [docs/PROMPTS.md](docs/PROMPTS.md) | How we work together + reusable prompts. |
 
-## Get a fresh project
+## The reference projects (`ref/`, git-ignored, read-only)
 
-When you're ready, run:
+- **`ref/cms`** — the Ninja CMS web app **and backend** (Next.js 16, better-auth, Prisma/Postgres).
+  The source of truth for API routes, data shapes, roles and UI.
+- **`ref/ninja-crm-mobile`** — our earlier Expo app for Ninja CRM. The source of truth for **mobile
+  conventions** (folder layout, auth client, `apiFetch`, query hooks, RNR components, docs format).
 
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-### Other setup steps
-
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Never edit anything under `ref/`; it is excluded from git and from EAS uploads.

@@ -39,3 +39,15 @@ Docs: https://docs.expo.dev/eas/index.md
 - If `ios/` and `android/` directories do not exist, they are generated (Continuous Native Generation). Never create or edit them by hand — configure native behavior in `app.json` and config plugins.
 - Expo Go only includes its bundled native modules. After adding a library with native code, the app needs a development build: `npx expo run:ios|android` locally, or `eas build --profile development`.
 - Prefer recommended Expo modules over third-party libraries, and check your available skills before adding dependencies. Docs: https://docs.expo.dev/versions/latest/index.md
+
+## This project (Ninja CMS Mobile)
+
+- **Read `HANDOVER.md` first**, then `docs/README.md`. Log every meaningful change in
+  `docs/IMPLEMENTATION-LOG.md` (newest first) and keep `HANDOVER.md` current.
+- `ref/` is **read-only reference** (git-ignored): `ref/cms` = the Ninja CMS web app + backend (API
+  source of truth); `ref/ninja-crm-mobile` = our earlier Expo app (conventions source of truth).
+- Stack: Expo SDK 57, Expo Router, TanStack Query v5, better-auth (+ `@better-auth/expo`), NativeWind 4,
+  React Native Reusables, react-hook-form + zod.
+- Screens never call `fetch` directly — use hooks in `src/api/*.api.ts` → `apiFetch`. Query keys come
+  from `src/lib/query-keys.ts`.
+- Work page by page, small commits (`feat:`/`fix:`/`chore:`/`docs:`).

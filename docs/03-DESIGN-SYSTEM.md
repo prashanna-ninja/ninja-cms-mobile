@@ -1,0 +1,54 @@
+# 03 — Design System
+
+> **Status:** draft — tokens collected from `ref/cms`; they get finalised in `global.css` /
+> `tailwind.config.js` during the foundation + login steps. Update this doc when they change.
+
+## 1. Brand
+
+- Product name: **Ninja CMS** (web metadata: *"Adviser portal and content management platform"*).
+- Portal wordmark: **NINJA CMS / PORTAL** (`app/portal/page.tsx`).
+- Multi-brand: each licensee **entity** has its own colour + logo (`lib/entity-config.ts`), and each
+  org (`Advice`) can override the theme colour (`Advice.colorTheme`, fallback `#1e3a5f` in `lib/portal.ts`).
+  ➜ The mobile app uses the neutral **Ninja CMS navy** for the chrome and applies an org's colour only
+  inside org-scoped screens (later).
+
+| Entity | Colour | Logo (`ref/cms/public`) |
+|---|---|---|
+| Cobalt | `#0B2D6F` | `logo-black.png` |
+| Beryllium | `#6B1424` | — |
+| AIAFSL | `#1e3a5f` | — |
+| CLS | `#8a8585` | `cls.png` |
+
+## 2. Fonts
+
+- Web uses **Bricolage Grotesque** (400–800) for everything (`app/layout.tsx`, `next/font/google`).
+- Mobile: `@expo-google-fonts/bricolage-grotesque` (same family as the CRM's display font), loaded
+  with `expo-font`. Keys must match the Tailwind `fontFamily` names.
+
+## 3. Colour tokens (portal palette — hard-coded inline in the web portal)
+
+| Token | Light | Use |
+|---|---|---|
+| `primary` | `#1A4DB3` | buttons, links, active tab |
+| `navy` (accent) | `#0B2D6F` | hero / header background, splash |
+| `primary-light` | `#4A7AD4` | gradients, highlights |
+| `background` | `#F0F4FB` (screens) / `#FFFFFF` (cards) | |
+| `foreground` | `#0D1B3E` | body text |
+| `muted-foreground` | `#7089B8` | secondary text |
+| `chip` / `secondary` | `#E8F0FD` | chips, soft buttons |
+| `destructive` | `oklch(0.577 0.245 27.325)` ≈ `#E7000B` | errors |
+
+Hero gradient on the web: `#0B2D6F → #1A4DB3 → #4A7AD4`.
+Back-office UI is stock shadcn neutral (`app/globals.css`, radius `0.625rem`).
+
+## 4. Tailwind mapping (planned, same approach as the CRM)
+
+- `global.css` defines `:root { --primary: …; }` as HSL channels + a dark set.
+- `tailwind.config.js` maps `primary: "hsl(var(--primary))"` etc., `nativewind/preset`.
+- ⚠️ CRM lesson: alpha modifiers on themed colours (`bg-primary/10`) are unreliable in NativeWind —
+  use solid tokens.
+
+## 5. Dark mode
+
+Planned: light by default, manual toggle persisted in SecureStore (CRM pattern), defined when we
+build Settings.
