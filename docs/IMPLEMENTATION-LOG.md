@@ -5,6 +5,41 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-09-30 — Keyboard avoidance on the auth screens
+
+**Did:** the sign-in and forgot-password screens now keep the focused field **and** the button under it
+above the keyboard, on iOS and Android, in Expo Go.
+- `src/hooks/use-keyboard.ts` — measures the keyboard: `overlap = window height − keyboard top`
+  (`keyboardWillShow/Hide` on iOS, `keyboardDidShow/Hide` on Android).
+- `src/components/login/auth-screen.tsx` — the sheet's bottom padding grows by the overlap (scroll room),
+  then `reveal()` measures the focused input (`TextInput.State.currentlyFocusedInput().measureInWindow`)
+  and scrolls just enough to put it + **180px** (next field / Forgot link + Login button, with an error
+  note) above the keyboard. The scroll never pushes the field under the status bar.
+- `AuthField` calls `reveal()` on focus, so email "Next" → password re-scrolls while the keyboard is open.
+- Removed `automaticallyAdjustKeyboardInsets` (iOS-only, and it doubled up with the padding).
+  `keyboardDismissMode`: `interactive` on iOS, `on-drag` on Android.
+
+**Decisions:**
+- **Not `KeyboardAvoidingView`:** SDK 57 Android is edge-to-edge, the window doesn't resize, and KAV
+  computes zero padding (CRM/PRM gotcha).
+- **Not `react-native-keyboard-controller` (yet):** it is the SDK 57-compatible, recommended library
+  (`1.21.9` in `bundledNativeModules.json`), but per the Expo docs it is **not in Expo Go**. We're
+  testing in Expo Go, so this is hand-rolled. **When we move to a development build, replace this with
+  `KeyboardProvider` + `KeyboardAwareScrollView`** and delete `use-keyboard.ts` + the reveal code.
+- The overlap is **geometric** (not `endCoordinates.height`), so on a device that *does* resize the
+  window the overlap is ~0 and nothing double-pads.
+
+**Gotchas / notes:**
+- `reveal()` waits one tick (50ms iOS / 80ms Android) so the new padding has laid out; otherwise
+  `scrollTo` gets clamped to the old content height.
+- Keyboard geometry for the async reveal lives in refs **written in an effect**, not during render
+  (React Compiler lint).
+- ⚠️ **Not tested on a device** — there's no Android emulator on this PC, and a browser has no soft
+  keyboard. To test: small phone (iPhone SE / small Android), focus email → Next → password → Login, with
+  and without a wrong-password error showing.
+
+---
+
 ## 2026-09-30 — Login: email + password sign-in, forgot password, session guard
 
 **Did:**

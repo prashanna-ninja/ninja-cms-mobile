@@ -2,6 +2,7 @@ import * as React from "react";
 import { Animated, Pressable, Text, TextInput, View, type TextInputProps } from "react-native";
 
 import { AUTH, AUTH_FONT } from "@/components/login/auth-palette";
+import { useRevealFocusedField } from "@/components/login/auth-screen";
 import { Eye, EyeOff } from "@/lib/icons";
 
 type IconComponent = React.ComponentType<{ size?: number; color?: string; strokeWidth?: number }>;
@@ -23,6 +24,7 @@ type AuthFieldProps = Omit<TextInputProps, "style" | "secureTextEntry"> & {
 export function AuthField({ label, icon: Icon, error, secure = false, onFocus, onBlur, ref, ...props }: AuthFieldProps) {
   const [focused, setFocused] = React.useState(false);
   const [revealed, setRevealed] = React.useState(false);
+  const revealFocusedField = useRevealFocusedField();
   // useState, not useRef().current — reading refs during render breaks React Compiler rules.
   const [focusAnim] = React.useState(() => new Animated.Value(0));
 
@@ -78,6 +80,9 @@ export function AuthField({ label, icon: Icon, error, secure = false, onFocus, o
             selectionColor={AUTH.brand}
             onFocus={(e) => {
               setFocused(true);
+              // Keyboard already up (e.g. "Next" from email → password)? Scroll
+              // this field into view — see AuthScreen.
+              revealFocusedField();
               onFocus?.(e);
             }}
             onBlur={(e) => {

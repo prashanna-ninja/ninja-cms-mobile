@@ -11,6 +11,8 @@ and what to build next. Keep it current at the end of every step.
 - **Sign in** (`src/app/(auth)/sign-in.tsx`) — email + password, PRM/CRM design in CMS navy, CMS NINJA
   logo, show/hide password, field + server errors, "Forgot password?" link. See [docs/06-AUTH.md](docs/06-AUTH.md) §6.
 - **Forgot password** (`(auth)/forgot-password.tsx`) — sends the CMS reset email; "check your inbox" state.
+- **Keyboard avoidance** on both auth screens — focused field + button stay above the keyboard (iOS + Android,
+  Expo Go). ⚠️ Needs a device check.
 - **Session guard** — `Stack.Protected` in `src/app/_layout.tsx`, session from `providers/session-provider.tsx`.
 - **Signed-in placeholder** (`(app)/index.tsx`) — name, email, role, sign out.
 - Backend verified: the CMS accepts `ninjacms://` and Expo Go `exp://` origins (401 on bad creds, not 403).
@@ -71,8 +73,11 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
 7. **Animated values via `useState(() => new Animated.Value(0))`**, not `useRef().current` — the React
    Compiler lint (`eslint-config-expo` 57) errors on reading refs during render.
 8. **Icons from `@/lib/icons`** (per-icon subpaths), never the `lucide-react-native` barrel (+3MB).
-9. **Icons/splash are still the Expo template art** (colours set to navy `#0B2D6F`). Replace before any store build.
-10. `apiFetch` must use `credentials: "omit"` and send
+9. **Keyboard avoidance on auth screens is hand-rolled** (`hooks/use-keyboard.ts` + `reveal()` in
+   `components/login/auth-screen.tsx`) because `react-native-keyboard-controller` isn't in Expo Go. Don't add
+   `KeyboardAvoidingView` (breaks on Android edge-to-edge). Swap in keyboard-controller once on a dev build.
+10. **Icons/splash are still the Expo template art** (colours set to navy `#0B2D6F`). Replace before any store build.
+11. `apiFetch` must use `credentials: "omit"` and send
    the cookie manually; signing out on 401, not on 403.
 
 ## 8. Loose ends & what to build next

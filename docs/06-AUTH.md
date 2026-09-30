@@ -115,3 +115,5 @@ to do.**
 5. Error copy: `INVALID_EMAIL_OR_PASSWORD`/401 → "don't match", banned → "suspended", 429 → "too many
    attempts", `INVALID_ORIGIN` → "not configured for this app", fetch TypeError → "can't reach".
 6. Forgot password never reveals whether the account exists.
+7. Keyboard: fields are revealed by `AuthScreen` (`useRevealFocusedField()` on focus). New inputs on auth
+   screens should use `AuthField` (or call `useRevealFocusedField()` in their own `onFocus`).
