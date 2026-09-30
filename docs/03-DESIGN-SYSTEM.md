@@ -53,7 +53,27 @@ radius `0.625rem`. Fonts: `font-sans` (400), `font-sans-medium`, `font-sans-semi
 - ⚠️ CRM lesson: alpha modifiers on themed colours (`bg-primary/10`) are unreliable in NativeWind —
   use solid tokens.
 
-## 5. Dark mode
+## 5. Auth screens (always light, brand-forward)
+
+`src/components/login/auth-palette.ts` is deliberately **not** the themed tokens (same rule as Ninja PRM).
+Layout copied from Ninja PRM/CRM: gradient hero → white sheet overlapping by 24px with a 28px top radius →
+invite-only footer pinned to the bottom.
+
+| Token | Value |
+|---|---|
+| hero gradient | `#1A4DB3` → `#0B2D6F` (top-left → bottom-right) |
+| ink / inkSoft / muted | `#0D1B3E` / `#4A5878` / `#6B7A99` |
+| line / fieldBg | `#E2E8F2` / `#F8FAFD` |
+| brand / pressed / soft | `#1A4DB3` / `#153F94` / `#E8F0FD` |
+| danger / dangerSoft | `#DC2626` / `#FEF2F2` |
+
+**Logo:** `assets/images/ninja-cms-logo.png` — white "CMS NINJA" wordmark, 600×384, transparent. There was
+no CMS logo anywhere, so it was **built from the Ninja PRM wordmark**: "PRM" erased (x≥238, y<113) and
+"CMS" drawn as vector glyphs in **Montserrat SemiBold** (the same weight as the original "PRM"), cap height
+104px, right-aligned at x=558 on the original baseline (y=111). Shown at 104×67 in the hero.
+⚠️ Replace it with an official asset from design if one appears.
+
+## 6. Dark mode
 
 Planned: light by default, manual toggle persisted in SecureStore (CRM pattern), defined when we
 build Settings.

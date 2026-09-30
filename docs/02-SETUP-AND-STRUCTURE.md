@@ -89,7 +89,7 @@ EXPO_PUBLIC_API_BASE_URL=https://<cms-host>   # same value as the CMS's BETTER_A
 1. ✅ Scaffold Expo SDK 57 app, git init, ignore `ref/`
 2. ✅ Initial docs (this set)
 3. ✅ Foundation: clean the template, NativeWind + tokens, TanStack Query provider, folder skeleton, env
-4. ⬜ **Login** — auth client, `apiFetch`, `(auth)/(app)` groups + guard, sign-in screen ([06-AUTH.md](06-AUTH.md))
-5. ⬜ Forgot password
+4. ✅ **Login** — auth client, `apiFetch`, `(auth)/(app)` groups + guard, sign-in screen ([06-AUTH.md](06-AUTH.md))
+5. ✅ Forgot password (request link; reset finishes on the web)
 6. ⬜ Dashboard (scope ❓ — see [01-OVERVIEW.md](01-OVERVIEW.md) §5)
 7. ⬜ …next pages as instructed

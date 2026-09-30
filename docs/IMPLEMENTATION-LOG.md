@@ -5,6 +5,46 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-09-30 — Login: email + password sign-in, forgot password, session guard
+
+**Did:**
+- **Sign-in screen** in the Ninja PRM/CRM design (from the user's reference screenshot: brand hero, white
+  sheet, boxed icon fields, pill button, invite-only footer), but with **email + password** and CMS
+  navy/blue. Adds a password field with show/hide, a "Forgot password?" link and "Secure, encrypted sign-in".
+- **Forgot password** screen (same shell): `requestPasswordReset` → "Check your inbox" (48h, no
+  account enumeration) → back to sign in.
+- Auth plumbing ported from **Ninja PRM mobile** (SDK 57 sibling, newest patterns): `better-auth/client` +
+  `expoClient` + SecureStore, `SessionProvider` (not `useSession` from better-auth/react), `apiFetch`,
+  per-icon lucide imports (`lib/icons.ts`), `Stack.Protected` `(auth)`/`(app)` groups, navy boot hold.
+- TanStack mutations `useSignIn` / `useRequestPasswordReset` in `src/api/auth.api.ts` (screens never call
+  auth directly); `describeAuthError` maps CMS error codes to copy.
+- **CMS NINJA logo** (`assets/images/ninja-cms-logo.png`) — none existed, so it was built from the PRM
+  wordmark with "CMS" in Montserrat SemiBold (details in docs/03 §5).
+- Deps: better-auth / @better-auth/expo / @better-auth/core **1.6.11 exact**, expo-secure-store,
+  expo-linear-gradient. Local `.env` → `http://192.168.1.77:3000` (git-ignored).
+
+**Decisions:**
+- **Improved on PRM:** a 401 from `apiFetch` now goes through the SessionProvider
+  (`setUnauthorizedHandler`). PRM calls `authClient.signOut()` directly, which clears the cookie but
+  leaves the provider thinking you're still signed in.
+- Kept **"Login"** as the button label to match the reference; it shows "Signing in…" while pending.
+- The email field uses `textContentType="username"` so iOS offers saved Keychain logins with the password.
+- The signed-in area is a plain Stack + placeholder until the dashboard step decides on tabs.
+
+**Gotchas / notes:**
+- npm resolved `@better-auth/expo`'s `@better-auth/core` peer to **1.7.6**, so core is pinned explicitly.
+- **React Compiler lint** (eslint-config-expo 57) rejects `useRef(new Animated.Value(0)).current` and a
+  synchronous `setState` in an effect. Fixed with `useState(() => new Animated.Value(0))`, and the session
+  load now sets state only inside promise callbacks.
+- Bash heredocs choked on JSX containing apostrophes — use the Write tool for TSX files.
+- Verified: tsc ✅, lint ✅, expo-doctor 20/20 ✅, Android bundle ✅ (5.5MB, was 3.9MB — better-auth + zod +
+  RHF), web-render screenshots of the empty / validation / network-error states ✅, CMS origin checks via
+  curl ✅ (table in docs/06 §5). ⚠️ **Not yet done: a real sign-in with a real account on a phone.**
+
+**Next:** test sign-in on a device → dashboard (❓ admin dashboard vs adviser portal home first).
+
+---
+
 ## 2026-09-30 — Foundation: NativeWind, TanStack Query, fonts, folder skeleton
 
 **Did:**

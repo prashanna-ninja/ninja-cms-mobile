@@ -61,23 +61,57 @@ export const auth = betterAuth({
 - For dev in Expo Go add `exp://` origins too (e.g. `exp://192.168.x.x:8081`) via `TRUSTED_ORIGINS`.
 - Nothing else changes for the web.
 
-**Version alignment decision:** the mobile app pins `better-auth` + `@better-auth/expo` to the **1.6.x**
-line (latest 1.6.33) to match the server's minor, until the CMS upgrades to 1.7.
+**Version alignment decision:** the mobile app pins `better-auth`, `@better-auth/expo` **and**
+`@better-auth/core` to exactly **1.6.11** (`--save-exact`), the same as the CMS. Without pinning core,
+npm resolved `@better-auth/expo`'s `@better-auth/core` peer to 1.7.6 (drift). Bump all of them together
+with the CMS.
 
 ## 4. Open questions
 
-1. Can we make the backend change above (or is the CMS team deploying it)? Until it is deployed, we
-   test against a local CMS with the change applied.
-2. Dev base URL — LAN IP or tunnel? (must be listed in `TRUSTED_ORIGINS`).
-3. Is there an App Store reviewer account needed (CRM had a bypass)? With password auth a normal
-   test account is enough.
+1. ~~Backend change~~ — done in the CMS (`1271309`, PR #110).
+2. Dev base URL — **LAN IP** (`http://192.168.1.77:3000` on this PC; the CMS listens on `0.0.0.0:3000`).
+3. App Store reviewer: a normal test account is enough with password auth (no bypass needed).
+4. In-app **password reset / invite setup** (deep link `ninjacms://reset-password?token=…`) — later, if
+   wanted. Today both finish on the web.
 
 ## 5. Backend checklist
 
-- ⬜ `@better-auth/expo` installed in CMS, `expo()` added to plugins
-- ⬜ `ninjacms://` (+ dev `exp://…`) in trusted origins
-- ⬜ Deployed / running locally for testing
+- ✅ `@better-auth/expo@1.6.11` installed in CMS, `expo()` first in plugins (CMS `lib/auth.ts`)
+- ✅ `ninjacms://` in `DEFAULT_TRUSTED_ORIGINS`; `exp://`, `exp://**`, `exp://192.168.*.*:*/**` in dev only
+  (CMS `lib/trusted-origins.ts`)
+- ✅ Verified 2026-09-30 against the local CMS (no `Origin` header, like the app):
 
-## 6. Status
+| Request | Result |
+|---|---|
+| `POST /api/auth/sign-in/email` + `expo-origin: ninjacms://`, bad password | `401 INVALID_EMAIL_OR_PASSWORD` ✅ (origin accepted) |
+| same via LAN IP `192.168.1.77:3000` | `401 INVALID_EMAIL_OR_PASSWORD` ✅ |
+| same + `expo-origin: exp://192.168.1.77:8081` (Expo Go) | `401 INVALID_EMAIL_OR_PASSWORD` ✅ |
+| `Origin: https://evil.example` + a cookie | `403 INVALID_ORIGIN` ✅ (still protected) |
 
-⬜ Not started — this is the next step after the foundation commit.
+- ⬜ Deployed to production (`login.cobaltlicenseesolutions.com.au`) — confirm before a store build.
+
+## 6. Status + client-side notes (implemented — read before touching auth)
+
+✅ **Built 2026-09-30.** Sign-in + forgot-password screens, session guard, `apiFetch`. Verified with a web
+render (layout, validation, error states). ⚠️ **A real sign-in with a real account on a device is still
+to do.**
+
+| File | Job |
+|---|---|
+| `src/lib/auth-client.ts` | `createAuthClient` from **`better-auth/client`** + `expoClient({ scheme/storagePrefix: "ninjacms", storage: SecureStore })` |
+| `src/providers/session-provider.tsx` | Session in React state (`getSession` → `useSession()`); `refetch`, `signOut` (+ `queryClient.clear()`); registers the 401 handler |
+| `src/lib/api-client.ts` | `apiFetch`: manual `Cookie`, `credentials: "omit"`, `{ message }`/`{ error }` bodies, 401 → `signOut` via `setUnauthorizedHandler` |
+| `src/api/auth.api.ts` | `useSignIn`, `useRequestPasswordReset` (TanStack mutations), `describeAuthError` |
+| `src/app/_layout.tsx` | Boot hold (navy, = splash) until session + fonts; `Stack.Protected` `(app)` / `(auth)` |
+| `src/app/(auth)/sign-in.tsx`, `forgot-password.tsx` | Thin routes → `components/login/*` |
+| `src/app/(app)/index.tsx` | Temporary signed-in screen (name, email, role, sign out) |
+
+**Rules (each one is a bug someone already hit on CRM/PRM):**
+1. **Never use `better-auth/react` / `authClient.useSession()`** — its store tears under React 19. Use
+   `useSession()` from `@/providers/session-provider`.
+2. After a successful `signIn.email`, call the provider's `refetch()` — the provider isn't reactive.
+3. `apiFetch` keeps `credentials: "omit"` + the manual `Cookie` header (iOS duplicate-cookie 500s).
+4. 401 signs out; **403 does not** (role / org membership, not auth).
+5. Error copy: `INVALID_EMAIL_OR_PASSWORD`/401 → "don't match", banned → "suspended", 429 → "too many
+   attempts", `INVALID_ORIGIN` → "not configured for this app", fetch TypeError → "can't reach".
+6. Forgot password never reveals whether the account exists.

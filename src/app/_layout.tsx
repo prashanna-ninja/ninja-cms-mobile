@@ -5,29 +5,46 @@ import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
-import { useColorScheme } from "react-native";
+import { useColorScheme, View } from "react-native";
 
 import { appFonts } from "@/lib/fonts";
 import { QueryProvider } from "@/providers/query-provider";
+import { SessionProvider, useSession } from "@/providers/session-provider";
 
 SplashScreen.preventAutoHideAsync();
 
+/** Matches the splash background (app.json) so the hand-over is invisible. */
+const BOOT_BACKGROUND = "#0B2D6F";
+
 function RootNavigator() {
   const colorScheme = useColorScheme();
+  // `fontError` lets us fail open (system font) instead of hanging on a bad asset.
   const [fontsLoaded, fontError] = useFonts(appFonts);
-  // Fail open on a font error — system font is better than a stuck splash screen.
-  const ready = fontsLoaded || !!fontError;
+  const { data: session, isPending } = useSession();
+  const isSignedIn = !!session?.user;
+
+  // Hold until BOTH the stored session has resolved and fonts are ready —
+  // otherwise sign-in flashes before the guard redirects a signed-in user.
+  const isBooting = isPending || (!fontsLoaded && !fontError);
 
   useEffect(() => {
-    if (ready) SplashScreen.hideAsync();
-  }, [ready]);
+    if (!isBooting) SplashScreen.hideAsync();
+  }, [isBooting]);
 
-  if (!ready) return null;
+  if (isBooting) return <View style={{ flex: 1, backgroundColor: BOOT_BACKGROUND }} />;
 
+  // Guarded stacks: only ONE group is reachable at a time. When the session
+  // appears/disappears, Expo Router redirects automatically — no manual <Redirect>.
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      {/* The (auth)/(app) groups + Stack.Protected session guard land in the login step. */}
-      <Stack screenOptions={{ headerShown: false }} />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Protected guard={isSignedIn}>
+          <Stack.Screen name="(app)" />
+        </Stack.Protected>
+        <Stack.Protected guard={!isSignedIn}>
+          <Stack.Screen name="(auth)" />
+        </Stack.Protected>
+      </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>
   );
@@ -36,7 +53,9 @@ function RootNavigator() {
 export default function RootLayout() {
   return (
     <QueryProvider>
-      <RootNavigator />
+      <SessionProvider>
+        <RootNavigator />
+      </SessionProvider>
     </QueryProvider>
   );
 }
