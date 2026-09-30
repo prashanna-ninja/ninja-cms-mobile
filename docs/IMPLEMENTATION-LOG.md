@@ -5,6 +5,22 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-09-30 — Logo: small "CMS" like the PRM mark
+
+**Did:** rebuilt `assets/images/ninja-cms-logo.png` from the user's PRM reference (1080×1080, small "PRM"
+above the J–A). The first version had a big "CMS" filling the top-right (copied from PRM's 600px
+`logo.png`). Now it's **Montserrat Bold "CMS"** at PRM's exact size and position (cap 77px, baseline 401,
+left edge on the J), with the orange turned transparent. 838×464, shown at 120×66. Details in docs/03 §5.
+
+**Why Montserrat Bold:** measured, not guessed. At cap height 77, Montserrat's P stem is 15 / **18** / 21px
+for SemiBold / **Bold** / ExtraBold, and the word "PRM" is 245 / **248** / 252px. The reference is 18px /
+249px, so it's Bold.
+
+**Gotcha:** `TaskStop` on a background `npx expo start` only kills the npx wrapper — Metro kept port 8099.
+Kill it by PID (`Get-NetTCPConnection -LocalPort 8099`).
+
+---
+
 ## 2026-09-30 — Keyboard avoidance on the auth screens
 
 **Did:** the sign-in and forgot-password screens now keep the focused field **and** the button under it

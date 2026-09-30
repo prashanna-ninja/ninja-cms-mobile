@@ -31,10 +31,10 @@ export function AuthHero({
     >
       <FadeIn delay={40}>
         <Image
-          // White "CMS NINJA" wordmark on transparent (600×384) — built from the
-          // Ninja PRM wordmark, see docs/IMPLEMENTATION-LOG.md 2026-09-30.
+          // White "CMS NINJA" wordmark on transparent (838×464, ≈1.81:1) — small
+          // Montserrat Bold "CMS" over the J–A, same as the PRM mark. See docs/03 §5.
           source={require("@/assets/images/ninja-cms-logo.png")}
-          style={{ width: 104, height: 67 }}
+          style={{ width: 120, height: 66 }}
           contentFit="contain"
           accessible
           accessibilityRole="image"

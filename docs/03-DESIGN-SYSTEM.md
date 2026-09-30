@@ -67,11 +67,18 @@ invite-only footer pinned to the bottom.
 | brand / pressed / soft | `#1A4DB3` / `#153F94` / `#E8F0FD` |
 | danger / dangerSoft | `#DC2626` / `#FEF2F2` |
 
-**Logo:** `assets/images/ninja-cms-logo.png` — white "CMS NINJA" wordmark, 600×384, transparent. There was
-no CMS logo anywhere, so it was **built from the Ninja PRM wordmark**: "PRM" erased (x≥238, y<113) and
-"CMS" drawn as vector glyphs in **Montserrat SemiBold** (the same weight as the original "PRM"), cap height
-104px, right-aligned at x=558 on the original baseline (y=111). Shown at 104×67 in the hero.
-⚠️ Replace it with an official asset from design if one appears.
+**Logo:** `assets/images/ninja-cms-logo.png` — white "CMS NINJA" wordmark, **838×464** (≈1.81:1),
+transparent, shown at **120×66** in the hero (`auth-hero.tsx`). There was no CMS logo anywhere, so it was
+built from the Ninja PRM square mark (the user's 1080×1080 orange reference):
+- Orange → transparent: alpha taken from the blue channel (bg 22 → 0, white 255 → 255), so the
+  anti-aliasing is kept.
+- "PRM" erased and replaced by **"CMS" in Montserrat Bold** — measured to match the original exactly
+  (18px stem, 248 vs 249px word width at cap height 77). Same cap height (77px), baseline (y=401) and left
+  edge (aligned to the **J**, x≈655) as "PRM": small letters over the J–A.
+- Cropped tight around the artwork (+8px).
+
+⚠️ Replace it with an official asset from design if one appears. The build script is not in the repo; the
+steps above are enough to redo it (sharp + opentype.js + @expo-google-fonts/montserrat).
 
 ## 6. Dark mode
 
