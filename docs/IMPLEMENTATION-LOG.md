@@ -5,6 +5,37 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-09-30 — Foundation: NativeWind, TanStack Query, fonts, folder skeleton
+
+**Did:**
+- Removed the template demo (tabs, explore, animated icon, themed components, `reset-project`) and the
+  unused template deps `@expo/ui`, `expo-glass-effect`, `expo-device`.
+- Added (via `npx expo install`): nativewind 4.2.7 + tailwindcss 3.4, @tanstack/react-query 5.104,
+  zod 4, react-hook-form + @hookform/resolvers, clsx / tailwind-merge / cva, @rn-primitives/slot,
+  lucide-react-native + react-native-svg, expo-network, expo-font + Bricolage Grotesque, eslint-config-expo.
+- Config: `babel.config.js`, `metro.config.js` (input `src/global.css`), `tailwind.config.js`,
+  `nativewind-env.d.ts`, `eslint.config.js` (ignores `ref/`), `.gitattributes` (LF), `.env.example`.
+- `app.json`: name **Ninja CMS**, scheme **`ninjacms`**, bundle/package **`com.adviceninja.ninjacms`**,
+  splash + adaptive icon background navy `#0B2D6F`, iOS phone-only, no-encryption flag.
+- Code: `constants/env.ts`, `lib/{utils,fonts,query-client,query-keys}.ts`,
+  `providers/query-provider.tsx`, `components/{screen,container}.tsx`, root `_layout.tsx`, placeholder `index.tsx`.
+
+**Decisions:**
+- `src/global.css` (template location) instead of the CRM's root `global.css`.
+- **`refetchOnWindowFocus: true`** (CRM had it off) — here "focus" is wired to `AppState`, so data refreshes
+  when the app comes back to the foreground. `onlineManager` pauses queries offline.
+- Bricolage Grotesque for body *and* display (the CMS web uses it for everything).
+
+**Gotchas / notes:**
+- **TS 6.0** (SDK 57 default) errors on `import "../global.css"` (TS2882). Fixed with `src/types/css.d.ts`.
+- `npx expo install` worked fine with `ref/` present (the CRM saw issues) — keep an eye on it.
+- Checks: tsc ✅, lint ✅, expo-doctor 20/20 ✅, `expo export -p android` ✅. Device run still pending.
+
+**Next:** login — better-auth 1.6 + `@better-auth/expo` + expo-secure-store, `apiFetch`, `(auth)/(app)`
+groups with `Stack.Protected`, RNR button/text/input, sign-in screen.
+
+---
+
 ## 2026-09-30 — Project kick-off: Expo SDK 57 scaffold + docs
 
 **Did:**

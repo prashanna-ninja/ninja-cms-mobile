@@ -3,13 +3,17 @@
 The single entry point for whoever picks this up next: what works, how to run it, what not to undo,
 and what to build next. Keep it current at the end of every step.
 
-> **Status (2026-09-30):** 🚧 Project initialised — Expo SDK 57 scaffold, git, docs.
-> No app screens yet beyond the template. Next: foundation → login.
+> **Status (2026-09-30):** 🚧 Foundation done — Expo SDK 57, NativeWind tokens, TanStack Query,
+> fonts, folder skeleton. One placeholder screen. Next: **login**.
 
 ## 1. What works today
 
-- Expo SDK 57 default template runs (`npx expo start`).
-- Docs set in place (`docs/`).
+- App boots to a placeholder screen (`src/app/index.tsx`) styled with NativeWind + Bricolage Grotesque.
+- TanStack Query client with app-foreground refetch (`focusManager` ↔ `AppState`) and offline pause
+  (`onlineManager` ↔ `expo-network`) — `src/lib/query-client.ts`, `src/providers/query-provider.tsx`.
+- Query-key factory `src/lib/query-keys.ts`; `cn()` in `src/lib/utils.ts`; `Screen` / `Container` shells.
+- Verified: `npx tsc --noEmit` ✅, `npx expo lint` ✅, `npx expo-doctor` 20/20 ✅, `expo export -p android` bundles ✅.
+  Not yet run on a physical device.
 
 ## 2. Prerequisites
 
@@ -20,7 +24,7 @@ Node 20+ (dev: 24.14), npm, Git, a phone with Expo Go / a development build. See
 
 ```bash
 npm install
-cp .env.example .env          # set EXPO_PUBLIC_API_BASE_URL (once the foundation step adds it)
+cp .env.example .env          # set EXPO_PUBLIC_API_BASE_URL
 npx expo start -c             # scan the QR with Expo Go / dev build
 ```
 
@@ -52,12 +56,15 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
 
 1. **`/ref` is git-ignored and read-only.** Never commit or edit it.
 2. **Stay on the latest *stable* SDK** — check `npm view expo dist-tags` (`latest`, not `next`).
-3. (Carried from the CRM, applies once auth lands) `apiFetch` must use `credentials: "omit"` and send
+3. **TS 6 + CSS import:** `src/types/css.d.ts` declares `*.css` — without it `import "../global.css"`
+   fails typecheck (`noUncheckedSideEffectImports`). Don't delete it.
+4. **Icons/splash are still the Expo template art** (colours set to navy `#0B2D6F`). Replace before any store build.
+5. (Carried from the CRM, applies once auth lands) `apiFetch` must use `credentials: "omit"` and send
    the cookie manually; signing out on 401, not on 403.
 
 ## 8. Loose ends & what to build next
 
-1. ⬜ Foundation: remove template demo screens, NativeWind + tokens, QueryClient provider, env, folders.
+1. ✅ Foundation.
 2. ⬜ Login (email + password) + session guard + backend expo plugin.
 3. ⬜ Forgot password.
 4. ⬜ Dashboard — ❓ admin dashboard vs adviser portal home first.
@@ -67,6 +74,10 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
 | Path | What |
 |---|---|
 | `src/app/` | Routes (screens) |
+| `src/lib/` | query-client, query-keys, fonts, utils (later: api-client, auth-client) |
+| `src/providers/` | QueryProvider |
+| `src/constants/env.ts` | `API_BASE_URL`, `APP_SCHEME` |
+| `src/global.css`, `tailwind.config.js` | Design tokens |
 | `docs/` | All project docs |
 | `ref/cms` | CMS web + backend (reference) |
 | `ref/ninja-crm-mobile` | CRM mobile (conventions reference) |

@@ -1,7 +1,7 @@
 # 03 — Design System
 
-> **Status:** draft — tokens collected from `ref/cms`; they get finalised in `global.css` /
-> `tailwind.config.js` during the foundation + login steps. Update this doc when they change.
+> **Status (2026-09-30):** first pass implemented in `src/global.css` + `tailwind.config.js`
+> (light + dark HSL tokens below). Tune on device during the login step; update this doc when they change.
 
 ## 1. Brand
 
@@ -41,7 +41,12 @@
 Hero gradient on the web: `#0B2D6F → #1A4DB3 → #4A7AD4`.
 Back-office UI is stock shadcn neutral (`app/globals.css`, radius `0.625rem`).
 
-## 4. Tailwind mapping (planned, same approach as the CRM)
+## 4. Tailwind mapping (same approach as the CRM)
+
+Implemented HSL values (`src/global.css`): primary `220 75% 40%`, accent `220 82% 24%`, background
+`218 58% 96%`, foreground `223 65% 15%`, muted-foreground `219 34% 58%`, secondary `217 84% 95%`,
+radius `0.625rem`. Fonts: `font-sans` (400), `font-sans-medium`, `font-sans-semibold`, `font-display` (700).
+
 
 - `global.css` defines `:root { --primary: …; }` as HSL channels + a dark set.
 - `tailwind.config.js` maps `primary: "hsl(var(--primary))"` etc., `nativewind/preset`.

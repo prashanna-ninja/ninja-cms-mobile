@@ -1,9 +1,64 @@
-:root {
-  --font-display:
-    Spline Sans, Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji,
-    Segoe UI Symbol, Noto Color Emoji;
-  --font-mono:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
-  --font-rounded: 'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif;
-  --font-serif: Georgia, 'Times New Roman', serif;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  Design tokens, ported from the CMS adviser portal palette (see docs/03-DESIGN-SYSTEM.md).
+  Written as HSL "H S% L%" triples so Tailwind can wrap them: hsl(var(--x)).
+  Brand: primary blue #1A4DB3, accent navy #0B2D6F, page bg #F0F4FB, text #0D1B3E.
+*/
+@layer base {
+  :root {
+    --background: 218 58% 96%;
+    --foreground: 223 65% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 223 65% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 223 65% 15%;
+    --primary: 220 75% 40%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 217 84% 95%;
+    --secondary-foreground: 220 75% 30%;
+    --muted: 218 45% 92%;
+    --muted-foreground: 219 34% 58%;
+    --accent: 220 82% 24%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 218 40% 86%;
+    --input: 218 40% 86%;
+    --ring: 220 75% 40%;
+    --radius: 0.625rem;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background: 222 47% 8%;
+      --foreground: 214 40% 96%;
+      --card: 222 42% 12%;
+      --card-foreground: 214 40% 96%;
+      --popover: 222 42% 12%;
+      --popover-foreground: 214 40% 96%;
+      --primary: 219 61% 56%;
+      --primary-foreground: 0 0% 100%;
+      --secondary: 222 35% 20%;
+      --secondary-foreground: 214 40% 96%;
+      --muted: 222 30% 17%;
+      --muted-foreground: 218 25% 65%;
+      --accent: 220 70% 30%;
+      --accent-foreground: 0 0% 100%;
+      --destructive: 0 65% 52%;
+      --destructive-foreground: 0 0% 100%;
+      --border: 222 28% 22%;
+      --input: 222 28% 22%;
+      --ring: 219 61% 56%;
+    }
+  }
+}
+
+/* Shared content wrapper (used via <Container>): same gutters app-wide, readable max width. */
+@layer components {
+  .content-wrapper {
+    @apply w-full max-w-md self-center px-5;
+  }
 }
