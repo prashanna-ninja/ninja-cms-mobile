@@ -5,6 +5,44 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-10-01 — Adviser portal audience + org theming engine (colour + logo per org)
+
+**Decision (user):** the app is for the **adviser site** (web `/portal/[adviceId]`), not the back office.
+After sign-in the app uses the **organisation's theme colour**, and the **logo changes to the org's logo**,
+like the web portal. This also settles the open "admin dashboard vs portal home" question: the dashboard is
+the portal home. New doc: **[07-ORG-THEMING.md](07-ORG-THEMING.md)**.
+
+**Researched (live CMS):** `Advice.colorTheme` (hex, nullable) paints the portal nav
+(`?? "#0B2D6F"`), the home sections get a `themeColor` prop, tints are hex-alpha (`${themeColor}1a`).
+`Advice.logo` (S3 URL) goes in the nav with an initials-tile fallback. `GET /api/advice/my` already returns
+`{ id, name, colorTheme, logo }`, so **no backend change is needed**.
+
+**Did:**
+- `src/lib/org-theme.ts`: pure engine. hex → `{ base, onBase, text, pressed, soft, line, gradient,
+  cssVars }`, hex validation, WCAG contrast picks white vs ink on the colour and darkens pale colours
+  for text on white.
+- `src/providers/org-theme-provider.tsx`: active org persisted in SecureStore (`ninjacms_active_org`),
+  **keyed to userId**. `<OrgThemeScope>` applies NativeWind `vars()`, so `bg-primary` / `bg-accent` /
+  `bg-secondary` recolour per org. `(app)/_layout.tsx` is wrapped in it.
+- `src/components/org-logo.tsx` (expo-image, disk cache, initials fallback like PortalNav),
+  `src/api/advice.api.ts` `useMyOrgs()`, `qk.myOrgs()`, `types/advice.types.ts`.
+- Docs: 07 (new), 01 (audience + roadmap), 03 (two brand layers), 05, README, HANDOVER, AGENTS.md rule.
+
+**Decisions:**
+- Signed-out screens stay **Ninja CMS branded**: the org is unknown before sign-in, and the native splash
+  is static.
+- Default org colour **`#0B2D6F`** (web layout/nav), not `lib/portal.ts`'s `#1e3a5f` (web home). The
+  web is inconsistent; we follow what frames every portal page.
+- Only the brand tokens are org-driven; neutrals stay neutral so any org colour stays readable.
+- **CLS grey `#8A8585` gets dark ink text** (4.6:1). The web uses white (3.7:1, fails AA for body text).
+
+**Verified:** tsc ✅, lint ✅. Engine checked against all four entity colours plus pale/short/invalid input
+(table in docs/07 §3), all ≥ 4.5:1.
+
+**Next:** org selection after sign-in (0 / 1 auto / many → picker) → portal home in the org's theme.
+
+---
+
 ## 2026-09-30 — Logo: small "CMS" like the PRM mark
 
 **Did:** rebuilt `assets/images/ninja-cms-logo.png` from the user's PRM reference (1080×1080, small "PRM"

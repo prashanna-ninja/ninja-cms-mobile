@@ -3,8 +3,13 @@
 The single entry point for whoever picks this up next: what works, how to run it, what not to undo,
 and what to build next. Keep it current at the end of every step.
 
+> ⭐ **This is the ADVISER PORTAL app** (web `/portal/[adviceId]`). Behind sign-in the app takes on the active
+> organisation's **colour and logo** (`Advice.colorTheme` / `Advice.logo`). Read
+> [docs/07-ORG-THEMING.md](docs/07-ORG-THEMING.md) before building any signed-in screen.
+
 > **Status (2026-09-30):** 🚧 **Login done** — email + password sign-in, forgot password, session guard,
-> `apiFetch`. The signed-in area is a placeholder. ⚠️ Real sign-in on a device not yet tested. Next: **dashboard**.
+> `apiFetch`, org theming engine. The signed-in area is a placeholder. ⚠️ Real sign-in on a device not yet
+> tested. Next: **org selection → portal home**.
 
 ## 1. What works today
 
@@ -15,6 +20,9 @@ and what to build next. Keep it current at the end of every step.
   Expo Go). ⚠️ Needs a device check.
 - **Session guard** — `Stack.Protected` in `src/app/_layout.tsx`, session from `providers/session-provider.tsx`.
 - **Signed-in placeholder** (`(app)/index.tsx`) — name, email, role, sign out.
+- **Org theming engine** — `lib/org-theme.ts` + `providers/org-theme-provider.tsx`: the active org's colour
+  overrides the NativeWind tokens across `(app)`; `<OrgLogo>` shows the org logo or initials. Org
+  *selection* (from `GET /api/advice/my`) is not wired yet, so the default navy shows for now.
 - Backend verified: the CMS accepts `ninjacms://` and Expo Go `exp://` origins (401 on bad creds, not 403).
 - TanStack Query client with app-foreground refetch (`focusManager` ↔ `AppState`) and offline pause
   (`onlineManager` ↔ `expo-network`) — `src/lib/query-client.ts`, `src/providers/query-provider.tsx`.
@@ -76,8 +84,11 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
 9. **Keyboard avoidance on auth screens is hand-rolled** (`hooks/use-keyboard.ts` + `reveal()` in
    `components/login/auth-screen.tsx`) because `react-native-keyboard-controller` isn't in Expo Go. Don't add
    `KeyboardAvoidingView` (breaks on Android edge-to-edge). Swap in keyboard-controller once on a dev build.
-10. **Icons/splash are still the Expo template art** (colours set to navy `#0B2D6F`). Replace before any store build.
-11. `apiFetch` must use `credentials: "omit"` and send
+10. **No hard-coded brand colours behind sign-in** — use `bg-primary`/`bg-accent`/`bg-secondary` classes or
+    `useOrgTheme().theme` (`onBase` for text on the colour, `text` for org-coloured text on white).
+    `auth-palette.ts` is for signed-out screens only. See docs/07 §4.
+11. **Icons/splash are still the Expo template art** (colours set to navy `#0B2D6F`). Replace before any store build.
+12. `apiFetch` must use `credentials: "omit"` and send
    the cookie manually; signing out on 401, not on 403.
 
 ## 8. Loose ends & what to build next
@@ -85,7 +96,8 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
 1. ✅ Foundation.
 2. ✅ Login + session guard (backend expo plugin ✅). ⚠️ Test a real sign-in on iOS + Android.
 3. ✅ Forgot password.
-4. ⬜ Dashboard — ❓ admin dashboard vs adviser portal home first.
+4. ⬜ **Org selection** after sign-in (0 / 1 auto / many → picker) → `setOrg` → org theme + logo. docs/07 §5.
+5. ⬜ **Portal home** ("dashboard") for the active org — `app/portal/[adviceId]/page.tsx`, org-themed.
 
 ## 9. Where things live
 
@@ -97,6 +109,9 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
 | `src/api/auth.api.ts` | sign-in / reset mutations + error copy |
 | `src/components/login/` | auth screen shell, hero, field, button, forms |
 | `assets/images/ninja-cms-logo.png` | white CMS NINJA wordmark |
+| `src/lib/org-theme.ts` | org colour → theme engine (pure) |
+| `src/providers/org-theme-provider.tsx` | active org, `useOrgTheme()`, `<OrgThemeScope>` |
+| `src/components/org-logo.tsx` | org logo / initials tile |
 | `src/constants/env.ts` | `API_BASE_URL`, `APP_SCHEME` |
 | `src/global.css`, `tailwind.config.js` | Design tokens |
 | `docs/` | All project docs |

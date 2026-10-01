@@ -19,6 +19,17 @@
 | AIAFSL | `#1e3a5f` | — |
 | CLS | `#8a8585` | `cls.png` |
 
+### ⭐ Two brand layers (decided 2026-10-01)
+
+| Layer | Where | Source |
+|---|---|---|
+| **Ninja CMS brand** (fixed) | splash, boot, sign-in, forgot password | navy/blue below + `auth-palette.ts`, CMS NINJA logo |
+| **Org brand** (variable) | everything behind sign-in | `Advice.colorTheme` + `Advice.logo` of the active org |
+
+The tokens in §3/§4 are the **defaults**. Behind sign-in, `--primary`, `--ring`, `--accent` and
+`--secondary` (+ their foregrounds) are **overridden at runtime per org** with NativeWind `vars()`.
+**Never hard-code a brand colour in a signed-in screen.** Full rules: [07-ORG-THEMING.md](07-ORG-THEMING.md) §4.
+
 ## 2. Fonts
 
 - Web uses **Bricolage Grotesque** (400–800) for everything (`app/layout.tsx`, `next/font/google`).

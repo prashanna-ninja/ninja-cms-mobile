@@ -18,17 +18,18 @@ Researched 2026-09-30 against `ref/cms` (`prisma/schema/base.prisma`, `lib/auth.
 
 | Role | Web landing | Mobile (planned) |
 |---|---|---|
-| superadmin, admin | `/dashboard` | admin dashboard |
-| orgadmin, editor | `/manage-article-group` | ❓ TBD |
-| adviser, onboarding, staff | `/portal` → org | portal home for the active org |
+| superadmin, admin | `/dashboard` | portal **preview** (can pick any org, like web `canAccessPortal`); no back office on mobile |
+| orgadmin | `/manage-article-group` | portal preview for their orgs |
+| editor | `/manage-article-group` | ❓ not a portal user (web `canAccessPortal` = false) — show a "use the web" message |
+| adviser, onboarding, staff | `/portal` → org | **portal home for the active org, in the org's theme** (primary audience) |
 | user | `/settings` | settings |
 
 ## 3. Active organisation (portal)
 
 - 0 memberships → "No organisations assigned". 1 → auto-select. More than 1 → org picker.
 - Admins can preview any org.
-- The web remembers the last org in `localStorage["portal_advice_id"]`. Mobile will use SecureStore
-  (or plain storage — it isn't secret) under a `ninjacms_` key.
+- The web remembers the last org in `localStorage["portal_advice_id"]`. Mobile: SecureStore key
+  `ninjacms_active_org` (whole org incl. colour + logo, keyed to the user) — see 07-ORG-THEMING.md.
 
 ## 4. How we use it on mobile
 

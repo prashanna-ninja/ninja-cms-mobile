@@ -51,3 +51,6 @@ Docs: https://docs.expo.dev/eas/index.md
 - Screens never call `fetch` directly — use hooks in `src/api/*.api.ts` → `apiFetch`. Query keys come
   from `src/lib/query-keys.ts`.
 - Work page by page, small commits (`feat:`/`fix:`/`chore:`/`docs:`).
+- **This is the ADVISER PORTAL app.** Behind sign-in, every brand colour + logo comes from the active
+  organisation (`Advice.colorTheme` / `Advice.logo`) via `useOrgTheme()` / NativeWind classes — never
+  hard-code brand colours in signed-in screens. Read `docs/07-ORG-THEMING.md` before building one.

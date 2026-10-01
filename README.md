@@ -1,18 +1,23 @@
 # Ninja CMS — Mobile
 
-The native (iOS + Android) companion app for **Ninja CMS**, the adviser portal and content-management
-platform (the Next.js app in `ref/cms`). Built with **Expo SDK 57 + React Native + TanStack Query**,
+The native (iOS + Android) **adviser portal** app for **Ninja CMS**, the adviser portal and
+content-management platform (the Next.js app in `ref/cms`). It is for advisers, staff and onboarding
+users, and after sign-in it takes on **their organisation's colour and logo**, like the web `/portal`.
+Built with **Expo SDK 57 + React Native + TanStack Query**,
 authenticating against the CMS's existing **better-auth** backend.
 
-> **Status (2026-09-30):** 🚧 Project initialised — Expo SDK 57 scaffold + docs. Next: the login flow.
+> **Status (2026-10-01):** 🚧 Sign-in + forgot password done; org theming engine in place. Next: org
+> selection → portal home.
 > See **[HANDOVER.md](HANDOVER.md)** for current status, how to run, and next steps.
 
 ## What this app does (planned, built page by page)
 
 1. **Sign in** — email + password against the CMS (same accounts as the web; no sign-up, invite-only).
 2. **Forgot password** — request a reset email (the reset itself completes on the web link).
-3. **Dashboard / home** — role-aware landing screen (scope to be confirmed page by page).
-4. …further screens are added one at a time, in the order the user gives them — see
+3. **Organisation selection** — auto when you belong to one org, a picker when several; the app then
+   takes on that org's **colour and logo**.
+4. **Portal home** — the adviser portal home for the active org (notices, quick links, content…).
+5. …further screens are added one at a time, in the order the user gives them — see
    [docs/01-OVERVIEW.md](docs/01-OVERVIEW.md) §5 for the candidate list.
 
 ## Tech stack
@@ -41,6 +46,7 @@ Read in order — written so someone new to React Native can follow along.
 | [docs/04-BACKEND-REFERENCE.md](docs/04-BACKEND-REFERENCE.md) | CMS API endpoints the app will call. |
 | [docs/05-ROLES-AND-ACCESS.md](docs/05-ROLES-AND-ACCESS.md) | Roles, orgs (`Advice`), where each role lands. |
 | [docs/06-AUTH.md](docs/06-AUTH.md) | Login design + the small backend change it needs. |
+| [docs/07-ORG-THEMING.md](docs/07-ORG-THEMING.md) | ⭐ Org colour + logo per organisation (adviser portal). |
 | [docs/IMPLEMENTATION-LOG.md](docs/IMPLEMENTATION-LOG.md) | Running diary of changes and decisions. |
 | [docs/PROMPTS.md](docs/PROMPTS.md) | How we work together + reusable prompts. |
 

@@ -4,6 +4,11 @@ Researched 2026-09-30 against `ref/cms` (HEAD `a147f92`) and `ref/ninja-crm-mobi
 
 ## 1. What we're building
 
+> **Audience (decided 2026-10-01): the ADVISER PORTAL.** This app is the mobile version of the web
+> `/portal/[adviceId]` for advisers, staff and onboarding users, **not** the back office (`/dashboard`,
+> `/manage-*`). After sign-in the app takes on the active **organisation's colour and logo**, like the web
+> portal. See [07-ORG-THEMING.md](07-ORG-THEMING.md).
+
 A native mobile app for **Ninja CMS** — the adviser portal + content-management platform used by the
 licensee groups (Cobalt, Beryllium, AIAFSL, CLS). The web app lives in `ref/cms`; this app talks to
 **the same backend** (same accounts, same data) over its REST routes.
@@ -70,11 +75,11 @@ document-upload, forms, invoices/receipts, my-revenue, fee-deductibility-calcula
 |---|---|---|---|
 | 1 | Sign in | `app/login`, `app/_components/LoginForm.tsx` | ⬜ next |
 | 2 | Forgot password | `app/(public)/forget-password` | ⬜ |
-| 3 | Role-based landing / dashboard | `app/(protected)/dashboard` **or** `app/portal/[adviceId]` | ⬜ — ❓ which audience first |
-| 4 | Org picker (multi-org advisers) | `app/portal/page.tsx` + `OrgSwitcher` | ⬜ |
+| 3 | Org selection (auto if 1, picker if >1) → applies org theme + logo | `app/portal/page.tsx` + `OrgSwitcher` | ⬜ next |
+| 4 | Portal home ("dashboard") | `app/portal/[adviceId]/page.tsx` | ⬜ |
 | 5 | Settings (profile, change password, sign out) | `app/(protected)/settings` | ⬜ |
 | … | Notices, content pages, clients, workflows… | see §4 | ⬜ |
 
-❓ **Open question for the dashboard step:** the web has *two* "home" screens — the **admin dashboard**
-(`/dashboard`, admin/superadmin only) and the **adviser portal home** (`/portal/[adviceId]`). Which
-audience the mobile app targets first decides the tab layout. To be settled when we reach it.
+✅ **Settled 2026-10-01:** the web has two "home" screens, the admin dashboard (`/dashboard`) and the
+**adviser portal home** (`/portal/[adviceId]`). Mobile is the **adviser portal**, so "dashboard" means the
+portal home, themed with the org's colour and logo.

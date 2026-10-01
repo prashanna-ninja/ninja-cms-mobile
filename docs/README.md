@@ -11,7 +11,9 @@ Then read these in order — each builds on the last.
 5. [05-ROLES-AND-ACCESS.md](05-ROLES-AND-ACCESS.md) — roles, organisations, where each role lands
 6. [06-AUTH.md](06-AUTH.md) — email/password sign-in with better-auth + backend changes needed
 
-Feature docs (added as each page/feature is built): `07-<FEATURE>.md`, `08-<FEATURE>.md`, …
+Feature docs (added as each page/feature is built):
+
+7. [07-ORG-THEMING.md](07-ORG-THEMING.md) — ⭐ org colour + logo per organisation (read before building any signed-in screen)
 
 Living docs:
 

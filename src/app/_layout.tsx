@@ -9,6 +9,7 @@ import { useColorScheme, View } from "react-native";
 
 import { appFonts } from "@/lib/fonts";
 import { QueryProvider } from "@/providers/query-provider";
+import { OrgThemeProvider } from "@/providers/org-theme-provider";
 import { SessionProvider, useSession } from "@/providers/session-provider";
 
 SplashScreen.preventAutoHideAsync();
@@ -54,7 +55,10 @@ export default function RootLayout() {
   return (
     <QueryProvider>
       <SessionProvider>
-        <RootNavigator />
+        {/* Org colour + logo for the signed-in area (docs/07-ORG-THEMING.md). */}
+        <OrgThemeProvider>
+          <RootNavigator />
+        </OrgThemeProvider>
       </SessionProvider>
     </QueryProvider>
   );

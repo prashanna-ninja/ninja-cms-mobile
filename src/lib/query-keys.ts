@@ -8,4 +8,6 @@
 export const qk = {
   session: () => ["session"] as const,
   me: () => ["me"] as const,
+  /** GET /api/advice/my — orgs (Advice) for the signed-in user. */
+  myOrgs: () => ["advice", "my"] as const,
 };
