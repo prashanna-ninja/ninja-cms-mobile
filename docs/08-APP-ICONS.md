@@ -114,6 +114,15 @@ entries (`.MainActivityIndependent` … `.MainActivityWhatIf`) + adaptive/monoch
 
 ## 5. Gotchas
 
+- ⚠️ **Stale native project (hit 2026-10-02 on the Mac):** `npx expo run:ios` only generates `ios/` if it
+  doesn't exist. An `ios/` from before the icon work keeps the **Expo template icon** and has **no
+  `expo-alternate-app-icons` pod**, so the dev build logs `NOT APPLIED: native module unavailable (…)` even
+  though it isn't Expo Go. Fix: `npx expo prebuild --clean --platform ios` → `npx expo run:ios`
+  (Android: `--platform android`). Do this after **any** change to `app.json` / `app.config.ts` /
+  `app-icons.json` / native packages. `ios/` and `android/` are git-ignored (CNG), so `--clean` is safe.
+- The simulator caches home-screen icons; if the old icon lingers after a clean build, delete the app
+  from the simulator (long-press → Remove App) and run again.
+
 - `npx expo prebuild` rewrites the `android`/`ios` scripts in `package.json` to `expo run:*`. It was
   reverted. Check `git diff package.json` after any prebuild.
 - The library generates a TypeScript union of icon names only at prebuild, so `setAppIcon` casts the

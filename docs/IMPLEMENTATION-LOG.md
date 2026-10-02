@@ -5,6 +5,18 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-10-02 — Dev build showed the Expo icon + "no native module": stale ios/
+
+**Reported:** on the Mac, `npx expo run:ios` dev build ("Using development build") still logged
+`NOT APPLIED: no native module` and the home screen showed the **Expo template icon**.
+**Cause:** a stale `ios/` folder from before the icon commits — `expo run:ios` doesn't re-run prebuild when
+`ios/` exists, so the old native project had neither the new icons nor the `expo-alternate-app-icons` pod.
+**Fix (user, on the Mac):** `npx expo prebuild --clean --platform ios` then `npx expo run:ios`.
+**Did:** the dev log now prints the real load error and says "stale native project → prebuild --clean" for
+dev builds; docs/08 §5 gotcha; HANDOVER rule.
+
+---
+
 ## 2026-10-02 — How to test app icons: dev build (iOS Simulator), expo-dev-client, icon trace
 
 **Reported:** the icon wasn't changing on iPhone. **Cause:** running in **Expo Go**, which doesn't contain

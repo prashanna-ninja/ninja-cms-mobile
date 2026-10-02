@@ -20,17 +20,34 @@ type NativeIcons = typeof import("expo-alternate-app-icons");
  * lazily inside a try.
  */
 let native: NativeIcons | null | undefined;
+/** Why the native module is unavailable (shown in the dev log). */
+let unavailableReason = "";
 function getNative(): NativeIcons | null {
   if (native !== undefined) return native;
-  if (Platform.OS === "web") return (native = null);
+  if (Platform.OS === "web") {
+    unavailableReason = "web";
+    return (native = null);
+  }
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     native = require("expo-alternate-app-icons") as NativeIcons;
-    if (!native.supportsAlternateIcons) native = null;
-  } catch {
+    if (!native.supportsAlternateIcons) {
+      unavailableReason = "device reports supportsAlternateIcons = false";
+      native = null;
+    }
+  } catch (err) {
+    // Expo Go, OR a dev build whose native project predates this module
+    // (stale ios/ or android/ folder → `npx expo prebuild --clean`). docs/08 §5.
+    unavailableReason = err instanceof Error ? err.message : String(err);
     native = null;
   }
   return native;
+}
+
+/** Dev diagnostics: why icons can't switch in this build ("" when they can). */
+export function appIconUnavailableReason(): string {
+  getNative();
+  return unavailableReason;
 }
 
 /** Whether this build can switch icons (false in Expo Go / web). */

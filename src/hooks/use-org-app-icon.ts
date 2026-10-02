@@ -1,7 +1,7 @@
 import * as React from "react";
 import { AppState, Platform } from "react-native";
 
-import { appIconForColor, canChangeAppIcon, setAppIcon } from "@/lib/app-icon";
+import { appIconForColor, appIconUnavailableReason, canChangeAppIcon, setAppIcon } from "@/lib/app-icon";
 import { useOrgTheme } from "@/providers/org-theme-provider";
 import { useSession } from "@/providers/session-provider";
 
@@ -35,7 +35,9 @@ export function useOrgAppIcon() {
         `[app-icon] org=${org?.name ?? "none"} colour=${org?.colorTheme ?? "-"} → icon=${desired ?? "Default"}` +
           (canChangeAppIcon()
             ? ""
-            : " — NOT APPLIED: no native module (Expo Go / web). Use a development build: npx expo run:ios"),
+            : ` — NOT APPLIED: native module unavailable (${appIconUnavailableReason()}). ` +
+              "In Expo Go: use a dev build. In a dev build: its native project is stale — " +
+              "run `npx expo prebuild --clean` then `npx expo run:ios`."),
       );
     }
     if (!canChangeAppIcon()) return;
