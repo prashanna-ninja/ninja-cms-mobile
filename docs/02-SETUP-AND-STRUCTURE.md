@@ -91,5 +91,6 @@ EXPO_PUBLIC_API_BASE_URL=https://<cms-host>   # same value as the CMS's BETTER_A
 3. ✅ Foundation: clean the template, NativeWind + tokens, TanStack Query provider, folder skeleton, env
 4. ✅ **Login** — auth client, `apiFetch`, `(auth)/(app)` groups + guard, sign-in screen ([06-AUTH.md](06-AUTH.md))
 5. ✅ Forgot password (request link; reset finishes on the web)
-6. ⬜ Dashboard (scope ❓ — see [01-OVERVIEW.md](01-OVERVIEW.md) §5)
-7. ⬜ …next pages as instructed
+6. ✅ Org theming engine + org selection (auto if 1, picker if 2+) — [07-ORG-THEMING.md](07-ORG-THEMING.md)
+7. ⬜ Portal home ("dashboard") for the active org
+8. ⬜ …next pages as instructed

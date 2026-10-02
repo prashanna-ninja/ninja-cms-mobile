@@ -37,8 +37,17 @@ export function setUnauthorizedHandler(handler: (() => void) | null) {
  *    duplicated cookie the server can't parse → 500s that look like "logged
  *    out". `omit` forces ONLY our explicit header.
  */
+/** The stored session cookie, or "" — never throws (SecureStore has no web implementation). */
+function readCookie(): string {
+  try {
+    return authClient.getCookie() || "";
+  } catch {
+    return "";
+  }
+}
+
 export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const cookie = authClient.getCookie();
+  const cookie = readCookie();
 
   const res = await fetch(`${API_BASE_URL}${path}`, {
     ...options,

@@ -5,6 +5,49 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-10-02 — Org selection after sign-in, org-coloured logo
+
+**Asked:** after sign-in, pull the user's orgs with their colours; keep the Ninja CMS logo but **recolour**
+it (Ninja CMS blue by default, the org colour once the org is known); show an org picker like the web
+(reference screenshot) when there are several orgs, and go straight in when there's one.
+
+**Did:**
+- **Org gate** in `src/app/(app)/_layout.tsx` (`GET /api/advice/my` via `useMyOrgs`, sorted by name): editor/user →
+  "use the web"; loading / error / 0 orgs states; **1 org → auto-select**; 2+ → remembered org or **picker**;
+  the remembered org is re-synced with the server (colour/logo edits, removed memberships).
+  `Stack.Protected` flips between `index` and `select-org` when `setOrg` runs.
+- **Picker** `(app)/select-org.tsx` + `components/orgs/org-card.tsx` — a port of the web `OrgSwitcher`/`OrgCard`
+  (copy, colours, gradient bar, "View Portal →" pill), as a 2-column grid with pull-to-refresh and sign out.
+  A missing or broken logo falls back to the first letter + the name.
+- **`<NinjaCmsLogo color>`** (`components/brand/ninja-cms-logo.tsx`) — expo-image `tintColor` on the white
+  wordmark. New theme field **`logoTint`**: Ninja CMS blue `#1A4DB3` with no org colour, otherwise the org colour.
+- Gate states (`components/orgs/org-gate-states.tsx`), `lib/roles.ts` (`canAccessPortal` from CMS lib/staff.ts),
+  icons (`building`, `arrow-right`, `arrow-left-right`, `refresh-cw`).
+- Temporary home: org-tinted wordmark app bar, org banner with `<OrgLogo>`, "Switch organisation" (2+ orgs only).
+
+**Decisions:**
+- **White on the org colour, like the web.** The first rule (whichever of white/ink contrasts more) put dark
+  text on the green and orange cards, unlike the user's reference, where org logos are white artwork. Now
+  white unless the colour is pale (< 2:1 with white). Body text on white still gets 4.5:1 (`text`); the
+  wordmark tint gets 3:1 (`logoTint`), so orange stays orange (`#CF730C`) instead of brown (`#9E5D19`).
+- **Light only** (`userInterfaceStyle: "light"`): the signed-in screens went dark under `automatic`, and the
+  web portal is light-only.
+- `apiFetch` reads the cookie through a non-throwing `readCookie()` (SecureStore has no web implementation,
+  so the mocked web run surfaced it as "Couldn't load your organisations").
+
+**Verified:** tsc ✅, lint ✅. Web render with **mocked CMS responses** (Puppeteer request interception: session +
+6 orgs in the reference colours, Cobalt with a broken logo URL): picker → Beryllium → red portal + red wordmark →
+Switch → picker; single org → straight in, no switch button; orange org → orange wordmark, white-on-orange banner.
+
+**Gotcha:** `CI=1 npx expo start` turns **off** Metro's file watching. Two runs tested a stale bundle before
+this was spotted. Restart Metro after edits when scripting.
+
+**Not yet:** real org logos from the CMS on a device; acting-adviser orgs for strict advisers (see docs/04).
+
+**Next:** the portal home for the active org (web `app/portal/[adviceId]/page.tsx`).
+
+---
+
 ## 2026-10-01 — Adviser portal audience + org theming engine (colour + logo per org)
 
 **Decision (user):** the app is for the **adviser site** (web `/portal/[adviceId]`), not the back office.

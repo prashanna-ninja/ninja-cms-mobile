@@ -8,8 +8,8 @@ and what to build next. Keep it current at the end of every step.
 > [docs/07-ORG-THEMING.md](docs/07-ORG-THEMING.md) before building any signed-in screen.
 
 > **Status (2026-09-30):** 🚧 **Login done** — email + password sign-in, forgot password, session guard,
-> `apiFetch`, org theming engine. The signed-in area is a placeholder. ⚠️ Real sign-in on a device not yet
-> tested. Next: **org selection → portal home**.
+> `apiFetch`, org selection (picker / direct) with per-org colour + tinted logo. The portal home is a
+> placeholder. ⚠️ Real sign-in on a device not yet tested. Next: **portal home**.
 
 ## 1. What works today
 
@@ -20,9 +20,12 @@ and what to build next. Keep it current at the end of every step.
   Expo Go). ⚠️ Needs a device check.
 - **Session guard** — `Stack.Protected` in `src/app/_layout.tsx`, session from `providers/session-provider.tsx`.
 - **Signed-in placeholder** (`(app)/index.tsx`) — name, email, role, sign out.
-- **Org theming engine** — `lib/org-theme.ts` + `providers/org-theme-provider.tsx`: the active org's colour
-  overrides the NativeWind tokens across `(app)`; `<OrgLogo>` shows the org logo or initials. Org
-  *selection* (from `GET /api/advice/my`) is not wired yet, so the default navy shows for now.
+- **Org theming** — `lib/org-theme.ts` + `providers/org-theme-provider.tsx`: the active org's colour
+  overrides the NativeWind tokens across `(app)`; the CMS NINJA wordmark is **tinted the org colour**
+  (Ninja CMS blue before an org is chosen); `<OrgLogo>` shows the org's own logo or initials.
+- **Org selection** (`(app)/_layout.tsx` gate) — `GET /api/advice/my`: 1 org → straight in; 2+ → **picker**
+  (`(app)/select-org.tsx`, web-style coloured cards); 0 → "No organisations assigned"; editor/user → "use the
+  web". Remembered per user; "Switch organisation" on the home banner when 2+.
 - Backend verified: the CMS accepts `ninjacms://` and Expo Go `exp://` origins (401 on bad creds, not 403).
 - TanStack Query client with app-foreground refetch (`focusManager` ↔ `AppState`) and offline pause
   (`onlineManager` ↔ `expo-network`) — `src/lib/query-client.ts`, `src/providers/query-provider.tsx`.
@@ -87,8 +90,11 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
 10. **No hard-coded brand colours behind sign-in** — use `bg-primary`/`bg-accent`/`bg-secondary` classes or
     `useOrgTheme().theme` (`onBase` for text on the colour, `text` for org-coloured text on white).
     `auth-palette.ts` is for signed-out screens only. See docs/07 §4.
-11. **Icons/splash are still the Expo template art** (colours set to navy `#0B2D6F`). Replace before any store build.
-12. `apiFetch` must use `credentials: "omit"` and send
+11. **App is light-only** (`userInterfaceStyle: "light"`) — the web portal is light-only and org colours assume it.
+12. **`CI=1 npx expo start` disables file watching** — fine for scripted screenshots, but restart Metro after
+    edits or you'll test a stale bundle (cost two confusing runs on 2026-10-02).
+13. **Icons/splash are still the Expo template art** (colours set to navy `#0B2D6F`). Replace before any store build.
+14. `apiFetch` must use `credentials: "omit"` and send
    the cookie manually; signing out on 401, not on 403.
 
 ## 8. Loose ends & what to build next
@@ -96,7 +102,7 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
 1. ✅ Foundation.
 2. ✅ Login + session guard (backend expo plugin ✅). ⚠️ Test a real sign-in on iOS + Android.
 3. ✅ Forgot password.
-4. ⬜ **Org selection** after sign-in (0 / 1 auto / many → picker) → `setOrg` → org theme + logo. docs/07 §5.
+4. ✅ **Org selection** + org theme + tinted wordmark. ⚠️ Check with real org logos on a device.
 5. ⬜ **Portal home** ("dashboard") for the active org — `app/portal/[adviceId]/page.tsx`, org-themed.
 
 ## 9. Where things live
@@ -112,6 +118,10 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
 | `src/lib/org-theme.ts` | org colour → theme engine (pure) |
 | `src/providers/org-theme-provider.tsx` | active org, `useOrgTheme()`, `<OrgThemeScope>` |
 | `src/components/org-logo.tsx` | org logo / initials tile |
+| `src/components/brand/ninja-cms-logo.tsx` | tintable CMS NINJA wordmark |
+| `src/app/(app)/_layout.tsx` | org gate (0 / 1 / many orgs) + guarded stack |
+| `src/app/(app)/select-org.tsx`, `src/components/orgs/*` | org picker, card, gate states |
+| `src/lib/roles.ts` | `canAccessPortal` (ported from CMS lib/staff.ts) |
 | `src/constants/env.ts` | `API_BASE_URL`, `APP_SCHEME` |
 | `src/global.css`, `tailwind.config.js` | Design tokens |
 | `docs/` | All project docs |

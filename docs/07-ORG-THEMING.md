@@ -29,8 +29,13 @@ Researched 2026-10-01 against the live CMS (`../cms`, HEAD `1271309`).
 
 | Layer | Screens | Colour | Logo |
 |---|---|---|---|
-| **Ninja CMS brand** (fixed) | Splash, boot hold, sign-in, forgot password | Navy `#0B2D6F` / blue `#1A4DB3` (`components/login/auth-palette.ts`) | `assets/images/ninja-cms-logo.png` |
-| **Org brand** (variable) | Everything behind sign-in, once an org is active | `Advice.colorTheme` → theme engine | `Advice.logo` → `<OrgLogo>` (initials fallback) |
+| **Ninja CMS brand** (fixed) | Splash, boot hold, sign-in, forgot password | Navy `#0B2D6F` / blue `#1A4DB3` (`components/login/auth-palette.ts`) | white CMS NINJA wordmark |
+| **No org yet** | org loading, org picker, "no organisations" | Ninja CMS blue `#1A4DB3` | CMS NINJA wordmark **tinted Ninja CMS blue** |
+| **Org brand** (variable) | Everything behind sign-in, once an org is active | `Advice.colorTheme` → theme engine | CMS NINJA wordmark **tinted the org colour** (`theme.logoTint`) in the app bar + the org's own logo (`<OrgLogo>`, initials fallback) on org-coloured banners |
+
+**The CMS NINJA wordmark is recoloured, not swapped.** It's white-on-transparent, so `<NinjaCmsLogo color=…>`
+(`components/brand/ninja-cms-logo.tsx`) tints it with expo-image `tintColor`: no tint on the sign-in hero,
+Ninja CMS blue before an org is chosen, `theme.logoTint` after.
 
 Why the sign-in screen is not org-themed: we don't know the org until the user has signed in and
 picked one. The native splash is a static asset, so it can't be org-coloured either.
@@ -69,15 +74,24 @@ GET /api/advice/my ──► pick org (auto if 1, picker if >1) ──► setOrg
 Everything else (background, cards, muted, borders, destructive) stays neutral, so the app stays
 readable whatever colour an org picks.
 
-**Readability guarantees** (checked against the real entity colours on 2026-10-01):
+**Colour rules** (revised 2026-10-02 to match the web picker):
+- **On the org colour** (`onBase`): **white, like the web**, because org logos are white artwork. It only
+  switches to ink for genuinely pale colours (contrast with white < 2:1, `ON_BASE_WHITE_MIN`). Brand greens
+  and oranges (~2.4–2.7:1) stay white, as they do on the web.
+- **Org-coloured body text on white** (`text`): darkened until 4.5:1 (WCAG AA).
+- **Wordmark tint on white** (`logoTint`): darkened only until 3:1 (WCAG large/graphical), so oranges and
+  greens stay close to the real brand colour. Ninja CMS blue when the org has no colour.
 
-| Org colour | Text on it | Org-coloured text on white |
-|---|---|---|
-| Cobalt `#0B2D6F` | white, 13.0:1 | as-is, 13.0:1 |
-| Beryllium `#6B1424` | white, 12.0:1 | as-is, 12.0:1 |
-| AIAFSL `#1E3A5F` | white, 11.5:1 | as-is, 11.5:1 |
-| CLS `#8A8585` | **ink**, 4.6:1 (the web uses white, 3.7:1) | darkened → `#717077`, 4.9:1 |
-| pale yellow `#FFE066` | ink, 13.0:1 | darkened → `#6E6A4E`, 5.5:1 |
+| Org colour | On it | `text` on white | `logoTint` |
+|---|---|---|---|
+| Cobalt `#0B2D6F` | white 13.0 | as-is 13.0 | as-is |
+| Beryllium `#6B1424` | white 12.0 | as-is 12.0 | as-is |
+| AIAFSL `#1E3A5F` | white 11.5 | as-is 11.5 | as-is |
+| CLS `#8A8585` | white 3.6 | `#717077` 4.9 | as-is (3.6) |
+| An Independent green `#6DAE43` | white 2.7 | `#508242` 4.6 | `#639F43` 3.2 |
+| What If orange `#FF8900` | white 2.4 | `#9E5D19` 5.2 | `#CF730C` 3.4 |
+| pale yellow `#FFE066` | **ink** 13.0 | `#6E6A4E` 5.5 | darkened |
+| none / invalid | white (default navy) | `#0B2D6F` | **Ninja CMS blue `#1A4DB3`** |
 
 ## 4. Rules for every screen we build
 
@@ -96,11 +110,33 @@ readable whatever colour an org picks.
 
 ## 5. Status
 
+Verified 2026-10-02 on a web render with mocked CMS responses (Puppeteer request interception: a session +
+6 orgs in the user's reference colours, one with a broken logo URL): picker → tap Beryllium → red portal →
+Switch → picker; single org → straight in; orange org → orange wordmark + white-on-orange banner. ⚠️ Not yet
+with real org logos from the CMS on a device.
+
+
 - ✅ Theme engine, provider, scope, `OrgLogo`, `useMyOrgs` (2026-10-01). `(app)` is wrapped in `OrgThemeScope`.
-- ⬜ **Org selection** — after sign-in: `useMyOrgs()` → 0 orgs: "No organisations assigned" screen /
-  1 org: `setOrg` automatically / >1: org picker (web `OrgSwitcher`) → `setOrg`. **Next step, together with
-  the dashboard (portal home).**
-- ⬜ Header with `<OrgLogo>` + "switch org" (web PortalNav).
+- ✅ **Org selection** (2026-10-02) — the gate in `src/app/(app)/_layout.tsx`:
+
+  | Case | Result |
+  |---|---|
+  | role is editor / user (`canAccessPortal` false, `lib/roles.ts`) | "This app is for the adviser portal" + sign out |
+  | `GET /api/advice/my` loading, no remembered org | Ninja CMS blue logo + spinner |
+  | request failed, no remembered org | "Couldn't load your organisations" + Try again + sign out |
+  | 0 orgs | "No organisations assigned" (web copy) + sign out |
+  | **1 org** | **auto-selected → straight into the portal (no picker)** |
+  | 2+ orgs (admins: all orgs) | remembered org if still in the list, else **the picker** |
+  | remembered org | straight in while the list refreshes; colour/logo/name re-synced, dropped if membership removed |
+
+  Picker = `src/app/(app)/select-org.tsx` + `components/orgs/org-card.tsx`, a port of the web
+  `OrgSwitcher`/`OrgCard`: light `#F0F4FB` background, 3px navy→blue gradient bar, blue CMS NINJA wordmark,
+  "Select an Organisation" / "Choose an organisation to access your adviser portal", 2-column grid of
+  org-coloured square cards (logo or first letter + name, translucent "View Portal →" pill), pull-to-refresh,
+  sign out. Orgs are sorted by name. `Stack.Protected` flips `index` ⇄ `select-org` on `setOrg`.
+- ✅ Temporary portal home (`(app)/index.tsx`): app bar with the org-tinted wordmark + sign out, org banner
+  (gradient, `<OrgLogo>`, welcome, "Switch organisation" only when 2+ orgs).
+- ⬜ Real portal home + header nav (web PortalNav).
 - ⬜ Acting-adviser cookie (`portal-acting-adviser`) for strict advisers — affects which orgs/membership
   apply (docs/01 §3).
 - ⬜ Practice logo (`User.practiceLogo`) in the profile/menu.

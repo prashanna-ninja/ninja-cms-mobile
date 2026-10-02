@@ -93,5 +93,7 @@ steps above are enough to redo it (sharp + opentype.js + @expo-google-fonts/mont
 
 ## 6. Dark mode
 
-Planned: light by default, manual toggle persisted in SecureStore (CRM pattern), defined when we
-build Settings.
+**Light only for now** (2026-10-02): `app.json` `userInterfaceStyle: "light"`. The web portal is light-only,
+and org colours are chosen against light surfaces. (The mocked run showed the signed-in screens going dark
+under the old `automatic` setting.) The dark tokens in `src/global.css` are kept for a later Settings toggle
+(CRM pattern: manual, persisted in SecureStore).

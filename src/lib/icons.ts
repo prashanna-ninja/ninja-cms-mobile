@@ -18,3 +18,10 @@ export { default as LogOut } from "lucide-react-native/icons/log-out";
 export { default as Mail } from "lucide-react-native/icons/mail";
 export { default as MailCheck } from "lucide-react-native/icons/mail-check";
 export { default as ShieldCheck } from "lucide-react-native/icons/shield-check";
+
+/* orgs / portal */
+export { default as ArrowLeftRight } from "lucide-react-native/icons/arrow-left-right";
+export { default as ArrowRight } from "lucide-react-native/icons/arrow-right";
+// lucide 1.x renamed `building-2` → `building` (web CMS uses Building2).
+export { default as Building } from "lucide-react-native/icons/building";
+export { default as RefreshCw } from "lucide-react-native/icons/refresh-cw";

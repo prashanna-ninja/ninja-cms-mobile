@@ -33,7 +33,7 @@ Session defaults (no custom config): cookie `better-auth.session_token` (`__Secu
 | `GET /api/me` | id, name, email, bio, image, practice fields, role |
 | `PUT /api/me` | update profile |
 | `GET/PATCH /api/me/practice-branding`, `PATCH /api/me/practice-logo` | adviser branding |
-| `GET /api/advice/my` | the orgs (`Advice`) I belong to |
+| `GET /api/advice/my` | the orgs (`Advice`) I belong to → `[{ id, name, colorTheme, logo }]`; admins/superadmins get **all** orgs; no ORDER BY (mobile sorts by name). ⚠️ uses the user's own memberships, not the acting adviser's (the web picker uses the acting adviser for strict advisers). Used by the org gate/picker (07-ORG-THEMING.md). |
 
 ## 3. Admin dashboard (`app/(protected)/dashboard`, admin/superadmin)
 

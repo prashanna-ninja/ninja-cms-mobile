@@ -21,6 +21,15 @@
 export const DEFAULT_ORG_COLOR = "#0B2D6F";
 
 const WHITE = "#FFFFFF";
+/** Ninja CMS brand blue — the sign-in screen's CTA colour (auth-palette `brand`). */
+export const NINJA_CMS_BLUE = "#1A4DB3";
+/**
+ * Minimum contrast for keeping WHITE on an org colour. Deliberately below WCAG
+ * AA (4.5) to stay faithful to the web portal, which always uses white on the
+ * org colour; only pale colours (< 2:1) switch to ink.
+ */
+const ON_BASE_WHITE_MIN = 2;
+
 /** Dark ink used on light org colours (portal text colour #0D1B3E). */
 const INK = "#0D1B3E";
 
@@ -113,6 +122,11 @@ export type OrgTheme = {
   pressed: string;
   /** Soft tint for chips / icon tiles (≈ web `${themeColor}1a` over white). */
   soft: string;
+  /**
+   * Colour for the CMS NINJA wordmark on light surfaces: Ninja CMS blue until
+   * the org has a colour, then the org colour (readable on white).
+   */
+  logoTint: string;
   /** Hairline borders in the org colour (≈ web `${themeColor}26`). */
   line: string;
   /** Header / hero gradient, light → deep (mirrors the auth hero). */
@@ -126,8 +140,10 @@ export type OrgTheme = {
 export function buildOrgTheme(colorTheme?: string | null): OrgTheme {
   const parsed = normalizeHex(colorTheme);
   const base = parsed ?? DEFAULT_ORG_COLOR;
-  // Pick whichever of white / ink reads better on the org colour.
-  const onBase = contrast(base, WHITE) >= contrast(base, INK) ? WHITE : INK;
+  // White on the org colour — like the web portal, and org logos are white artwork —
+  // unless the colour is genuinely pale (pastels, very light greys), where white
+  // would vanish. Brand greens/oranges (≈2.4–2.6:1 with white) stay white, as on web.
+  const onBase = contrast(base, WHITE) >= ON_BASE_WHITE_MIN ? WHITE : INK;
   const text = readableOnWhite(base);
   const soft = mix(base, WHITE, 0.9);
   const line = mix(base, WHITE, 0.85);
@@ -137,6 +153,9 @@ export function buildOrgTheme(colorTheme?: string | null): OrgTheme {
     base,
     onBase,
     text,
+    // Large bold artwork → WCAG "large/graphical" 3:1 is enough, so brand oranges
+    // and greens stay close to their real colour (body text uses 4.5:1 via `text`).
+    logoTint: parsed ? readableOnWhite(base, 3) : NINJA_CMS_BLUE,
     pressed,
     soft,
     line,
