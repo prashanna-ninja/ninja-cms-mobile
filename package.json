@@ -13,6 +13,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "expo": "~57.0.26",
+    "expo-alternate-app-icons": "^8.0.0",
     "expo-constants": "~57.0.20",
     "expo-font": "~57.0.4",
     "expo-image": "~57.0.5",
@@ -47,6 +48,7 @@
     "@types/react": "~19.2.2",
     "eslint": "^9.39.5",
     "eslint-config-expo": "^57.0.2",
+    "sharp": "^0.35.5",
     "typescript": "~6.0.3"
   },
   "scripts": {

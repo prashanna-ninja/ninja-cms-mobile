@@ -14,6 +14,7 @@ Then read these in order — each builds on the last.
 Feature docs (added as each page/feature is built):
 
 7. [07-ORG-THEMING.md](07-ORG-THEMING.md) — ⭐ org colour + logo per organisation (read before building any signed-in screen)
+8. [08-APP-ICONS.md](08-APP-ICONS.md) — per-org home-screen icon, generated in code (needs a dev build)
 
 Living docs:
 

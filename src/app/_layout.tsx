@@ -7,6 +7,7 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import { useColorScheme, View } from "react-native";
 
+import { useOrgAppIcon } from "@/hooks/use-org-app-icon";
 import { appFonts } from "@/lib/fonts";
 import { QueryProvider } from "@/providers/query-provider";
 import { OrgThemeProvider } from "@/providers/org-theme-provider";
@@ -23,6 +24,8 @@ function RootNavigator() {
   const [fontsLoaded, fontError] = useFonts(appFonts);
   const { data: session, isPending } = useSession();
   const isSignedIn = !!session?.user;
+  // Home-screen icon follows the active org (dev/store builds only; docs/08-APP-ICONS.md).
+  useOrgAppIcon();
 
   // Hold until BOTH the stored session has resolved and fonts are ready —
   // otherwise sign-in flashes before the guard redirects a signed-in user.

@@ -4,11 +4,10 @@
     "slug": "ninja-cms-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/app-icons/Default.png",
     "scheme": "ninjacms",
     "userInterfaceStyle": "light",
     "ios": {
-      "icon": "./assets/expo.icon",
       "supportsTablet": false,
       "bundleIdentifier": "com.adviceninja.ninjacms",
       "infoPlist": {
@@ -17,17 +16,16 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#0B2D6F",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+        "backgroundColor": "#1A4DB3",
+        "foregroundImage": "./assets/app-icons/adaptive-foreground.png",
+        "monochromeImage": "./assets/app-icons/monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
       "package": "com.adviceninja.ninjacms"
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/app-icons/favicon.png"
     },
     "plugins": [
       "expo-router",
@@ -35,8 +33,8 @@
         "expo-splash-screen",
         {
           "backgroundColor": "#0B2D6F",
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 76
+          "image": "./assets/images/ninja-cms-logo.png",
+          "imageWidth": 180
         }
       ],
       "expo-font",

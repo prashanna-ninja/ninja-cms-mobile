@@ -26,6 +26,9 @@ and what to build next. Keep it current at the end of every step.
 - **Org selection** (`(app)/_layout.tsx` gate) — `GET /api/advice/my`: 1 org → straight in; 2+ → **picker**
   (`(app)/select-org.tsx`, web-style coloured cards); 0 → "No organisations assigned"; editor/user → "use the
   web". Remembered per user; "Switch organisation" on the home banner when 2+.
+- **Per-org home-screen icon** — 7 icons generated in code (org colour + white CMS NINJA wordmark, default
+  login blue); the icon follows the active org (iOS: at once, Android: on next background). Also the real
+  app icon/splash now. ⚠️ Needs a **development build** — no-op in Expo Go. docs/08-APP-ICONS.md.
 - Backend verified: the CMS accepts `ninjacms://` and Expo Go `exp://` origins (401 on bad creds, not 403).
 - TanStack Query client with app-foreground refetch (`focusManager` ↔ `AppState`) and offline pause
   (`onlineManager` ↔ `expo-network`) — `src/lib/query-client.ts`, `src/providers/query-provider.tsx`.
@@ -93,8 +96,11 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
 11. **App is light-only** (`userInterfaceStyle: "light"`) — the web portal is light-only and org colours assume it.
 12. **`CI=1 npx expo start` disables file watching** — fine for scripted screenshots, but restart Metro after
     edits or you'll test a stale bundle (cost two confusing runs on 2026-10-02).
-13. **Icons/splash are still the Expo template art** (colours set to navy `#0B2D6F`). Replace before any store build.
-14. `apiFetch` must use `credentials: "omit"` and send
+13. **App icons are generated** — edit `src/constants/app-icons.json`, run `node scripts/generate-app-icons.mjs`,
+    never hand-edit `assets/app-icons/`. Alternate icons are native: **rebuild** after changing the list. docs/08.
+14. **After `npx expo prebuild`, check `git diff package.json`** — it rewrites the android/ios scripts.
+15. ~~Icons/splash are still the Expo template art~~ (replaced 2026-10-02) (colours set to navy `#0B2D6F`). Replace before any store build.
+16. `apiFetch` must use `credentials: "omit"` and send
    the cookie manually; signing out on 401, not on 403.
 
 ## 8. Loose ends & what to build next
@@ -103,7 +109,9 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
 2. ✅ Login + session guard (backend expo plugin ✅). ⚠️ Test a real sign-in on iOS + Android.
 3. ✅ Forgot password.
 4. ✅ **Org selection** + org theme + tinted wordmark. ⚠️ Check with real org logos on a device.
-5. ⬜ **Portal home** ("dashboard") for the active org — `app/portal/[adviceId]/page.tsx`, org-themed.
+5. ✅ Per-org app icons (⚠️ verify on a dev build: iOS alert, Android switch on background).
+6. ⬜ **EAS / dev build** setup (eas.json like the CRM) — needed to see the app icons switch.
+7. ⬜ **Portal home** ("dashboard") for the active org — `app/portal/[adviceId]/page.tsx`, org-themed.
 
 ## 9. Where things live
 
@@ -122,6 +130,9 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
 | `src/app/(app)/_layout.tsx` | org gate (0 / 1 / many orgs) + guarded stack |
 | `src/app/(app)/select-org.tsx`, `src/components/orgs/*` | org picker, card, gate states |
 | `src/lib/roles.ts` | `canAccessPortal` (ported from CMS lib/staff.ts) |
+| `src/constants/app-icons.json`, `scripts/generate-app-icons.mjs`, `assets/app-icons/` | per-org app icons (source, generator, output) |
+| `app.config.ts` | registers alternate icons (on top of app.json) |
+| `src/lib/app-icon.ts`, `src/hooks/use-org-app-icon.ts` | org → icon matching + switching |
 | `src/constants/env.ts` | `API_BASE_URL`, `APP_SCHEME` |
 | `src/global.css`, `tailwind.config.js` | Design tokens |
 | `docs/` | All project docs |

@@ -5,6 +5,39 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-10-02 — Per-org home-screen app icons, generated in code
+
+**Asked (clarified with the user):** generate, in code, an icon per org (the org colour as background,
+the Ninja CMS wordmark on top) and use it as the **phone's home-screen icon**, switching to the org's icon
+after login. Default = the login-page blue. Colours = the 6 orgs from the web picker screenshot + default.
+
+**Did:**
+- `src/constants/app-icons.json` — the single list (default `#1A4DB3` + Independent `#71AF43`, Beryllium
+  `#8F2A2A`, Cobalt `#00499A`, DominicJames `#2D3240`, ApprovalEdge `#000000`, WhatIf `#FF8900`, sampled from
+  the screenshot).
+- `scripts/generate-app-icons.mjs` (sharp, new devDependency) → `assets/app-icons/`: 7 opaque 1024² iOS
+  icons, a shared Android adaptive foreground + monochrome, favicon, and a `preview.png` contact sheet.
+- `expo-alternate-app-icons` 8.0.0, registered from the JSON in **`app.config.ts`** (new, layered on app.json).
+- `src/lib/app-icon.ts` — nearest-preset matching (RGB distance ≤ 48, else default), lazy native import
+  (no-op in Expo Go/web), never throws. `src/hooks/use-org-app-icon.ts` in the root layout — iOS switches
+  immediately; Android switches on the next background.
+- Replaced the Expo template art: app icon, adaptive icon, favicon, and splash (wordmark on navy, 180dp).
+  Removed `assets/expo.icon` + template PNGs.
+
+**Decisions:**
+- **Nearest preset, not exact match.** Icons are baked in at build time, so any org colour maps to the
+  closest one, or to the default. A new org that needs its own icon means a JSON entry, the generator, and a rebuild.
+- **Android: switch on background.** The library disables the running launcher alias (and needs the
+  activity), so switching in the foreground risks closing the app.
+
+**Verified:** tsc ✅, lint ✅; matching table (docs/08 §2); `npx expo prebuild` → 6 activity-aliases +
+per-icon mipmaps (then deleted `android/`; prebuild's package.json script rewrite reverted).
+⚠️ **Not seen on a device** — needs a development build (not Expo Go). iOS prebuild doesn't run on Windows.
+
+**Next:** dev build (EAS profiles) to see it live → portal home.
+
+---
+
 ## 2026-10-02 — Org selection after sign-in, org-coloured logo
 
 **Asked:** after sign-in, pull the user's orgs with their colours; keep the Ninja CMS logo but **recolour**

@@ -1,0 +1,12 @@
+{
+  "$comment": "Single source of truth for the per-org home-screen icons. Read by scripts/generate-app-icons.mjs (renders the PNGs), app.config.ts (registers them with expo-alternate-app-icons) and src/lib/app-icon.ts (picks one for the active org). Colours sampled from the web org picker on 2026-10-02. After editing: node scripts/generate-app-icons.mjs, then rebuild the dev client (alternate icons are native).",
+  "default": { "name": "Default", "label": "Ninja CMS (default)", "color": "#1A4DB3" },
+  "alternates": [
+    { "name": "Independent", "label": "An Independent AFSL", "color": "#71AF43" },
+    { "name": "Beryllium", "label": "Beryllium Advisers", "color": "#8F2A2A" },
+    { "name": "Cobalt", "label": "Cobalt Advisers", "color": "#00499A" },
+    { "name": "DominicJames", "label": "Dominic James", "color": "#2D3240" },
+    { "name": "ApprovalEdge", "label": "The Approval Edge", "color": "#000000" },
+    { "name": "WhatIf", "label": "What If Advice + Accounting", "color": "#FF8900" }
+  ]
+}

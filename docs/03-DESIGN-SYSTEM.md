@@ -91,7 +91,12 @@ built from the Ninja PRM square mark (the user's 1080×1080 orange reference):
 ⚠️ Replace it with an official asset from design if one appears. The build script is not in the repo; the
 steps above are enough to redo it (sharp + opentype.js + @expo-google-fonts/montserrat).
 
-## 6. Dark mode
+## 6. App icon & splash
+
+Generated in code: org colour + white CMS NINJA wordmark, default login blue `#1A4DB3`. The home-screen icon
+follows the active org. Splash = wordmark on navy `#0B2D6F`. See [08-APP-ICONS.md](08-APP-ICONS.md).
+
+## 7. Dark mode
 
 **Light only for now** (2026-10-02): `app.json` `userInterfaceStyle: "light"`. The web portal is light-only,
 and org colours are chosen against light surfaces. (The mocked run showed the signed-in screens going dark
