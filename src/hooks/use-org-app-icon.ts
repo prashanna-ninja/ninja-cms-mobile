@@ -28,13 +28,23 @@ export function useOrgAppIcon() {
 
   React.useEffect(() => {
     // Don't flip to the default icon during cold start, before the stored session has loaded.
-    if (isPending || !canChangeAppIcon()) return;
+    if (isPending) return;
+    if (__DEV__) {
+      // Dev-only trace so "why didn't my icon change?" is answerable from the Metro log.
+      console.log(
+        `[app-icon] org=${org?.name ?? "none"} colour=${org?.colorTheme ?? "-"} → icon=${desired ?? "Default"}` +
+          (canChangeAppIcon()
+            ? ""
+            : " — NOT APPLIED: no native module (Expo Go / web). Use a development build: npx expo run:ios"),
+      );
+    }
+    if (!canChangeAppIcon()) return;
     if (Platform.OS === "ios") {
       void setAppIcon(desired);
     } else {
       pending.current = desired;
     }
-  }, [desired, isPending]);
+  }, [desired, isPending, org?.name, org?.colorTheme]);
 
   React.useEffect(() => {
     if (Platform.OS !== "android" || !canChangeAppIcon()) return;

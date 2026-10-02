@@ -84,11 +84,28 @@ if it needs its own icon.
 `canChangeAppIcon()` is false and everything is a no-op; the app works normally with the default icon.
 To see the icons switch:
 
+**Test on a Mac in the iOS Simulator** (alternate icons work there — Apple's `setAlternateIconName`):
+
 ```bash
-npx expo run:android            # local (needs Android Studio / SDK)
-# or EAS (no local SDK): add eas.json profiles like the CRM, then
-npx eas-cli@latest build -p android --profile development
+# one-time: Xcode (from the App Store) + its command-line tools, CocoaPods (`brew install cocoapods`)
+npm install
+npm run ios:dev          # = npx expo run:ios → prebuilds ios/, pod install, builds, installs on the Simulator, starts Metro
 ```
+
+Then: sign in → pick an org → press **Cmd+Shift+H** (Home) and the icon has changed (iOS also showed its
+"You have changed the icon…" alert). Sign out → back to blue. Next time just run `npx expo start` and open
+the installed **Ninja CMS** app (not Expo Go) — rebuild with `npm run ios:dev` only when native config
+changes (e.g. `app-icons.json`).
+
+⚠️ `npx expo start` → `i` / Expo Go **can't** switch icons. With `expo-dev-client` installed, `expo start`
+targets the dev build by default; press **`s`** in the Metro terminal to switch to Expo Go for quick UI work.
+
+**Diagnose from the Metro log** (dev only): every change prints
+`[app-icon] org=Beryllium Advisers colour=#8F2A2A → icon=Beryllium` — and `NOT APPLIED: no native module`
+when running in Expo Go. `icon=Default` for a real org means its colour isn't close to any preset (§2).
+
+Android: `npm run android:dev` (needs Android Studio / SDK), or EAS (no local SDK):
+`npx eas-cli@latest build -p android --profile development` once eas.json exists.
 
 Verified 2026-10-02 with `npx expo prebuild` (then deleted the generated `android/`): 6 `activity-alias`
 entries (`.MainActivityIndependent` … `.MainActivityWhatIf`) + adaptive/monochrome mipmaps for each.

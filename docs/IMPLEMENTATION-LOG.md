@@ -5,6 +5,20 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-10-02 — How to test app icons: dev build (iOS Simulator), expo-dev-client, icon trace
+
+**Reported:** the icon wasn't changing on iPhone. **Cause:** running in **Expo Go**, which doesn't contain
+`expo-alternate-app-icons`, so the switch is a silent no-op (by design — see `canChangeAppIcon`).
+
+**Did:** added **`expo-dev-client`** (~57.0.19) + scripts `ios:dev` / `android:dev` (`expo run:*`);
+a dev-only Metro log line on every icon decision (`[app-icon] org=… colour=… → icon=…`, plus `NOT APPLIED`
+in Expo Go); docs/08 §4 now has the Mac Simulator steps. Confirmed the iOS side is Apple's
+`UIApplication.setAlternateIconName`, which works in the Simulator.
+
+**Note:** with expo-dev-client installed, `npx expo start` opens the dev build by default — press `s` for Expo Go.
+
+---
+
 ## 2026-10-02 — Per-org home-screen app icons, generated in code
 
 **Asked (clarified with the user):** generate, in code, an icon per org (the org colour as background,

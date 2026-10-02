@@ -99,6 +99,8 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
 13. **App icons are generated** — edit `src/constants/app-icons.json`, run `node scripts/generate-app-icons.mjs`,
     never hand-edit `assets/app-icons/`. Alternate icons are native: **rebuild** after changing the list. docs/08.
 14. **After `npx expo prebuild`, check `git diff package.json`** — it rewrites the android/ios scripts.
+    Test app icons with a **dev build** (`npm run ios:dev` on a Mac / `npm run android:dev`), never Expo Go;
+    `expo start` now targets the dev build (press `s` for Expo Go).
 15. ~~Icons/splash are still the Expo template art~~ (replaced 2026-10-02) (colours set to navy `#0B2D6F`). Replace before any store build.
 16. `apiFetch` must use `credentials: "omit"` and send
    the cookie manually; signing out on 401, not on 403.
