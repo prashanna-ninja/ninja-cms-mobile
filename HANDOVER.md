@@ -100,7 +100,8 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
 11. **App is light-only** (`userInterfaceStyle: "light"`) — the web portal is light-only and org colours assume it.
 12. **`CI=1 npx expo start` disables file watching** — fine for scripted screenshots, but restart Metro after
     edits or you'll test a stale bundle (cost two confusing runs on 2026-10-02).
-13. **App icons are generated** — edit `src/constants/app-icons.json`, run `node scripts/generate-app-icons.mjs`,
+13. **Logos + app icons are generated** — wordmark: `node scripts/build-wordmark.mjs` (`CAP_HEIGHT`); icons: edit
+    `src/constants/app-icons.json`, run `node scripts/generate-app-icons.mjs`,
     never hand-edit `assets/app-icons/`. Alternate icons are native: **rebuild** after changing the list. docs/08.
 14. **After `npx expo prebuild`, check `git diff package.json`** — it rewrites the android/ios scripts.
     Test app icons with a **dev build** (`npm run ios:dev` on a Mac / `npm run android:dev`), never Expo Go;

@@ -17,10 +17,12 @@
 //   favicon.png, preview.png (contact sheet of every icon, for review)
 //
 // Sizing: iOS masks a rounded square; Android masks inside the central 66% safe
-// zone (a 676px circle on 1024). Logos are fitted ("contain") into a box:
+// zone (a 676px circle on 1024). Each logo is fitted to its OWN aspect ratio:
 //   wordmark: 62% wide (iOS) / 52% wide (Android)
-//   brand logos (wide, short): 76% × 42% (iOS) / 60% × 30% (Android) — the box
-//   diagonal stays inside the safe circle.
+//   brand logos: as large as fits 84% × 50% (iOS), and on Android as large as fits
+//   66% × 40% with the logo's diagonal inside a 62% circle (safe zone minus margin),
+//   so wide logos (Dominic James 6:1) get more width and squarer ones (Cobalt
+//   2.9:1) stay unclipped under any launcher mask.
 import { mkdirSync, readFileSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -33,9 +35,10 @@ const BRAND_DIR = join(root, "assets/brand-logos");
 const OUT = join(root, "assets/app-icons");
 const SIZE = 1024;
 
+/** [max width, max height, optional max diagonal] as fractions of the icon size. */
 const BOX = {
   wordmark: { ios: [0.62, 0.62], android: [0.52, 0.52] },
-  brand: { ios: [0.76, 0.42], android: [0.6, 0.3] },
+  brand: { ios: [0.84, 0.5], android: [0.66, 0.4, 0.62] },
 };
 
 mkdirSync(OUT, { recursive: true });
@@ -49,13 +52,14 @@ function artFor(icon) {
   return { file: WORDMARK, kind: "wordmark" };
 }
 
-/** `art` fitted into a (w×h fraction) box, centred on a transparent size² canvas. */
-async function centred(art, [bw, bh], size = SIZE, { silhouette = false } = {}) {
-  let img = sharp(art.file).resize({
-    width: Math.round(size * bw),
-    height: Math.round(size * bh),
-    fit: "inside",
-  });
+/** `art` fitted into a (w×h[×diagonal] fraction) box, centred on a transparent size² canvas. */
+async function centred(art, [bw, bh, bd], size = SIZE, { silhouette = false } = {}) {
+  const meta = await sharp(art.file).metadata();
+  const aspect = meta.width / meta.height;
+  let targetWidth = Math.min(bw * size, bh * size * aspect);
+  // Keep the logo's diagonal inside a circle (Android adaptive safe zone).
+  if (bd) targetWidth = Math.min(targetWidth, (bd * size) / Math.sqrt(1 + 1 / (aspect * aspect)));
+  let img = sharp(art.file).resize({ width: Math.round(targetWidth) });
   if (silhouette) {
     // Monochrome: keep only the shape (alpha), paint it white.
     const { data, info } = await img.ensureAlpha().raw().toBuffer({ resolveWithObject: true });

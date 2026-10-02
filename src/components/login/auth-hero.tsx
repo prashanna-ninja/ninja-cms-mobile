@@ -1,7 +1,7 @@
-import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { Text, View } from "react-native";
 
+import { NinjaCmsLogo } from "@/components/brand/ninja-cms-logo";
 import { FadeIn } from "@/components/login/fade-in";
 import { AUTH, AUTH_FONT } from "@/components/login/auth-palette";
 
@@ -30,16 +30,8 @@ export function AuthHero({
       style={{ paddingHorizontal: 26, paddingTop: topInset + 28, paddingBottom: 44 }}
     >
       <FadeIn delay={40}>
-        <Image
-          // White "CMS NINJA" wordmark on transparent (838×464, ≈1.81:1) — small
-          // Montserrat Bold "CMS" over the J–A, same as the PRM mark. See docs/03 §5.
-          source={require("@/assets/images/ninja-cms-logo.png")}
-          style={{ width: 120, height: 66 }}
-          contentFit="contain"
-          accessible
-          accessibilityRole="image"
-          accessibilityLabel="Ninja CMS"
-        />
+        {/* White CMS NINJA wordmark (no tint) — same component as the signed-in screens. */}
+        <NinjaCmsLogo width={120} />
       </FadeIn>
 
       <FadeIn delay={110}>

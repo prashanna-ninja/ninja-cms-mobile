@@ -1,7 +1,7 @@
 import { Image } from "expo-image";
 
-/** Source art is 838×464 (docs/03 §5). */
-const ASPECT = 838 / 464;
+/** Source art is 838×477 (built by scripts/build-wordmark.mjs; docs/03 §5). */
+const ASPECT = 838 / 477;
 
 /** The default (no org yet) tint — re-exported so screens import it with the logo. */
 export { NINJA_CMS_BLUE } from "@/lib/org-theme";

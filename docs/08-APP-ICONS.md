@@ -23,8 +23,10 @@ not the web's `/_next/image?…&w=256` resize) → trims, caps at 1600px wide �
 (committed). Dominic James + The Approval Edge logos keep their colours (orange "james", colour bars);
 the Android monochrome icon is a white silhouette of the logo.
 
-Brand-logo sizing: fitted into 76%×42% of the iOS icon and 60%×30% of the Android foreground (inside the
-safe circle). ⚠️ Very wide logos (Dominic James 6:1, Approval Edge 5:1) come out small — tune per logo.
+Brand-logo sizing (rev 2): **fitted to each logo's own aspect ratio** — as large as fits 84%×50% of the iOS
+icon; on Android 66%×40% with the logo's **diagonal inside a 62% circle** (safe zone minus margin), so no
+launcher mask clips it. Very wide logos (Dominic James 6:1, Approval Edge 5:1) are width-limited — to go
+bigger they'd need a cropped mark (e.g. the dots / "WA") instead of the full logo.
 
 ![preview](../assets/app-icons/preview.png)
 

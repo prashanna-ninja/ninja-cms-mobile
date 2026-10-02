@@ -5,6 +5,25 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-10-02 — Bigger "CMS" in the wordmark; brand icons sized per logo
+
+**Asked:** make the "CMS" in the Ninja CMS logo a little bigger, and check/fix the other logos.
+
+**Did:**
+- New **`scripts/build-wordmark.mjs`** (opentype.js + @expo-google-fonts/montserrat, devDeps; source
+  `assets/source/ninja-mark-source.png`) — the wordmark is reproducible now (before: a scratch script).
+  `CAP_HEIGHT` 77 → **88px** (+14%), same baseline + J-aligned left edge, guard against passing the A.
+  The image is now 838×477, so `ASPECT` in `NinjaCmsLogo` was updated.
+- The login hero uses `<NinjaCmsLogo>` (it had its own hard-coded 120×66 Image), so there is **one** place
+  that sizes the wordmark.
+- Icon generator: brand logos are **fitted per aspect ratio** (iOS 84%×50%; Android 66%×40% + diagonal ≤ 62%
+  circle). Every brand logo is larger on iOS; wide ones are as big as their width allows.
+- Regenerated all icons, favicon (splash uses the wordmark file directly).
+
+**Note:** in-app logos update on a JS reload; the **app icon + splash need `npx expo prebuild --clean` + rebuild**.
+
+---
+
 ## 2026-10-02 — Notices on the portal home
 
 **Asked:** add the web portal's Notices section (screenshot) to the main page after login; a proper

@@ -78,15 +78,19 @@ invite-only footer pinned to the bottom.
 | brand / pressed / soft | `#1A4DB3` / `#153F94` / `#E8F0FD` |
 | danger / dangerSoft | `#DC2626` / `#FEF2F2` |
 
-**Logo:** `assets/images/ninja-cms-logo.png` — white "CMS NINJA" wordmark, **838×464** (≈1.81:1),
-transparent, shown at **120×66** in the hero (`auth-hero.tsx`). There was no CMS logo anywhere, so it was
-built from the Ninja PRM square mark (the user's 1080×1080 orange reference):
-- Orange → transparent: alpha taken from the blue channel (bg 22 → 0, white 255 → 255), so the
-  anti-aliasing is kept.
-- "PRM" erased and replaced by **"CMS" in Montserrat Bold** — measured to match the original exactly
-  (18px stem, 248 vs 249px word width at cap height 77). Same cap height (77px), baseline (y=401) and left
-  edge (aligned to the **J**, x≈655) as "PRM": small letters over the J–A.
-- Cropped tight around the artwork (+8px).
+**Logo:** `assets/images/ninja-cms-logo.png` — white "CMS NINJA" wordmark, **838×477**, transparent,
+**built in code** by `node scripts/build-wordmark.mjs` from `assets/source/ninja-mark-source.png` (the
+Ninja PRM square mark, the user's 1080×1080 reference):
+- Orange → transparent: alpha comes from the blue channel, so anti-aliasing is kept.
+- "PRM" is erased and replaced by **"CMS" in Montserrat Bold**, which was measured to match the original
+  (18px stem, 248 vs 249px word width). It keeps the original baseline (y=401) and left edge (aligned to the
+  **J**). **Size: `CAP_HEIGHT = 88`px** (rev 2, 2026-10-02: "a little bit bigger" than PRM's 77px, +14%).
+  The script refuses to let it pass the A.
+- Cropped tight (+8px). After changing it, run `node scripts/generate-app-icons.mjs` (default icon, splash,
+  favicon) and update `ASPECT` in `components/brand/ninja-cms-logo.tsx`.
+
+It is rendered everywhere through `<NinjaCmsLogo width color>`: white on the sign-in hero, Ninja CMS blue
+on the org picker, the org colour in the app bar.
 
 ⚠️ Replace it with an official asset from design if one appears. The build script is not in the repo; the
 steps above are enough to redo it (sharp + opentype.js + @expo-google-fonts/montserrat).
