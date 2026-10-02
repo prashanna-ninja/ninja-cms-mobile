@@ -1,0 +1,53 @@
+# EAS Build uses THIS file (not .gitignore) to decide what to upload.
+# It mirrors .gitignore, and deliberately ALSO keeps every .env file out:
+# local .env points EXPO_PUBLIC_API_BASE_URL at the LAN dev CMS
+# (http://192.168.x.x:3000). Cloud builds get their env from eas.json
+# (build.<profile>.env) so a store build can never ship a dev URL.
+# (Ninja CRM did the opposite — uploaded .env — which is how a dev URL can leak.)
+
+# dependencies
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Native (generated on the build server — CNG)
+/ios
+/android
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# env files — never uploaded (see top)
+.env
+.env.*
+!.env.example
+
+# typescript
+*.tsbuildinfo
+
+# Reference projects (read-only) — keep them out of the build upload
+/ref
+
+# Not needed to build the app (icon/wordmark source art, review sheet)
+assets/source/
+assets/app-icons/preview.png

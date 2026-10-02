@@ -64,7 +64,10 @@
     "typecheck": "tsc --noEmit",
     "doctor": "expo-doctor",
     "ios:dev": "expo run:ios",
-    "android:dev": "expo run:android"
+    "android:dev": "expo run:android",
+    "build:ios": "eas build --platform ios --profile production",
+    "submit:ios": "eas submit --platform ios --profile production --latest",
+    "release:ios": "eas build --platform ios --profile production --auto-submit"
   },
   "private": true
 }

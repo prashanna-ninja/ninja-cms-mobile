@@ -54,10 +54,15 @@ cp .env.example .env          # set EXPO_PUBLIC_API_BASE_URL (dev: http://192.16
 npx expo start -c             # scan the QR with Expo Go / dev build
 ```
 
-## 4. Building
+## 4. Building & releasing
 
-Not set up yet. Everything so far (secure-store, linear-gradient, network) ships in **Expo Go SDK 57**, so
-Expo Go works for now. EAS profiles (`development`, `preview`, `production`, like the CRM) come before the first store build.
+- **Local dev build (Mac, iOS Simulator):** `npm run ios:dev` (= `npx expo run:ios`). After native config
+  changes: `npx expo prebuild --clean --platform ios` first.
+- **TestFlight (iOS, internal, no review):** `npm run release:ios` — EAS cloud build with the production env,
+  then auto-submit. Full runbook + one-time setup (`eas init`, Apple credentials): **[docs/10-RELEASE-IOS.md](docs/10-RELEASE-IOS.md)**.
+- Env: local `.env` = dev only and **never uploaded** (`.easignore`); store/preview builds get
+  `EXPO_PUBLIC_API_BASE_URL=https://login.cobaltlicenseesolutions.com.au` from `eas.json`, and `app.config.ts`
+  fails a release build without an https URL.
 
 ## 5. Backend dependency
 
@@ -120,7 +125,8 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
 3. ✅ Forgot password.
 4. ✅ **Org selection** + org theme + tinted wordmark. ⚠️ Check with real org logos on a device.
 5. ✅ Per-org app icons (⚠️ verify on a dev build: iOS alert, Android switch on background).
-6. ⬜ **EAS / dev build** setup (eas.json like the CRM) — needed to see the app icons switch.
+6. ✅ **EAS** — `eas.json` profiles, `.easignore`, production env + guard (2026-10-02). ⬜ `eas init` + first
+   TestFlight build (needs your Expo/Apple logins) — docs/10-RELEASE-IOS.md §2–3.
 7. 🚧 **Portal home** — Notices ✅; next: quick links, events, … → proper dashboard. ⚠️ Check real notices on a device.
 
 ## 9. Where things live
@@ -141,7 +147,8 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
 | `src/app/(app)/select-org.tsx`, `src/components/orgs/*` | org picker, card, gate states |
 | `src/lib/roles.ts` | `canAccessPortal` (ported from CMS lib/staff.ts) |
 | `src/constants/app-icons.json`, `scripts/generate-app-icons.mjs`, `assets/app-icons/` | per-org app icons (source, generator, output) |
-| `app.config.ts` | registers alternate icons (on top of app.json) |
+| `app.config.ts` | release-env guard + registers alternate icons (on top of app.json) |
+| `eas.json`, `.easignore` | EAS build profiles + production env; what gets uploaded (no `.env`) |
 | `src/lib/app-icon.ts`, `src/hooks/use-org-app-icon.ts` | org → icon matching + switching |
 | `src/api/notices.api.ts`, `src/components/notices/*` | Notices section |
 | `src/components/content/*`, `src/schemas/grid-builder.schema.ts` | CMS content (grid-builder + rich text) renderer — reuse for articles |

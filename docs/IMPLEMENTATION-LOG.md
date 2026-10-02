@@ -5,6 +5,34 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-10-02 — iOS release setup for TestFlight (internal, no review)
+
+**Asked:** the bundle ID is registered in App Store Connect; prepare everything for a TestFlight push (iOS
+only, no review): env out of the upload, production env set up, anything else needed.
+
+**Did:**
+- **`eas.json`**: `development` (dev client, simulator), `preview`, `production` (`autoIncrement`,
+  `appVersionSource: remote` → EAS owns the build number); production/preview env
+  `EXPO_PUBLIC_API_BASE_URL=https://login.cobaltlicenseesolutions.com.au` + `APP_ENV`.
+- **`.easignore`**: mirrors .gitignore and **excludes all `.env` files** (local = LAN dev URL), `/ref`,
+  icon source art. *Deliberately unlike the CRM*, which uploaded `.env`.
+- **`app.config.ts` `assertReleaseEnv()`**: production/preview config fails without an `https://` API URL.
+- `app.json`: `expo-secure-store` `faceIDPermission: false` (no unused Face ID permission string).
+- Scripts `build:ios`, `submit:ios`, `release:ios` (build + auto-submit); `.env.example` notes; runbook
+  **docs/10-RELEASE-IOS.md**.
+
+**Verified:** production CMS accepts the app origin (fake login → 401, not 403) and has no auth redirect;
+the guard fails on an http URL and passes on https; the production iOS bundle has the prod URL and 0 LAN URLs;
+expo-doctor 20/20; resolved config has `ITSAppUsesNonExemptEncryption: false` and no `NSFaceIDUsageDescription`.
+
+**Gotcha:** writing `/^https:\/\//` through a shell heredoc lost the escapes and silently produced a broken
+regex. Now it's `url.startsWith("https://")`, and TS files go through the Write tool.
+
+**Left for the user (needs logins):** `eas login` → `eas init` (add projectId/owner to app.json if it can't
+write the dynamic config) → `npm run release:ios` → TestFlight → Internal Testing group.
+
+---
+
 ## 2026-10-02 — Bigger "CMS" in the wordmark; brand icons sized per logo
 
 **Asked:** make the "CMS" in the Ninja CMS logo a little bigger, and check/fix the other logos.
