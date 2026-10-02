@@ -1,19 +1,23 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
-import { Alert, Pressable, ScrollView, Text, View } from "react-native";
+import { useQueryClient } from "@tanstack/react-query";
+import * as React from "react";
+import { Alert, Pressable, RefreshControl, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useMyOrgs } from "@/api/advice.api";
 import { NinjaCmsLogo } from "@/components/brand/ninja-cms-logo";
+import { NoticesSection } from "@/components/notices/notices-section";
 import { OrgLogo } from "@/components/org-logo";
 import { ArrowLeftRight, LogOut } from "@/lib/icons";
+import { qk } from "@/lib/query-keys";
 import { useOrgTheme } from "@/providers/org-theme-provider";
 import { useSession } from "@/providers/session-provider";
 
 /**
- * Temporary portal home — proves the org round-trip: sign in → org (auto or
- * picked) → everything in the org's colour + logo. Replaced by the real portal
- * home (CMS app/portal/[adviceId]/page.tsx) in the next step.
+ * Portal home (interim) — org banner + Notices. The full dashboard (quick links,
+ * events, workspace tiles… CMS app/portal/[adviceId]/page.tsx) comes later; Notices
+ * is the first real section (docs/09-NOTICES.md).
  *
  * Shows both ways of theming (docs/07 §4):
  *  - `useOrgTheme().theme` for props that can't take a class (gradient, logo tint, icons)
@@ -28,6 +32,22 @@ export default function PortalHomeScreen() {
   const user = session?.user;
   const canSwitch = (orgsQuery.data?.length ?? 0) > 1;
   const firstName = user?.name?.split(" ")[0] || user?.email?.split("@")[0] || "there";
+  const queryClient = useQueryClient();
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  // Pull to refresh: the org list (colour/logo edits) + this org's notices and their content.
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: qk.myOrgs() }),
+        queryClient.invalidateQueries({ queryKey: qk.notices(org?.id ?? "") }),
+        queryClient.invalidateQueries({ queryKey: ["notice"] }),
+      ]);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const confirmSignOut = () =>
     Alert.alert("Sign out?", "You'll need your email and password to sign back in.", [
@@ -56,7 +76,12 @@ export default function PortalHomeScreen() {
         </Pressable>
       </View>
 
-      <ScrollView contentContainerStyle={{ padding: 20, gap: 16, paddingBottom: insets.bottom + 24 }}>
+      <ScrollView
+        contentContainerStyle={{ padding: 20, gap: 24, paddingBottom: insets.bottom + 24 }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.base} colors={[theme.base]} />
+        }
+      >
         {/* Org banner — like the web portal nav: org colour, org logo. */}
         <LinearGradient
           colors={theme.gradient}
@@ -99,18 +124,7 @@ export default function PortalHomeScreen() {
           ) : null}
         </LinearGradient>
 
-        <View className="bg-card border-border gap-3 rounded-2xl border p-5">
-          <Text className="font-sans-semibold text-foreground text-base">Signed in</Text>
-          <Text className="font-sans text-muted-foreground text-sm">{user?.email}</Text>
-          {user?.role ? (
-            <View className="bg-secondary self-start rounded-full px-3 py-1">
-              <Text className="font-sans-medium text-secondary-foreground text-xs capitalize">{user.role}</Text>
-            </View>
-          ) : null}
-          <Text className="font-sans text-muted-foreground text-sm">
-            The portal home (notices, quick links, content) is coming next.
-          </Text>
-        </View>
+        <NoticesSection />
       </ScrollView>
     </View>
   );

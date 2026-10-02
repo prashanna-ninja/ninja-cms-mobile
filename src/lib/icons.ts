@@ -25,3 +25,17 @@ export { default as ArrowRight } from "lucide-react-native/icons/arrow-right";
 // lucide 1.x renamed `building-2` → `building` (web CMS uses Building2).
 export { default as Building } from "lucide-react-native/icons/building";
 export { default as RefreshCw } from "lucide-react-native/icons/refresh-cw";
+
+/* notices / content */
+export { default as ArrowUpDown } from "lucide-react-native/icons/arrow-up-down";
+export { default as Bell } from "lucide-react-native/icons/bell";
+export { default as Calendar } from "lucide-react-native/icons/calendar";
+export { default as ChevronDown } from "lucide-react-native/icons/chevron-down";
+export { default as ChevronUp } from "lucide-react-native/icons/chevron-up";
+export { default as CirclePlay } from "lucide-react-native/icons/circle-play";
+export { default as ClipboardList } from "lucide-react-native/icons/clipboard-list";
+export { default as ExternalLink } from "lucide-react-native/icons/external-link";
+export { default as FileText } from "lucide-react-native/icons/file-text";
+export { default as ImageIcon } from "lucide-react-native/icons/image";
+export { default as Inbox } from "lucide-react-native/icons/inbox";
+export { default as Paperclip } from "lucide-react-native/icons/paperclip";

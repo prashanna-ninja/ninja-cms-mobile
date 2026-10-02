@@ -10,4 +10,8 @@ export const qk = {
   me: () => ["me"] as const,
   /** GET /api/advice/my — orgs (Advice) for the signed-in user. */
   myOrgs: () => ["advice", "my"] as const,
+  /** GET /api/notices?adviceId= — an org's notices (list, no content). */
+  notices: (adviceId: string) => ["notices", adviceId] as const,
+  /** GET /api/notices/[id] — one notice with content. */
+  notice: (id: string) => ["notice", id] as const,
 };
