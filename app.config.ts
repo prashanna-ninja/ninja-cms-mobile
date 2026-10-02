@@ -7,9 +7,9 @@ import appIcons from "./src/constants/app-icons.json";
  *
  * Only job for now: register the per-org home-screen icons with
  * expo-alternate-app-icons from the same JSON the icon generator and the app use
- * (src/constants/app-icons.json), so the list can't drift. Every alternate shares
- * the Android adaptive foreground (white CMS NINJA wordmark); only the background
- * colour differs. Regenerate the PNGs with `node scripts/generate-app-icons.mjs`.
+ * (src/constants/app-icons.json), so the list can't drift. Each alternate has its own
+ * Android foreground/monochrome (the org's brand logo, or the CMS NINJA wordmark when
+ * `style` is "ninja"). Regenerate the PNGs with `node scripts/generate-app-icons.mjs`.
  *
  * Alternate icons are native: after changing this list, rebuild the dev client
  * (they do nothing in Expo Go). See docs/08-APP-ICONS.md.
@@ -24,8 +24,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         name: icon.name,
         ios: `./assets/app-icons/${icon.name}.png`,
         android: {
-          foregroundImage: "./assets/app-icons/adaptive-foreground.png",
-          monochromeImage: "./assets/app-icons/monochrome.png",
+          foregroundImage: `./assets/app-icons/${icon.name}-foreground.png`,
+          monochromeImage: `./assets/app-icons/${icon.name}-monochrome.png`,
           backgroundColor: icon.color,
         },
       })),

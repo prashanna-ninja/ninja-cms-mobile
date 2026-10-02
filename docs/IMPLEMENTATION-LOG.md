@@ -5,6 +5,26 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-10-02 — App icons: org brand logos instead of the wordmark (trial)
+
+**Asked:** icon switching now works on the Mac Simulator. Try the **org's own brand logo** on the icon
+instead of the CMS NINJA wordmark — "we will reverse if we don't like that". The user supplied the real logo
+URLs (CMS `Advice.logo`). The local CMS database is a dev/test DB (orgs like "Microsoft", "linux"), so it
+couldn't supply them — queried read-only with user approval, nothing used from it.
+
+**Did:** `app-icons.json` gains `"style": "brand"|"ninja"` + per-org `logoUrl`; new
+`scripts/fetch-brand-logos.mjs` (download original S3 file, trim, ≤1600px → `assets/brand-logos/`);
+generator renders brand logos on the org colour (76%×42% iOS, 60%×30% Android), per-icon Android
+foreground + white-silhouette monochrome, preview sheet now shows iOS + Android crops; `app.config.ts` uses
+the per-icon Android layers. Default icon unchanged (wordmark on blue). Verified with `expo prebuild` (7
+foregrounds) + preview.
+
+**Revert:** `"style": "ninja"` → generator → `prebuild --clean` → rebuild.
+
+**Next:** user reviews logos one by one (wide Dominic James / Approval Edge look small).
+
+---
+
 ## 2026-10-02 — Dev build showed the Expo icon + "no native module": stale ios/
 
 **Reported:** on the Mac, `npx expo run:ios` dev build ("Using development build") still logged

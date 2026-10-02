@@ -1,12 +1,43 @@
 {
-  "$comment": "Single source of truth for the per-org home-screen icons. Read by scripts/generate-app-icons.mjs (renders the PNGs), app.config.ts (registers them with expo-alternate-app-icons) and src/lib/app-icon.ts (picks one for the active org). Colours sampled from the web org picker on 2026-10-02. After editing: node scripts/generate-app-icons.mjs, then rebuild the dev client (alternate icons are native).",
+  "$comment": "Single source of truth for the per-org home-screen icons. Read by scripts/fetch-brand-logos.mjs (downloads logoUrl → assets/brand-logos/<name>.png), scripts/generate-app-icons.mjs (renders the PNGs), app.config.ts (registers them with expo-alternate-app-icons) and src/lib/app-icon.ts (picks one for the active org). style: \"brand\" = each org's own logo on its colour; \"ninja\" = the white CMS NINJA wordmark on its colour (the previous look — set this to revert). After editing: node scripts/fetch-brand-logos.mjs (if logos changed) → node scripts/generate-app-icons.mjs → npx expo prebuild --clean → rebuild. Colours sampled from the web org picker 2026-10-02; logo URLs from the user (CMS Advice.logo).",
+  "style": "brand",
   "default": { "name": "Default", "label": "Ninja CMS (default)", "color": "#1A4DB3" },
   "alternates": [
-    { "name": "Independent", "label": "An Independent AFSL", "color": "#71AF43" },
-    { "name": "Beryllium", "label": "Beryllium Advisers", "color": "#8F2A2A" },
-    { "name": "Cobalt", "label": "Cobalt Advisers", "color": "#00499A" },
-    { "name": "DominicJames", "label": "Dominic James", "color": "#2D3240" },
-    { "name": "ApprovalEdge", "label": "The Approval Edge", "color": "#000000" },
-    { "name": "WhatIf", "label": "What If Advice + Accounting", "color": "#FF8900" }
+    {
+      "name": "Independent",
+      "label": "An Independent AFSL",
+      "color": "#71AF43",
+      "logoUrl": "https://ninja-crm.s3.ap-southeast-2.amazonaws.com/uploads/images/1776769217518-afsl_white.png"
+    },
+    {
+      "name": "Beryllium",
+      "label": "Beryllium Advisers",
+      "color": "#8F2A2A",
+      "logoUrl": "https://ninja-crm.s3.ap-southeast-2.amazonaws.com/uploads/images/1776766769624-Be_Logo_White.png"
+    },
+    {
+      "name": "Cobalt",
+      "label": "Cobalt Advisers",
+      "color": "#00499A",
+      "logoUrl": "https://ninja-crm.s3.ap-southeast-2.amazonaws.com/uploads/images/1776650634379-cobalt-advisers-white-7844467.svg"
+    },
+    {
+      "name": "DominicJames",
+      "label": "Dominic James",
+      "color": "#2D3240",
+      "logoUrl": "https://ninja-crm.s3.ap-southeast-2.amazonaws.com/uploads/images/1779325235511-ColourNoBG.png"
+    },
+    {
+      "name": "ApprovalEdge",
+      "label": "The Approval Edge",
+      "color": "#000000",
+      "logoUrl": "https://ninja-crm.s3.ap-southeast-2.amazonaws.com/uploads/images/1779325058036-AE_No_Background.png"
+    },
+    {
+      "name": "WhatIf",
+      "label": "What If Advice + Accounting",
+      "color": "#FF8900",
+      "logoUrl": "https://ninja-crm.s3.ap-southeast-2.amazonaws.com/uploads/images/1779324747800-WIA_Logo_White.png"
+    }
   ]
 }

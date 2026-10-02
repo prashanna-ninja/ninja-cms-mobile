@@ -2,11 +2,29 @@
 
 Built 2026-10-02.
 
-> **What:** the phone's **home-screen icon** follows the organisation. It's the white CMS NINJA
-> wordmark on the org's colour, with Ninja CMS blue by default. After sign-in it switches to the active
+> **What:** the phone's **home-screen icon** follows the organisation: **the org's own brand logo on the
+> org's colour** (`"style": "brand"`, since 2026-10-02 — trial, may be reverted), or the white CMS NINJA
+> wordmark on the org's colour (`"style": "ninja"`). Default (signed out / no org) = wordmark on Ninja CMS blue. After sign-in it switches to the active
 > org's icon, and on sign-out it goes back to the default.
 
 ## 1. The icons (generated in code)
+
+### Style switch (reversible)
+
+`src/constants/app-icons.json` → `"style"`:
+- `"brand"` (current) — each org's brand logo (`logoUrl`, from CMS `Advice.logo`) on its colour.
+- `"ninja"` — the CMS NINJA wordmark on its colour (the first version).
+
+**To revert to the wordmark:** set `"style": "ninja"` → `node scripts/generate-app-icons.mjs` →
+`npx expo prebuild --clean` → rebuild. (Or `git revert` the brand-logo commit.)
+
+Brand logos: `node scripts/fetch-brand-logos.mjs` downloads each `logoUrl` (use the **original S3 URL**,
+not the web's `/_next/image?…&w=256` resize) → trims, caps at 1600px wide → `assets/brand-logos/<name>.png`
+(committed). Dominic James + The Approval Edge logos keep their colours (orange "james", colour bars);
+the Android monochrome icon is a white silhouette of the logo.
+
+Brand-logo sizing: fitted into 76%×42% of the iOS icon and 60%×30% of the Android foreground (inside the
+safe circle). ⚠️ Very wide logos (Dominic James 6:1, Approval Edge 5:1) come out small — tune per logo.
 
 ![preview](../assets/app-icons/preview.png)
 
@@ -35,10 +53,10 @@ The colours were sampled from the web org picker (the card background is `Advice
 | File | Use |
 |---|---|
 | `<Name>.png` (1024², opaque) | iOS icon. `Default.png` is the main app icon (`app.json` `icon`). |
-| `adaptive-foreground.png` (1024², transparent) | Android adaptive foreground, shared by every icon. Only `backgroundColor` changes. |
-| `monochrome.png` | Android 13+ themed icon |
+| `<Name>-foreground.png` / `<Name>-monochrome.png` | Android adaptive foreground + themed (Android 13+) icon per alternate |
+| `adaptive-foreground.png` / `monochrome.png` | the same for the default icon (`app.json`) |
 | `favicon.png` | web |
-| `preview.png` | contact sheet for review (above) |
+| `preview.png` | contact sheet: iOS rounded square + Android circle crop per icon |
 
 Sizing: the wordmark is 62% wide on iOS (rounded-square mask) and 52% on the Android foreground, so it
 stays inside the 66% adaptive-icon safe zone under any launcher mask.
