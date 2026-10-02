@@ -5,6 +5,36 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-10-02 — Notices on the portal home
+
+**Asked:** add the web portal's Notices section (screenshot) to the main page after login; a proper
+dashboard comes later.
+
+**Researched:** the web loads notices server-side with Prisma (`getPortalNotices`), but the REST twins exist:
+`GET /api/notices?adviceId=` (list, membership-checked, no content) and `GET /api/notices/[id]` (content =
+grid-builder rows JSON: rich-text/image/document/buttons/video/form). NEW = < 7 days; Brisbane `DD/MM/YYYY`;
+filters All/Week/Month/Older + sort; `@name` → org name.
+
+**Did:** `notices.api.ts` (list + `useQueries` details), `NoticesSection` + `NoticeCard` (web port, org
+colours), a **reusable CMS content renderer** (`components/content/block-content.tsx` + a native
+Tiptap-HTML renderer `rich-text.tsx` on **htmlparser2**), `grid-builder.schema.ts` (zod port + `parseRows`),
+`lib/date.ts`, `lib/open-url.ts` (in-app browser). Home: Notices under the banner (the "Signed in"
+placeholder card is gone), pull-to-refresh. Details in docs/09.
+
+**Decisions:** native rich text rather than a WebView; video/documents/forms open in the in-app browser;
+filter dropdown → chips and sort next to the title (the first try clipped "This Month"); prefetch details for
+the counts. "Now" = fetch time (React Compiler purity).
+
+**Gotchas:** the React Compiler lint rejected `useMemo` deps like `variables?.name` ("existing memoization
+could not be preserved"), so destructure first. The CMS notice routes treat **superadmin** like a member
+(403 for orgs they're not in); noted in docs/09 §2.
+
+**Verified:** mocked web run (5 notices covering every block type) → screenshots of list, expanded rich text,
+image/video/document, This Week filter; tsc ✅, lint ✅, Android + iOS bundles ✅. ⚠️ Not yet with real
+notices on a device.
+
+---
+
 ## 2026-10-02 — App icons: org brand logos instead of the wordmark (trial)
 
 **Asked:** icon switching now works on the Mac Simulator. Try the **org's own brand logo** on the icon

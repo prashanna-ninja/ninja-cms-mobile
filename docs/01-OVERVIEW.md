@@ -76,7 +76,7 @@ document-upload, forms, invoices/receipts, my-revenue, fee-deductibility-calcula
 | 1 | Sign in | `app/login`, `app/_components/LoginForm.tsx` | ⬜ next |
 | 2 | Forgot password | `app/(public)/forget-password` | ⬜ |
 | 3 | Org selection (auto if 1, picker if >1) → applies org theme + logo | `app/portal/page.tsx` + `OrgSwitcher` | ✅ 2026-10-02 |
-| 4 | Portal home ("dashboard") | `app/portal/[adviceId]/page.tsx` | ⬜ next |
+| 4 | Portal home ("dashboard") | `app/portal/[adviceId]/page.tsx` | 🚧 Notices ✅ (2026-10-02); rest ⬜ |
 | 5 | Settings (profile, change password, sign out) | `app/(protected)/settings` | ⬜ |
 | … | Notices, content pages, clients, workflows… | see §4 | ⬜ |
 

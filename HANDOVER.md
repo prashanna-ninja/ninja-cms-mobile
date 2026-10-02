@@ -26,6 +26,10 @@ and what to build next. Keep it current at the end of every step.
 - **Org selection** (`(app)/_layout.tsx` gate) — `GET /api/advice/my`: 1 org → straight in; 2+ → **picker**
   (`(app)/select-org.tsx`, web-style coloured cards); 0 → "No organisations assigned"; editor/user → "use the
   web". Remembered per user; "Switch organisation" on the home banner when 2+.
+- **Notices on the portal home** — `GET /api/notices?adviceId=` + each notice's content; org-coloured cards
+  (NEW badge, Brisbane dates, image/attachment counts), expand to read, filter chips + sort, pull to refresh.
+  Content is rendered natively (rich text, images, documents, buttons, video/form links) by the reusable
+  `components/content/*`. docs/09-NOTICES.md.
 - **Per-org home-screen icon** — 7 icons generated in code (org colour + white CMS NINJA wordmark, default
   login blue); the icon follows the active org (iOS: at once, Android: on next background). Also the real
   app icon/splash now. ⚠️ Needs a **development build** — no-op in Expo Go. docs/08-APP-ICONS.md.
@@ -116,7 +120,7 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
 4. ✅ **Org selection** + org theme + tinted wordmark. ⚠️ Check with real org logos on a device.
 5. ✅ Per-org app icons (⚠️ verify on a dev build: iOS alert, Android switch on background).
 6. ⬜ **EAS / dev build** setup (eas.json like the CRM) — needed to see the app icons switch.
-7. ⬜ **Portal home** ("dashboard") for the active org — `app/portal/[adviceId]/page.tsx`, org-themed.
+7. 🚧 **Portal home** — Notices ✅; next: quick links, events, … → proper dashboard. ⚠️ Check real notices on a device.
 
 ## 9. Where things live
 
@@ -138,6 +142,8 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
 | `src/constants/app-icons.json`, `scripts/generate-app-icons.mjs`, `assets/app-icons/` | per-org app icons (source, generator, output) |
 | `app.config.ts` | registers alternate icons (on top of app.json) |
 | `src/lib/app-icon.ts`, `src/hooks/use-org-app-icon.ts` | org → icon matching + switching |
+| `src/api/notices.api.ts`, `src/components/notices/*` | Notices section |
+| `src/components/content/*`, `src/schemas/grid-builder.schema.ts` | CMS content (grid-builder + rich text) renderer — reuse for articles |
 | `src/constants/env.ts` | `API_BASE_URL`, `APP_SCHEME` |
 | `src/global.css`, `tailwind.config.js` | Design tokens |
 | `docs/` | All project docs |

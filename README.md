@@ -48,6 +48,7 @@ Read in order — written so someone new to React Native can follow along.
 | [docs/06-AUTH.md](docs/06-AUTH.md) | Login design + the small backend change it needs. |
 | [docs/07-ORG-THEMING.md](docs/07-ORG-THEMING.md) | ⭐ Org colour + logo per organisation (adviser portal). |
 | [docs/08-APP-ICONS.md](docs/08-APP-ICONS.md) | Per-org home-screen icon, generated in code. |
+| [docs/09-NOTICES.md](docs/09-NOTICES.md) | Notices on the portal home + CMS content renderer. |
 | [docs/IMPLEMENTATION-LOG.md](docs/IMPLEMENTATION-LOG.md) | Running diary of changes and decisions. |
 | [docs/PROMPTS.md](docs/PROMPTS.md) | How we work together + reusable prompts. |
 

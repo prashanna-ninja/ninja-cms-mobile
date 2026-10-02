@@ -51,7 +51,9 @@ Session defaults (no custom config): cookie `better-auth.session_token` (`__Secu
 | `GET /api/portal/[adviceId]/[groupSlug]` / `…/[articleSlug]` | content pages |
 | `POST /api/portal/[adviceId]/page-view` | analytics |
 | `POST /api/portal/acting-adviser` | `{ adviserUserId }` → sets `portal-acting-adviser` cookie (30 days) |
-| `GET /api/notices`, `GET /api/events`, `POST /api/events/[id]/rsvp` | home widgets |
+| `GET /api/notices?adviceId=&pageSize=100&sortBy=-createdAt` | org notices (no content) — membership-checked, see 09-NOTICES.md |
+| `GET /api/notices/[id]` | one notice + `content` (grid-builder rows) |
+| `GET /api/events`, `POST /api/events/[id]/rsvp` | home widgets |
 | `/api/portal/[adviceId]/client-records/**`, `/clients/**`, `/pipeline/**`, `/workflows/**`, `/verification/**`, `/ato-research-consent/**` | feature areas (documented per feature) |
 
 ## 5. Not for mobile
