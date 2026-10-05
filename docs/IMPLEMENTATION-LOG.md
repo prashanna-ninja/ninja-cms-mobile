@@ -5,6 +5,17 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-10-05 — Fix: "big bubble" when tapping tabs
+
+**Reported:** a big bubble appeared while tapping the tabs.
+**Cause:** the default tab button (expo-router's React Navigation fork, `BottomTabItem.js`) sets
+`android_ripple: { borderless: true }`. The ripple isn't clipped, so it spreads as a large circle.
+**Fix:** a custom `tabBarButton` → `TabButton` in `(tabs)/_layout.tsx`: a plain Pressable with no ripple, dimming to
+0.55 while pressed. It strips `android_ripple`/`pressColor`/`pressOpacity`/`hoverEffect`/`href`/`ref` (the ref is typed
+for PlatformPressable and isn't needed). Verified tabs still navigate (mocked web run); tsc ✅ lint ✅.
+
+---
+
 ## 2026-10-05 — Bottom tabs: Dashboard · Clients · Workflows · Revenue
 
 **Asked:** add tabs. The current page (welcome + notices) becomes the Dashboard; add Revenue, Clients and

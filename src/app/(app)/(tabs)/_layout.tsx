@@ -1,6 +1,6 @@
-import { Tabs } from "expo-router/js-tabs";
+import { Tabs, type BottomTabBarButtonProps } from "expo-router/js-tabs";
 import * as React from "react";
-import type { ColorValue } from "react-native";
+import { Pressable, type ColorValue } from "react-native";
 
 import { ChartLine, LayoutDashboard, Users, Workflow } from "@/lib/icons";
 import { useOrgTheme } from "@/providers/org-theme-provider";
@@ -9,6 +9,51 @@ type IconComponent = React.ComponentType<{ size?: number; color?: string; stroke
 
 function TabIcon({ icon: Icon, color, focused }: { icon: IconComponent; color: ColorValue; focused: boolean }) {
   return <Icon size={22} color={String(color)} strokeWidth={focused ? 2.4 : 1.9} />;
+}
+
+/**
+ * Tab button without the "big bubble".
+ *
+ * React Navigation's default tab button sets `android_ripple: { borderless: true }`
+ * (BottomTabItem.js) — a borderless ripple isn't clipped to the button, so it
+ * spreads as a large circle over the bar and screen on every tap. This button
+ * drops the ripple and just dims slightly while pressed.
+ *
+ * ⚠️ Pressed state is tracked by hand and passed as a plain style — NativeWind
+ * drops Pressable's function `style` (see auth-button.tsx).
+ */
+function TabButton({
+  children,
+  style,
+  onPressIn,
+  onPressOut,
+  // Drop the default press effects (ripple / web hover), the web-only href, and the
+  // ref (typed for PlatformPressable; the tab bar doesn't need it).
+  ref: _ref,
+  android_ripple: _ripple,
+  pressColor: _pressColor,
+  pressOpacity: _pressOpacity,
+  hoverEffect: _hoverEffect,
+  href: _href,
+  ...rest
+}: BottomTabBarButtonProps) {
+  const [pressed, setPressed] = React.useState(false);
+  return (
+    <Pressable
+      {...rest}
+      onPressIn={(e) => {
+        setPressed(true);
+        onPressIn?.(e);
+      }}
+      onPressOut={(e) => {
+        setPressed(false);
+        onPressOut?.(e);
+      }}
+      style={[style, { opacity: pressed ? 0.55 : 1 }]}
+    >
+      {children}
+    </Pressable>
+  );
 }
 
 /**
@@ -32,6 +77,7 @@ export default function TabsLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
+        tabBarButton: (props) => <TabButton {...props} />,
         tabBarActiveTintColor: theme.logoTint,
         tabBarInactiveTintColor: "#8A97B5",
         tabBarLabelStyle: { fontFamily: "BricolageGrotesque_500Medium", fontSize: 11 },

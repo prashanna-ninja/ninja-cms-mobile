@@ -31,6 +31,10 @@ URLs: `/` (Dashboard), `/clients`, `/workflows`, `/revenue`, `/select-org`, `/si
 - Icons (lucide): Dashboard `layout-dashboard`, Clients `users`, Workflows `workflow`, Revenue `chart-line`.
   The focused icon gets a heavier stroke.
 - `sceneStyle` = `#F0F4FB` (= `bg-background`) so switching tabs never flashes.
+- **Custom `tabBarButton` (`TabButton`), no ripple.** React Navigation's default tab button uses
+  `android_ripple: { borderless: true }` (BottomTabItem.js). A borderless ripple isn't clipped to the button, so it
+  spread as a "big bubble" over the bar on every tap (reported 2026-10-05). `TabButton` drops the ripple/hover/href/ref
+  props and dims to 0.55 while pressed (a hand-tracked pressed state, since NativeWind drops function styles).
 - `headerShown: false`; every tab renders **`<AppHeader />`** (`components/app-header.tsx`): the org-tinted
   CMS NINJA wordmark plus sign out.
 
