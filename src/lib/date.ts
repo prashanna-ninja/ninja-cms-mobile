@@ -36,3 +36,30 @@ export function formatDate(input: string | number | Date): string {
   const pad = (n: number) => String(n).padStart(2, "0");
   return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()}`;
 }
+
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+let shortFormatter: Intl.DateTimeFormat | null | undefined;
+/** "2026-10-03T…Z" → "3 Oct 2026" (Brisbane) — the date part of the web's formatPortalDateTime. */
+export function formatShortDate(input: string | number | Date): string {
+  const date = new Date(input);
+  if (Number.isNaN(date.getTime())) return "";
+  if (shortFormatter === undefined) {
+    try {
+      shortFormatter = new Intl.DateTimeFormat("en-AU", {
+        timeZone: PRODUCT_TIME_ZONE,
+        day: "numeric",
+        month: "numeric",
+        year: "numeric",
+      });
+    } catch {
+      shortFormatter = null;
+    }
+  }
+  if (shortFormatter) {
+    const p = Object.fromEntries(shortFormatter.formatToParts(date).map((x) => [x.type, x.value]));
+    // Month names mapped by hand: en-AU Intl says "Sept"; the web (moment) says "Sep".
+    return `${p.day} ${MONTHS[Number(p.month) - 1] ?? p.month} ${p.year}`;
+  }
+  return date.toDateString().slice(4);
+}

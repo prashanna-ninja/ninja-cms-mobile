@@ -3,6 +3,7 @@ import * as React from "react";
 import { Pressable, type ColorValue } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { useClientRecordsAccess } from "@/api/clients.api";
 import { ChartLine, LayoutDashboard, Settings, Users, Workflow } from "@/lib/icons";
 import { useOrgTheme } from "@/providers/org-theme-provider";
 
@@ -69,12 +70,14 @@ function TabButton({
  * SDK 57, and JS tabs take lucide icons + any tint colour directly.
  * Each screen renders its own AppHeader (headerShown: false).
  *
- * Later: hide tabs the user can't use, from the per-user CMS feature flags
- * (`clientRecordsEnabled`, `workflowsEnabled`, `revenueVisibilityEnabled`) — the
- * web shows those portal sections only when enabled. See docs/11-NAVIGATION.md.
+ * Clients is hidden unless the server grants Client Records access (asked via
+ * `useClientRecordsAccess` — mirrors the web exactly). Workflows / Revenue will be
+ * gated the same way when they're built. See docs/11-NAVIGATION.md, docs/12-CLIENTS.md.
  */
 export default function TabsLayout() {
-  const { theme } = useOrgTheme();
+  const { org, theme } = useOrgTheme();
+  // Clients shows only when the CMS grants Client Records access (403 → hidden).
+  const canSeeClients = useClientRecordsAccess(org?.id) === true;
   const insets = useSafeAreaInsets();
 
   return (
@@ -110,6 +113,8 @@ export default function TabsLayout() {
         name="clients"
         options={{
           title: "Clients",
+          // `href: null` hides the tab (still checking, or no access).
+          href: canSeeClients ? undefined : null,
           tabBarIcon: ({ color, focused }) => <TabIcon icon={Users} color={color} focused={focused} />,
         }}
       />

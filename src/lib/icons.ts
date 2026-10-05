@@ -55,3 +55,13 @@ export { default as KeyRound } from "lucide-react-native/icons/key-round";
 export { default as Settings } from "lucide-react-native/icons/settings";
 export { default as UserRound } from "lucide-react-native/icons/user";
 export { default as UserX } from "lucide-react-native/icons/user-x";
+
+/* clients */
+export { default as Archive } from "lucide-react-native/icons/archive";
+export { default as Check } from "lucide-react-native/icons/check";
+export { default as Contact } from "lucide-react-native/icons/contact";
+export { default as Phone } from "lucide-react-native/icons/phone";
+export { default as Search } from "lucide-react-native/icons/search";
+export { default as SlidersHorizontal } from "lucide-react-native/icons/sliders-horizontal";
+export { default as Tag } from "lucide-react-native/icons/tag";
+export { default as X } from "lucide-react-native/icons/x";

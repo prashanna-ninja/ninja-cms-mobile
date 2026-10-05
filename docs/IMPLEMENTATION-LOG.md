@@ -5,6 +5,31 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-10-05 — Clients tab: access gating + Client Records list
+
+**Asked:** only show the Clients tab to users who have access; start building it like the web Client Records
+page (screenshot). Scope agreed with the user: **list + filters, read-only** (no add/archive/delete yet).
+
+**Researched:** `lib/clients/access.ts` (adviser `clientRecordsEnabled`; staff need their own flag and a
+managing adviser; admin/orgadmin preview; else 403), `GET /api/portal/[adviceId]/client-records` (search, tag,
+type, source, archived, page; 50/page; returns the adviser's tags too), the web columns/badges, and enum labels.
+
+**Did:** `clients.api.ts` (infinite list + **access probe**), `clients/` stack (`index` list, `[id]`
+placeholder), `ClientCard`, `OptionSheet` (bottom-sheet picker, RN Modal), `lib/clients.ts` (labels + web
+badge colours), `formatShortDate`, `useDebouncedValue`, icons. The Clients tab has `href: null` unless access
+is granted. Details in **docs/12-CLIENTS.md**.
+
+**Decisions:**
+- **Gate by asking the API**, not by copying the access rules: the 403 *is* the rule, so mobile can't drift
+  from the web. The probe seeds the list cache, so there's no duplicate request.
+- Search-as-you-type instead of a Search button; filters as chips + bottom sheets; cards instead of a table.
+- Month names are mapped by hand: en-AU Intl writes "Sept", while the web (moment) writes "Sep".
+
+**Verified:** mocked runs (access → tab, list, SMSF filter request, clear, open client; 403 → no Clients tab);
+tsc ✅ lint ✅. **No native changes.**
+
+---
+
 ## 2026-10-05 — Settings: server row removed; Delete account (CRM pattern)
 
 **Asked:** don't show the server in Settings for now; add delete account like we did in Ninja CRM.

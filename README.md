@@ -51,6 +51,7 @@ Read in order — written so someone new to React Native can follow along.
 | [docs/09-NOTICES.md](docs/09-NOTICES.md) | Notices on the portal home + CMS content renderer. |
 | [docs/10-RELEASE-IOS.md](docs/10-RELEASE-IOS.md) | ⭐ iOS TestFlight release: EAS profiles, env, build + submit. |
 | [docs/11-NAVIGATION.md](docs/11-NAVIGATION.md) | Route tree + bottom tabs. |
+| [docs/12-CLIENTS.md](docs/12-CLIENTS.md) | Client Records: access-gated tab, list + filters. |
 | [docs/IMPLEMENTATION-LOG.md](docs/IMPLEMENTATION-LOG.md) | Running diary of changes and decisions. |
 | [docs/PROMPTS.md](docs/PROMPTS.md) | How we work together + reusable prompts. |
 

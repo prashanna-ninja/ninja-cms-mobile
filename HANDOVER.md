@@ -29,6 +29,9 @@ and what to build next. Keep it current at the end of every step.
 - **Bottom tabs** (2026-10-05) — Dashboard (welcome banner + Notices) · Clients · Workflows · Revenue · **Settings**,
   tinted in the org colour; Clients/Workflows/Revenue are clean "Coming soon" placeholders. Shared `AppHeader`
   (wordmark + initials avatar → Settings). docs/11-NAVIGATION.md.
+- **Clients tab = Client Records** (2026-10-05) — shown only to users the CMS allows (403 → hidden); list with
+  search-as-you-type, Active/Archived, type/tag/source sheets, infinite scroll, pull to refresh; tap → client
+  placeholder. Read-only. docs/12-CLIENTS.md.
 - **Settings** — org member card, organisation (switch), account (email, role, web profile/password), app
   version/build, **sign out** (moved here from the header), **delete account** (confirm → pre-filled email
   request to support, the CRM pattern).
@@ -140,7 +143,8 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
 6. ✅ **EAS** — `eas.json` profiles, `.easignore`, production env + guard (2026-10-02). ⬜ `eas init` + first
    TestFlight build (needs your Expo/Apple logins) — docs/10-RELEASE-IOS.md §2–3.
 7. 🚧 **Portal home** — Notices ✅; next: quick links, events, … → proper dashboard. ⚠️ Check real notices on a device.
-8. ✅ Tabs. ⬜ Fill Clients / Workflows / Revenue; ⬜ hide tabs from the user's CMS feature flags (docs/11 §4).
+8. ✅ Tabs. 🚧 Clients: list ✅ → ⬜ client profile → ⬜ Add client → ⬜ archive/delete (docs/12 §5). ⬜ Workflows, Revenue
+   (gate them like Clients).
 
 ## 9. Where things live
 
@@ -160,6 +164,7 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
 | `src/app/(app)/(tabs)/*` | bottom tabs: Dashboard (index), clients, workflows, revenue |
 | `src/components/app-header.tsx`, `src/components/coming-soon.tsx` | shared app bar (avatar → Settings); tab placeholder |
 | `src/app/(app)/(tabs)/settings.tsx`, `src/components/settings/*`, `src/lib/user-display.ts` | Settings tab |
+| `src/app/(app)/(tabs)/clients/*`, `src/api/clients.api.ts`, `src/components/clients/*`, `src/lib/clients.ts` | Client Records |
 | `src/app/(app)/select-org.tsx`, `src/components/orgs/*` | org picker, card, gate states |
 | `src/lib/roles.ts` | `canAccessPortal` (ported from CMS lib/staff.ts) |
 | `src/constants/app-icons.json`, `scripts/generate-app-icons.mjs`, `assets/app-icons/` | per-org app icons (source, generator, output) |

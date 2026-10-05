@@ -54,7 +54,8 @@ Session defaults (no custom config): cookie `better-auth.session_token` (`__Secu
 | `GET /api/notices?adviceId=&pageSize=100&sortBy=-createdAt` | org notices (no content) — membership-checked, see 09-NOTICES.md |
 | `GET /api/notices/[id]` | one notice + `content` (grid-builder rows) |
 | `GET /api/events`, `POST /api/events/[id]/rsvp` | home widgets |
-| `/api/portal/[adviceId]/client-records/**`, `/clients/**`, `/pipeline/**`, `/workflows/**`, `/verification/**`, `/ato-research-consent/**` | feature areas (documented per feature) |
+| `GET /api/portal/[adviceId]/client-records?search&tag&type&source&archived=1&page` | Client Records list, 50/page; **403 = no access** (used to gate the tab) — 12-CLIENTS.md |
+| `/api/portal/[adviceId]/client-records/[clientId]/**`, `/clients/**`, `/pipeline/**`, `/workflows/**`, `/verification/**`, `/ato-research-consent/**` | feature areas (documented per feature) |
 
 ## 5. Not for mobile
 

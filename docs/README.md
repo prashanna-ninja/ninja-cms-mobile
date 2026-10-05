@@ -17,7 +17,8 @@ Feature docs (added as each page/feature is built):
 8. [08-APP-ICONS.md](08-APP-ICONS.md) — per-org home-screen icon, generated in code (needs a dev build)
 9. [09-NOTICES.md](09-NOTICES.md) — Notices on the portal home + the reusable CMS content renderer
 10. [10-RELEASE-IOS.md](10-RELEASE-IOS.md) — ⭐ TestFlight (iOS) release runbook: EAS profiles, env, build + submit
-11. [11-NAVIGATION.md](11-NAVIGATION.md) — route tree + bottom tabs (Dashboard · Clients · Workflows · Revenue)
+11. [11-NAVIGATION.md](11-NAVIGATION.md) — route tree + bottom tabs (Dashboard · Clients · Workflows · Revenue · Settings)
+12. [12-CLIENTS.md](12-CLIENTS.md) — Client Records: access-gated tab, list + filters
 
 Living docs:
 

@@ -14,7 +14,7 @@ src/app/
     └── (tabs)/
         ├── _layout.tsx       bottom tabs, org-coloured
         ├── index.tsx         Dashboard — welcome banner + Notices (docs/09)
-        ├── clients.tsx       Clients    — placeholder ("Coming soon")
+        ├── clients/          Clients    — Stack: index (Client Records list) + [id] (client). Hidden without access.
         ├── workflows.tsx     Workflows  — placeholder
         ├── revenue.tsx       Revenue    — placeholder
         └── settings.tsx      Settings   — member card, org, account, app, sign out, delete account
@@ -81,7 +81,8 @@ with one memorable piece. Staggered `FadeIn` on open.
 
 ## 5. Later
 
-- **Hide tabs per user.** The web shows these portal sections only when the user's CMS flags allow:
+- **Hide tabs per user.** ✅ Clients is done: hidden unless `GET …/client-records` is allowed (403 → `href: null`),
+  docs/12-CLIENTS.md §2. Workflows / Revenue: same approach when built. The web shows these portal sections only when the user's CMS flags allow:
   `clientRecordsEnabled`, `workflowsEnabled`, `revenueVisibilityEnabled` (on `User`; not in the session yet,
   so they need `GET /api/me` or a session field). Expo Router: `href: null` on a `Tabs.Screen` hides it.
 - In-app profile/password editing (today: the web portal settings page), theme toggle.

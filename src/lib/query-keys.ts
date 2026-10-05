@@ -14,4 +14,8 @@ export const qk = {
   notices: (adviceId: string) => ["notices", adviceId] as const,
   /** GET /api/notices/[id] — one notice with content. */
   notice: (id: string) => ["notice", id] as const,
+  /** GET /api/portal/[adviceId]/client-records (infinite, per filter set). */
+  clientRecords: (adviceId: string, filters: object) => ["client-records", adviceId, filters] as const,
+  /** Whether the user can use Client Records in this org (403 → no). */
+  clientRecordsAccess: (adviceId: string) => ["client-records-access", adviceId] as const,
 };
