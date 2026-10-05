@@ -5,6 +5,30 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-10-05 — Bottom tabs: Dashboard · Clients · Workflows · Revenue
+
+**Asked:** add tabs. The current page (welcome + notices) becomes the Dashboard; add Revenue, Clients and
+Workflows tabs, empty for now, nice and clean.
+
+**Did:**
+- `src/app/(app)/(tabs)/`: `_layout.tsx` (JS tabs from `expo-router/js-tabs`, org-tinted via `theme.logoTint`,
+  lucide icons, white bar, flash-free `sceneStyle`), `index.tsx` (Dashboard = the former home, moved with
+  `git mv`), `clients.tsx`, `workflows.tsx`, `revenue.tsx`.
+- `components/app-header.tsx` (wordmark + sign out, shared by every tab) and `components/coming-soon.tsx`
+  (clean placeholder card: icon tile, "Coming soon", pitch, 3 planned features mapped from the web portal).
+- `(app)/_layout.tsx` gate now guards `(tabs)` instead of `index`. Docs: new **11-NAVIGATION.md**.
+
+**Decisions:** JS tabs rather than NativeTabs (unstable in SDK 57; JS tabs take lucide icons and any colour).
+All tabs are visible for now; later they'll be hidden per user from the CMS feature flags (docs/11 §4).
+
+**Gotcha:** `tabBarIcon` gets `color: ColorValue` (not string), and an icon *factory* trips
+`react/display-name`, so it's a named `TabIcon` component.
+
+**Verified:** mocked web run → Dashboard (banner + notices + tab bar), Clients/Workflows/Revenue placeholders,
+tab URLs `/clients` `/workflows` `/revenue`; tsc ✅, lint ✅.
+
+---
+
 ## 2026-10-02 — iOS release setup for TestFlight (internal, no review)
 
 **Asked:** the bundle ID is registered in App Store Connect; prepare everything for a TestFlight push (iOS

@@ -26,6 +26,8 @@ and what to build next. Keep it current at the end of every step.
 - **Org selection** (`(app)/_layout.tsx` gate) — `GET /api/advice/my`: 1 org → straight in; 2+ → **picker**
   (`(app)/select-org.tsx`, web-style coloured cards); 0 → "No organisations assigned"; editor/user → "use the
   web". Remembered per user; "Switch organisation" on the home banner when 2+.
+- **Bottom tabs** (2026-10-05) — Dashboard (welcome banner + Notices) · Clients · Workflows · Revenue, tinted in
+  the org colour; the last three are clean "Coming soon" placeholders. Shared `AppHeader`. docs/11-NAVIGATION.md.
 - **Notices on the portal home** — `GET /api/notices?adviceId=` + each notice's content; org-coloured cards
   (NEW badge, Brisbane dates, image/attachment counts), expand to read, filter chips + sort, pull to refresh.
   Content is rendered natively (rich text, images, documents, buttons, video/form links) by the reusable
@@ -128,6 +130,7 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
 6. ✅ **EAS** — `eas.json` profiles, `.easignore`, production env + guard (2026-10-02). ⬜ `eas init` + first
    TestFlight build (needs your Expo/Apple logins) — docs/10-RELEASE-IOS.md §2–3.
 7. 🚧 **Portal home** — Notices ✅; next: quick links, events, … → proper dashboard. ⚠️ Check real notices on a device.
+8. ✅ Tabs. ⬜ Fill Clients / Workflows / Revenue; ⬜ hide tabs from the user's CMS feature flags (docs/11 §4).
 
 ## 9. Where things live
 
@@ -144,6 +147,8 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
 | `src/components/org-logo.tsx` | org logo / initials tile |
 | `src/components/brand/ninja-cms-logo.tsx` | tintable CMS NINJA wordmark |
 | `src/app/(app)/_layout.tsx` | org gate (0 / 1 / many orgs) + guarded stack |
+| `src/app/(app)/(tabs)/*` | bottom tabs: Dashboard (index), clients, workflows, revenue |
+| `src/components/app-header.tsx`, `src/components/coming-soon.tsx` | shared app bar; tab placeholder |
 | `src/app/(app)/select-org.tsx`, `src/components/orgs/*` | org picker, card, gate states |
 | `src/lib/roles.ts` | `canAccessPortal` (ported from CMS lib/staff.ts) |
 | `src/constants/app-icons.json`, `scripts/generate-app-icons.mjs`, `assets/app-icons/` | per-org app icons (source, generator, output) |

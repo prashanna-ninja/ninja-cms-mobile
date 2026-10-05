@@ -78,6 +78,7 @@ document-upload, forms, invoices/receipts, my-revenue, fee-deductibility-calcula
 | 3 | Org selection (auto if 1, picker if >1) → applies org theme + logo | `app/portal/page.tsx` + `OrgSwitcher` | ✅ 2026-10-02 |
 | 4 | Portal home ("dashboard") | `app/portal/[adviceId]/page.tsx` | 🚧 Notices ✅ (2026-10-02); rest ⬜ |
 | 5 | Settings (profile, change password, sign out) | `app/(protected)/settings` | ⬜ |
+| — | Bottom tabs: Dashboard · Clients · Workflows · Revenue | portal nav | ✅ 2026-10-05 (last three are placeholders) |
 | … | Notices, content pages, clients, workflows… | see §4 | ⬜ |
 
 ✅ **Settled 2026-10-01:** the web has two "home" screens, the admin dashboard (`/dashboard`) and the

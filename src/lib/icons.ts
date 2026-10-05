@@ -39,3 +39,10 @@ export { default as FileText } from "lucide-react-native/icons/file-text";
 export { default as ImageIcon } from "lucide-react-native/icons/image";
 export { default as Inbox } from "lucide-react-native/icons/inbox";
 export { default as Paperclip } from "lucide-react-native/icons/paperclip";
+
+/* tabs */
+export { default as ChartLine } from "lucide-react-native/icons/chart-line";
+export { default as LayoutDashboard } from "lucide-react-native/icons/layout-dashboard";
+export { default as Sparkles } from "lucide-react-native/icons/sparkles";
+export { default as Users } from "lucide-react-native/icons/users";
+export { default as Workflow } from "lucide-react-native/icons/workflow";

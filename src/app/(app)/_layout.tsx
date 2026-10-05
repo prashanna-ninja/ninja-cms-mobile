@@ -71,7 +71,7 @@ export default function AppLayout() {
       {/* Only one is reachable at a time; setOrg(org | null) flips between them. */}
       <Stack screenOptions={{ headerShown: false, animation: "fade" }}>
         <Stack.Protected guard={!!org}>
-          <Stack.Screen name="index" />
+          <Stack.Screen name="(tabs)" />
         </Stack.Protected>
         <Stack.Protected guard={!org}>
           <Stack.Screen name="select-org" />
