@@ -5,6 +5,26 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-10-05 — Settings: server row removed; Delete account (CRM pattern)
+
+**Asked:** don't show the server in Settings for now; add delete account like we did in Ninja CRM.
+
+**Researched (`ref/ninja-crm-mobile`):** Settings → Delete account → Alert confirm → `mailto:` to support with
+a pre-filled subject/body; an alert with the address if no mail app. It's request-based because accounts are
+org-provisioned and the org owns the records. The CRM docs record the Apple 5.1.1(v) risk ("should not require
+… send an email") and the decision to ship anyway, with honest review notes.
+
+**Did:** removed the Server row (and the `host` helper / Globe icon); added a quieter red **Delete account** row
+below Sign out. Confirm → `mailto:${SUPPORT_EMAIL}` with the subject "Account deletion request" and a body
+of email + name + org; a fallback alert. New `SUPPORT_EMAIL` in `constants/env.ts`.
+
+**Decision (user):** `SUPPORT_EMAIL = support@ninjacrm.com.au` **for now**. ⏰ The user asked to be reminded to
+change it. The reminder is in HANDOVER §8, docs/10 §6 and the code comment.
+
+**Verified:** mocked web screenshot of the Settings bottom; tsc ✅ lint ✅. No native changes (`Linking` is core).
+
+---
+
 ## 2026-10-05 — Native-module hygiene: no red error on stale dev builds; rebuild log
 
 **Reported:** on the Android dev build, opening Settings showed `ERROR Cannot find native module

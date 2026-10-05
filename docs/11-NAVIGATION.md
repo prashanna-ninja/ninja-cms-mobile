@@ -17,7 +17,7 @@ src/app/
         ├── clients.tsx       Clients    — placeholder ("Coming soon")
         ├── workflows.tsx     Workflows  — placeholder
         ├── revenue.tsx       Revenue    — placeholder
-        └── settings.tsx      Settings   — member card, org, account, app, sign out
+        └── settings.tsx      Settings   — member card, org, account, app, sign out, delete account
 ```
 
 URLs: `/` (Dashboard), `/clients`, `/workflows`, `/revenue`, `/settings`, `/select-org`, `/sign-in`, `/forgot-password`.
@@ -67,8 +67,14 @@ with one memorable piece. Staggered `FadeIn` on open.
 - **Organisation**: current org (colour swatch) + **Switch organisation** (only with 2+ orgs → `setOrg(null)`).
 - **Account**: email, role (`lib/user-display.ts` labels), **Profile & password** → opens the web
   `/portal/[adviceId]/settings` in the in-app browser (profile/password editing stays on the web for now).
-- **App**: version + build (`expo-application`; build = the EAS/TestFlight build number), server host.
+- **App**: version + build (`expo-application`; build = the EAS/TestFlight build number). (The server row was
+  removed 2026-10-05 at the user's request.)
 - **Sign out**: a calm destructive button (red text, a soft red wash when pressed) with a confirm alert.
+- **Delete account** (below Sign out, quieter): confirm → a pre-filled `mailto:` **deletion request** to
+  `SUPPORT_EMAIL` (`constants/env.ts`) with the account email, name and org; if there's no mail app, an alert
+  shows the address. Same pattern as Ninja CRM mobile: accounts are org-provisioned, and the records belong to
+  the organisation, so our team processes the request. ⚠️ `SUPPORT_EMAIL` is **temporarily the Ninja CRM
+  inbox** (`support@ninjacrm.com.au`) — change before App Store submission.
 - Footer: muted wordmark + "Ninja CMS · v{version} ({build})".
 - Building blocks: `components/settings/settings-group.tsx` (`SettingsGroup` titled inset group, `SettingsRow`:
   org-tinted icon tile, label/caption, value, chevron or external glyph, hand-tracked pressed state).

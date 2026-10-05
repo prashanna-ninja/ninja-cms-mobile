@@ -90,8 +90,13 @@ Separate steps if you prefer: `npm run build:ios`, then `npm run submit:ios` (su
 ## 6. Known for later (not needed for internal TestFlight)
 
 - **External TestFlight / App Store review:** needs a demo/reviewer account in the review notes, a privacy
-  policy URL, and App Privacy answers (the CRM's `APP-STORE-REVIEW-NOTES.md` is the template). Plus
-  **account deletion** (Apple guideline 5.1.1(v)) or the documented exemption the CRM used.
+  policy URL, and App Privacy answers (the CRM's `APP-STORE-REVIEW-NOTES.md` is the template).
+- **Account deletion (5.1.1(v)):** ✅ Settings → Delete account → confirm → `mailto:` request (the CRM
+  pattern). ⚠️ **Change `SUPPORT_EMAIL` in `src/constants/env.ts`** — it is temporarily
+  `support@ninjacrm.com.au` (the CRM's inbox). ⚠️ Same risk the CRM recorded: Apple's guidance says apps
+  "should not require people to … send an email". The request flow is defensible (org-provisioned accounts,
+  the org owns the records), but it's reviewer discretion. Describe it honestly in the review notes ("opens a
+  pre-filled request our team processes"), never as in-app deletion. A real fix needs a CMS endpoint.
 - Push notifications, OTA updates (`expo-updates`), Android Play internal testing.
 - The default (signed-out) icon is the Ninja CMS blue one; org icons switch after sign-in (iOS shows its
   one-line "icon changed" alert — expected).

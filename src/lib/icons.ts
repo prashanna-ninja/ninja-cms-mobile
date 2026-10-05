@@ -54,3 +54,4 @@ export { default as Info } from "lucide-react-native/icons/info";
 export { default as KeyRound } from "lucide-react-native/icons/key-round";
 export { default as Settings } from "lucide-react-native/icons/settings";
 export { default as UserRound } from "lucide-react-native/icons/user";
+export { default as UserX } from "lucide-react-native/icons/user-x";

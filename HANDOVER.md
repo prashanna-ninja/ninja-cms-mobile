@@ -30,7 +30,8 @@ and what to build next. Keep it current at the end of every step.
   tinted in the org colour; Clients/Workflows/Revenue are clean "Coming soon" placeholders. Shared `AppHeader`
   (wordmark + initials avatar → Settings). docs/11-NAVIGATION.md.
 - **Settings** — org member card, organisation (switch), account (email, role, web profile/password), app
-  version/build + server, **sign out** (moved here from the header).
+  version/build, **sign out** (moved here from the header), **delete account** (confirm → pre-filled email
+  request to support, the CRM pattern).
 - **Notices on the portal home** — `GET /api/notices?adviceId=` + each notice's content; org-coloured cards
   (NEW badge, Brisbane dates, image/attachment counts), expand to read, filter chips + sort, pull to refresh.
   Content is rendered natively (rich text, images, documents, buttons, video/form links) by the reusable
@@ -126,6 +127,10 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
    the cookie manually; signing out on 401, not on 403.
 
 ## 8. Loose ends & what to build next
+
+> ⏰ **REMINDER (user asked, 2026-10-05):** `SUPPORT_EMAIL` in `src/constants/env.ts` is temporarily
+> **`support@ninjacrm.com.au`** (the CRM inbox) for delete-account requests. **Change it to the Ninja CMS / Advice
+> Ninja support inbox before the App Store submission.**
 
 1. ✅ Foundation.
 2. ✅ Login + session guard (backend expo plugin ✅). ⚠️ Test a real sign-in on iOS + Android.
