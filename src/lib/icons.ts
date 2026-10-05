@@ -46,3 +46,11 @@ export { default as LayoutDashboard } from "lucide-react-native/icons/layout-das
 export { default as Sparkles } from "lucide-react-native/icons/sparkles";
 export { default as Users } from "lucide-react-native/icons/users";
 export { default as Workflow } from "lucide-react-native/icons/workflow";
+
+/* settings */
+export { default as ChevronRight } from "lucide-react-native/icons/chevron-right";
+export { default as Globe } from "lucide-react-native/icons/globe";
+export { default as Info } from "lucide-react-native/icons/info";
+export { default as KeyRound } from "lucide-react-native/icons/key-round";
+export { default as Settings } from "lucide-react-native/icons/settings";
+export { default as UserRound } from "lucide-react-native/icons/user";

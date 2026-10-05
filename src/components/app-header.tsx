@@ -1,27 +1,25 @@
+import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { Alert, Pressable, View } from "react-native";
+import * as React from "react";
+import { Pressable, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { NinjaCmsLogo } from "@/components/brand/ninja-cms-logo";
-import { LogOut } from "@/lib/icons";
+import { initials } from "@/lib/user-display";
 import { useOrgTheme } from "@/providers/org-theme-provider";
 import { useSession } from "@/providers/session-provider";
 
 /**
  * The signed-in app bar, shared by every tab: the Ninja CMS wordmark in the
- * ORG's colour (`theme.logoTint`, Ninja CMS blue when the org has none) and a
- * sign-out button. Owns the top safe-area inset and the dark status bar.
+ * ORG's colour (`theme.logoTint`, Ninja CMS blue when the org has none) and the
+ * user's initials, which open Settings (sign out lives there now).
+ * Owns the top safe-area inset and the dark status bar.
  */
 export function AppHeader() {
   const insets = useSafeAreaInsets();
-  const { signOut } = useSession();
+  const { data: session } = useSession();
   const { theme } = useOrgTheme();
-
-  const confirmSignOut = () =>
-    Alert.alert("Sign out?", "You'll need your email and password to sign back in.", [
-      { text: "Cancel", style: "cancel" },
-      { text: "Sign out", style: "destructive", onPress: () => void signOut() },
-    ]);
+  const [pressed, setPressed] = React.useState(false);
 
   return (
     <View
@@ -30,14 +28,29 @@ export function AppHeader() {
     >
       <StatusBar style="dark" />
       <NinjaCmsLogo width={88} color={theme.logoTint} />
+      {/* Plain style object (NativeWind drops Pressable function styles). */}
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel="Sign out"
-        onPress={confirmSignOut}
+        accessibilityLabel="Open settings"
+        onPress={() => router.navigate("/settings")}
+        onPressIn={() => setPressed(true)}
+        onPressOut={() => setPressed(false)}
         hitSlop={10}
-        className="bg-secondary h-9 w-9 items-center justify-center rounded-full"
+        style={{
+          width: 36,
+          height: 36,
+          borderRadius: 18,
+          backgroundColor: theme.soft,
+          borderWidth: 1.5,
+          borderColor: theme.line,
+          alignItems: "center",
+          justifyContent: "center",
+          opacity: pressed ? 0.6 : 1,
+        }}
       >
-        <LogOut size={16} color={theme.text} strokeWidth={2.2} />
+        <Text style={{ fontFamily: "BricolageGrotesque_700Bold", fontSize: 13, color: theme.text }}>
+          {initials(session?.user)}
+        </Text>
       </Pressable>
     </View>
   );

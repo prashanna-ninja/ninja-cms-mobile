@@ -1,8 +1,9 @@
 import { Tabs, type BottomTabBarButtonProps } from "expo-router/js-tabs";
 import * as React from "react";
 import { Pressable, type ColorValue } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { ChartLine, LayoutDashboard, Users, Workflow } from "@/lib/icons";
+import { ChartLine, LayoutDashboard, Settings, Users, Workflow } from "@/lib/icons";
 import { useOrgTheme } from "@/providers/org-theme-provider";
 
 type IconComponent = React.ComponentType<{ size?: number; color?: string; strokeWidth?: number }>;
@@ -49,7 +50,9 @@ function TabButton({
         setPressed(false);
         onPressOut?.(e);
       }}
-      style={[style, { opacity: pressed ? 0.55 : 1 }]}
+      // paddingVertical 2 (default 5): the button holds a fixed 28pt icon box, and the
+      // default padding left the label ~9pt — too short for Bricolage's descenders.
+      style={[style, { paddingVertical: 2, opacity: pressed ? 0.55 : 1 }]}
     >
       {children}
     </Pressable>
@@ -60,7 +63,7 @@ function TabButton({
  * The portal's bottom tabs, in the active org's colour (`theme.logoTint` — the
  * org colour, darkened only if too pale to read on the white bar).
  *
- *   Dashboard · Clients · Workflows · Revenue
+ *   Dashboard · Clients · Workflows · Revenue · Settings
  *
  * JS tabs (`expo-router/js-tabs`) rather than NativeTabs: still "unstable" in
  * SDK 57, and JS tabs take lucide icons + any tint colour directly.
@@ -72,6 +75,7 @@ function TabButton({
  */
 export default function TabsLayout() {
   const { theme } = useOrgTheme();
+  const insets = useSafeAreaInsets();
 
   return (
     <Tabs
@@ -80,8 +84,17 @@ export default function TabsLayout() {
         tabBarButton: (props) => <TabButton {...props} />,
         tabBarActiveTintColor: theme.logoTint,
         tabBarInactiveTintColor: "#8A97B5",
-        tabBarLabelStyle: { fontFamily: "BricolageGrotesque_500Medium", fontSize: 11 },
-        tabBarStyle: { backgroundColor: "#FFFFFF", borderTopColor: "#E2E8F2" },
+        // Room for Bricolage's descenders (the g in "Settings"): the default bar squeezed the
+        // label to ~7pt (overflow hidden). 62pt of content + the home-indicator inset; the
+        // button's own padding is slimmed in TabButton.
+        tabBarLabelStyle: { fontFamily: "BricolageGrotesque_500Medium", fontSize: 11, lineHeight: 15 },
+        tabBarStyle: {
+          backgroundColor: "#FFFFFF",
+          borderTopColor: "#E2E8F2",
+          height: 62 + insets.bottom,
+          paddingTop: 4,
+          paddingBottom: insets.bottom + 2,
+        },
         // Same as bg-background, so switching tabs never flashes white/grey.
         sceneStyle: { backgroundColor: "#F0F4FB" },
       }}
@@ -112,6 +125,13 @@ export default function TabsLayout() {
         options={{
           title: "Revenue",
           tabBarIcon: ({ color, focused }) => <TabIcon icon={ChartLine} color={color} focused={focused} />,
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: "Settings",
+          tabBarIcon: ({ color, focused }) => <TabIcon icon={Settings} color={color} focused={focused} />,
         }}
       />
     </Tabs>

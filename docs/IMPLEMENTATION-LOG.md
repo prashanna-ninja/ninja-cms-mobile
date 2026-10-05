@@ -5,6 +5,30 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-10-05 — Settings tab; sign out moves out of the header
+
+**Asked (via /frontend-design):** a Settings button as the last tab with sign out and some user info, nice and
+clean; remove sign out from the header.
+
+**Did:**
+- `(tabs)/settings.tsx`: an org-gradient **member card** (logo, role tag, monogram, name/email, web
+  PortalNav ring motif) → Organisation (current + Switch when 2+) → Account (email, role, Profile & password →
+  web portal settings) → App (version + build via **expo-application**, server) → calm destructive **Sign out**
+  (confirm) → muted wordmark footer. Staggered `FadeIn`.
+- `components/settings/{member-card,settings-group}.tsx`, `lib/user-display.ts` (initials, role labels, display name).
+- `AppHeader`: sign out removed; an **initials avatar** opens Settings (`router.navigate("/settings")`).
+- Tabs: Settings added last.
+
+**Fix along the way — tab labels clipped:** with Bricolage, the label box was only 7–9pt (`overflow: hidden`),
+cutting descenders. I measured it in the DOM: the *button* has a fixed 28pt icon box + 5pt padding, so the
+first two guesses (a bigger line height, then `tabBarItemStyle` padding) made it worse or did nothing. Fix:
+bar `height: 62 + insets.bottom` and `paddingVertical: 2` on our `TabButton`. The label gets 15pt.
+
+**Verified:** mocked web run with 2 orgs → picker → Beryllium → Clients → avatar opens Settings; full page incl.
+Switch row, Sign out, footer; tab labels unclipped; tsc ✅ lint ✅.
+
+---
+
 ## 2026-10-05 — Fix: "big bubble" when tapping tabs
 
 **Reported:** a big bubble appeared while tapping the tabs.
