@@ -1,5 +1,3 @@
-import * as Application from "expo-application";
-import Constants from "expo-constants";
 import * as React from "react";
 import { Alert, Pressable, ScrollView, Text, View } from "react-native";
 
@@ -10,6 +8,7 @@ import { FadeIn } from "@/components/login/fade-in";
 import { MemberCard } from "@/components/settings/member-card";
 import { SettingsGroup, SettingsRow } from "@/components/settings/settings-group";
 import { API_BASE_URL } from "@/constants/env";
+import { appVersion } from "@/lib/app-version";
 import { ArrowLeftRight, Globe, Info, KeyRound, LogOut, Mail, UserRound } from "@/lib/icons";
 import { openUrl } from "@/lib/open-url";
 import { roleLabel } from "@/lib/user-display";
@@ -46,8 +45,7 @@ export default function SettingsScreen() {
   const user = session?.user;
   const canSwitch = (orgsQuery.data?.length ?? 0) > 1;
 
-  const version = Application.nativeApplicationVersion ?? Constants.expoConfig?.version ?? "—";
-  const build = Application.nativeBuildVersion;
+  const { version, build } = appVersion();
 
   const confirmSignOut = () =>
     Alert.alert("Sign out?", "You'll need your email and password to sign back in.", [
