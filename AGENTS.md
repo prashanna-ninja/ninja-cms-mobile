@@ -51,6 +51,10 @@ Docs: https://docs.expo.dev/eas/index.md
 - Screens never call `fetch` directly — use hooks in `src/api/*.api.ts` → `apiFetch`. Query keys come
   from `src/lib/query-keys.ts`.
 - Work page by page, small commits (`feat:`/`fix:`/`chore:`/`docs:`).
+- **Native modules:** if a change adds/removes a package with native code or changes native config
+  (app.json / app.config.ts / plugins / icons), say so explicitly in the hand-off with
+  `npx expo prebuild --clean && npx expo run:ios|android`, and add a row to the rebuild log in
+  `docs/02-SETUP-AND-STRUCTURE.md` §6. Probe optional native modules with `requireOptionalNativeModule`.
 - **This is the ADVISER PORTAL app.** Behind sign-in, every brand colour + logo comes from the active
   organisation (`Advice.colorTheme` / `Advice.logo`) via `useOrgTheme()` / NativeWind classes — never
   hard-code brand colours in signed-in screens. Read `docs/07-ORG-THEMING.md` before building one.

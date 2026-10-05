@@ -1,3 +1,4 @@
+import { requireOptionalNativeModule } from "expo";
 import { Platform } from "react-native";
 
 import appIcons from "@/constants/app-icons.json";
@@ -26,6 +27,12 @@ function getNative(): NativeIcons | null {
   if (native !== undefined) return native;
   if (Platform.OS === "web") {
     unavailableReason = "web";
+    return (native = null);
+  }
+  // Probe first: requiring the package when its native side is missing throws (and
+  // React Native dev reports it as a red error even inside try/catch).
+  if (!requireOptionalNativeModule("ExpoAlternateAppIcons")) {
+    unavailableReason = "native module ExpoAlternateAppIcons isn't in this build (Expo Go, or a dev build that needs rebuilding)";
     return (native = null);
   }
   try {

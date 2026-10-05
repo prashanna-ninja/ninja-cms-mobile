@@ -5,6 +5,29 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-10-05 — Native-module hygiene: no red error on stale dev builds; rebuild log
+
+**Reported:** on the Android dev build, opening Settings showed `ERROR Cannot find native module
+'ExpoApplication'`. The user asked to always be told when a new native module needs a rebuild.
+
+**Cause:** `expo-application` (added for Settings' version/build) is native; the dev build predates it. My
+try/catch kept the app alive, but React Native dev still reports a module-init throw as a red error.
+
+**Did:**
+- `lib/app-version.ts` and `lib/app-icon.ts` now **probe with `requireOptionalNativeModule`** (from `expo`)
+  before requiring the package. A missing native side means a quiet fallback (version without build number /
+  icons off).
+- **docs/02 §6 "Native modules — when you must rebuild"**: the rule, the list of native packages, and a dated
+  **rebuild log**. Rule added to AGENTS.md + HANDOVER.
+
+**Mistake owned:** the Settings hand-off mentioned a rebuild only for the build number, not that
+`expo-application` was a new native module. From now on every native addition is called out up front.
+
+**User action:** `npx expo prebuild --clean && npx expo run:android` (and `run:ios` on the Mac) to get the
+build number. Without it, Settings shows the version only.
+
+---
+
 ## 2026-10-05 — Settings tab; sign out moves out of the header
 
 **Asked (via /frontend-design):** a Settings button as the last tab with sign out and some user info, nice and

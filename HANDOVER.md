@@ -113,7 +113,9 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
 13. **Logos + app icons are generated** — wordmark: `node scripts/build-wordmark.mjs` (`CAP_HEIGHT`); icons: edit
     `src/constants/app-icons.json`, run `node scripts/generate-app-icons.mjs`,
     never hand-edit `assets/app-icons/`. Alternate icons are native: **rebuild** after changing the list. docs/08.
-14. **After `npx expo prebuild`, check `git diff package.json`** — it rewrites the android/ios scripts.
+14. **New native module ⇒ rebuild the dev app** (`npx expo prebuild --clean && npx expo run:ios|android`). The register
+    and rebuild log are in docs/02 §6. The latest native addition is **expo-application** (2026-10-05).
+    After `npx expo prebuild`, also check `git diff package.json`, since it rewrites the android/ios scripts.
     Test app icons with a **dev build** (`npm run ios:dev` on a Mac / `npm run android:dev`), never Expo Go;
     `expo start` now targets the dev build (press `s` for Expo Go).
     **Changed app.json / app.config.ts / app-icons.json / a native package? → `npx expo prebuild --clean`

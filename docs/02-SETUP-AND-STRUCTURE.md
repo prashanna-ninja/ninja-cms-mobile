@@ -84,7 +84,44 @@ EXPO_PUBLIC_API_BASE_URL=https://<cms-host>   # same value as the CMS's BETTER_A
 - Production CMS: `https://login.cobaltlicenseesolutions.com.au` (from the CMS `.env.example`).
 - `EXPO_PUBLIC_*` values are **baked into the bundle** — never put secrets there.
 
-## 6. Order of work
+## 6. ⭐ Native modules — when you must rebuild the dev app
+
+JS changes reload instantly. **Native** changes (a new package with native code, or config-plugin /
+`app.json` / `app.config.ts` / icon changes) only reach a dev build after a **rebuild**:
+
+```bash
+npx expo prebuild --clean            # regenerate ios/ + android/ from config
+npx expo run:ios                     # or: npx expo run:android
+```
+
+Skip it and the dev build either runs a stale native project (old icon, missing modules) or hits
+`Cannot find native module '…'`. EAS cloud builds always prebuild fresh, so no action is needed there.
+
+**Rule (for whoever adds code, Claude included): whenever a change adds or removes a native module or changes
+native config, say so explicitly in the hand-off, with the rebuild command, and add a row below.**
+Code that uses an optional native module probes it first (`requireOptionalNativeModule`, see
+`lib/app-version.ts`, `lib/app-icon.ts`), so a stale build degrades quietly instead of showing a red error.
+
+**Native packages in the app** (anything with `ios/`, `android/` or `expo-module.config.json`): expo,
+expo-alternate-app-icons, expo-application, expo-constants, expo-dev-client, expo-font, expo-image,
+expo-linear-gradient, expo-linking, expo-network, expo-router, expo-secure-store, expo-splash-screen,
+expo-status-bar, expo-symbols, expo-system-ui, expo-web-browser, react-native, react-native-gesture-handler,
+react-native-reanimated, react-native-safe-area-context, react-native-screens, react-native-svg,
+react-native-worklets.
+
+**Rebuild log — native changes after the scaffold** (rebuild if your dev build is older than the row):
+
+| Date | Change | Commit | In Expo Go? |
+|---|---|---|---|
+| 2026-09-30 | expo-network, react-native-svg, expo-font | foundation `37c8db7` | ✅ |
+| 2026-09-30 | expo-secure-store, expo-linear-gradient | login `f641ece` | ✅ |
+| 2026-10-02 | **expo-alternate-app-icons** + per-org icons in `app.config.ts` | `cd57c27` | ❌ dev build only |
+| 2026-10-02 | **expo-dev-client** | `097a0c4` | — |
+| 2026-10-02 | brand-logo icons (native assets) | `5f105dd`, `f6aaf1b` | — |
+| 2026-10-02 | expo-secure-store `faceIDPermission: false` (Info.plist) | `3438774` | — |
+| 2026-10-05 | **expo-application** (Settings → version/build) | `4e665e2` | ✅ |
+
+## 7. Order of work
 
 1. ✅ Scaffold Expo SDK 57 app, git init, ignore `ref/`
 2. ✅ Initial docs (this set)

@@ -1,3 +1,4 @@
+import { requireOptionalNativeModule } from "expo";
 import Constants from "expo-constants";
 
 /**
@@ -12,6 +13,9 @@ import Constants from "expo-constants";
 type ApplicationModule = typeof import("expo-application");
 
 function loadApplication(): ApplicationModule | null {
+  // Probe first: requiring the package when its native side is missing throws (and
+  // React Native dev reports it as a red error even inside try/catch).
+  if (!requireOptionalNativeModule("ExpoApplication")) return null;
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     return require("expo-application") as ApplicationModule;
