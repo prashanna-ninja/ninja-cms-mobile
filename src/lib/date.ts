@@ -59,7 +59,8 @@ export function formatShortDate(input: string | number | Date): string {
   if (shortFormatter) {
     const p = Object.fromEntries(shortFormatter.formatToParts(date).map((x) => [x.type, x.value]));
     // Month names mapped by hand: en-AU Intl says "Sept"; the web (moment) says "Sep".
-    return `${p.day} ${MONTHS[Number(p.month) - 1] ?? p.month} ${p.year}`;
+    // Number(): en-AU numeric mode zero-pads the day ("03"); the web shows "3 Oct 2026".
+    return `${Number(p.day)} ${MONTHS[Number(p.month) - 1] ?? p.month} ${p.year}`;
   }
   return date.toDateString().slice(4);
 }

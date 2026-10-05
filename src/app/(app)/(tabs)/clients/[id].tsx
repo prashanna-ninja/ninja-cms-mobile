@@ -1,114 +1,217 @@
-import { useQueryClient, type InfiniteData } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
 import * as React from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Linking, Pressable, RefreshControl, ScrollView, Text, View } from "react-native";
 
+import { useClientDetail, useClientRevenueAccess } from "@/api/client-detail.api";
 import { AppHeader } from "@/components/app-header";
-import { SettingsGroup, SettingsRow } from "@/components/settings/settings-group";
+import { ActivitySection } from "@/components/client-detail/activity-section";
+import { FactFindSection } from "@/components/client-detail/fact-find-section";
+import { FilesSection } from "@/components/client-detail/files-section";
+import { NotesSection } from "@/components/client-detail/notes-section";
+import { OngoingSection } from "@/components/client-detail/ongoing-section";
+import { OverviewSection } from "@/components/client-detail/overview-section";
+import { RevenueSection } from "@/components/client-detail/revenue-section";
+import { SECTIONS, SectionTabs, type SectionKey } from "@/components/client-detail/section-tabs";
+import { C, ErrorNote, F, Loading, errorMessage, text } from "@/components/client-detail/ui";
+import { ApiError } from "@/lib/api-client";
 import { clientSourceLabel, clientTypeLabel, clientTypeStyle } from "@/lib/clients";
-import { formatShortDate } from "@/lib/date";
-import { ArrowLeft, Calendar, Mail, Phone, Sparkles, Tag } from "@/lib/icons";
-import { initials } from "@/lib/user-display";
+import { formatDateTime, nameInitials } from "@/lib/format";
+import { ArrowLeft, Calendar, Mail, Phone } from "@/lib/icons";
 import { useOrgTheme } from "@/providers/org-theme-provider";
-import type { ClientRecord, ClientRecordsResponse } from "@/types/client.types";
-
-const FONT = {
-  regular: "BricolageGrotesque_400Regular",
-  medium: "BricolageGrotesque_500Medium",
-  semibold: "BricolageGrotesque_600SemiBold",
-  bold: "BricolageGrotesque_700Bold",
-};
-
-/** Find a client in any cached Client Records page (the list already has the basics). */
-function useCachedClient(id: string | undefined): ClientRecord | undefined {
-  const queryClient = useQueryClient();
-  return React.useMemo(() => {
-    if (!id) return undefined;
-    for (const [, data] of queryClient.getQueriesData<InfiniteData<ClientRecordsResponse>>({ queryKey: ["client-records"] })) {
-      const hit = data?.pages.flatMap((p) => p.clients).find((c) => c.id === id);
-      if (hit) return hit;
-    }
-    return undefined;
-  }, [id, queryClient]);
-}
+import { useSession } from "@/providers/session-provider";
 
 /**
- * A client — placeholder until the full profile lands (web:
- * /portal/[adviceId]/client-records/[clientId]: profile, fact find, notes, files,
- * activity, workflows). Shows what the list already knows. docs/12-CLIENTS.md.
+ * A client record — the web's /portal/[adviceId]/client-records/[clientId]:
+ * header card + section pills (Overview · Revenue · Fact Find · Files · File Notes ·
+ * Ongoing client · Activity Log). Revenue only when the server allows it.
+ * `?tab=` selects a section (like the web). docs/12-CLIENTS.md §6.
  */
 export default function ClientDetailScreen() {
-  const { id, name } = useLocalSearchParams<{ id: string; name?: string }>();
-  const { theme } = useOrgTheme();
-  const client = useCachedClient(id);
-  const title = client?.name ?? name ?? "Client";
-  const type = client ? clientTypeStyle(client.type) : null;
+  const { id, name, tab } = useLocalSearchParams<{ id: string; name?: string; tab?: string }>();
+  const { org, theme } = useOrgTheme();
+  const { data: session } = useSession();
+  const queryClient = useQueryClient();
+  const adviceId = org?.id;
+
+  const client = useClientDetail(adviceId, id);
+  const revenueAllowed = useClientRevenueAccess(adviceId, id);
+  const sections = React.useMemo(() => SECTIONS.filter((s) => s.key !== "revenue" || revenueAllowed === true), [revenueAllowed]);
+  const [section, setSection] = React.useState<SectionKey>(() => (SECTIONS.some((s) => s.key === tab) ? (tab as SectionKey) : "overview"));
+  const active: SectionKey = sections.some((s) => s.key === section) ? section : "overview";
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await queryClient.invalidateQueries({ queryKey: ["client"] });
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  const goBack = () => (router.canGoBack() ? router.back() : router.replace("/clients"));
+  const openClient = (clientId: string, clientName: string) =>
+    router.push({ pathname: "/clients/[id]", params: { id: clientId, name: clientName } });
+
+  // The client GET has no adviser/org names; we know the org, and the adviser when it's the signed-in user.
+  const adviserName = client.data && session?.user.id === client.data.adviserUserId ? session.user.name ?? undefined : undefined;
 
   return (
     <View className="bg-background flex-1">
       <AppHeader />
-      <ScrollView contentContainerStyle={{ padding: 20, gap: 20, paddingBottom: 32 }}>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Back to clients"
-          onPress={() => (router.canGoBack() ? router.back() : router.replace("/clients"))}
-          hitSlop={10}
-          style={{ flexDirection: "row", alignItems: "center", gap: 6, alignSelf: "flex-start" }}
-        >
-          <ArrowLeft size={18} color={theme.text} strokeWidth={2.2} />
-          <Text style={{ fontFamily: FONT.semibold, fontSize: 14, color: theme.text }}>Client Records</Text>
-        </Pressable>
-
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 14 }}>
-          <View style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: theme.soft, alignItems: "center", justifyContent: "center" }}>
-            <Text style={{ fontFamily: FONT.bold, fontSize: 19, color: theme.text }}>{initials({ name: title, email: "" })}</Text>
-          </View>
-          <View style={{ flex: 1, gap: 6 }}>
-            <Text style={{ fontFamily: FONT.bold, fontSize: 24, color: "#0D1B3E" }}>{title}</Text>
-            {client && type ? (
-              <View style={{ flexDirection: "row", gap: 6 }}>
-                <View style={{ backgroundColor: type.bg, borderColor: type.ring, borderWidth: 1, borderRadius: 999, paddingHorizontal: 8, paddingVertical: 1 }}>
-                  <Text style={{ fontFamily: FONT.medium, fontSize: 12, color: type.fg }}>{clientTypeLabel(client.type)}</Text>
-                </View>
-                <View style={{ backgroundColor: "#F5F5F5", borderColor: "#E5E5E5", borderWidth: 1, borderRadius: 999, paddingHorizontal: 8, paddingVertical: 1 }}>
-                  <Text style={{ fontFamily: FONT.medium, fontSize: 12, color: "#404040" }}>{clientSourceLabel(client.source)}</Text>
-                </View>
-              </View>
-            ) : null}
-          </View>
+      <ScrollView
+        stickyHeaderIndices={[2]}
+        contentContainerStyle={{ paddingBottom: 36 }}
+        keyboardShouldPersistTaps="handled"
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.base} colors={[theme.base]} />}
+      >
+        {/* 0 — back */}
+        <View style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 12 }}>
+          <Pressable accessibilityRole="button" accessibilityLabel="Go back" onPress={goBack} hitSlop={10} style={{ flexDirection: "row", alignItems: "center", gap: 6, alignSelf: "flex-start" }}>
+            <ArrowLeft size={17} color={C.ink} strokeWidth={2.2} />
+            <Text style={{ fontFamily: F.semibold, fontSize: 14, color: C.ink }}>Go back</Text>
+          </Pressable>
         </View>
 
-        {client ? (
-          <SettingsGroup title="Contact">
-            <SettingsRow icon={Mail} label="Email" value={client.email ?? "—"} />
-            <SettingsRow icon={Phone} label="Phone" value={client.phone ?? "—"} />
-            <SettingsRow icon={Calendar} label="Added" value={formatShortDate(client.createdAt)} />
-            {client.tags.length ? (
-              <SettingsRow icon={Tag} label="Tags" value={client.tags.map((t) => t.name).join(", ")} />
-            ) : null}
-          </SettingsGroup>
-        ) : null}
+        {/* 1 — header card */}
+        <View style={{ paddingHorizontal: 20, paddingBottom: 14 }}>
+          {client.isPending ? (
+            <Loading />
+          ) : client.isError ? (
+            <ErrorNote
+              message={client.error instanceof ApiError && client.error.status === 404 ? "This client couldn't be found." : errorMessage(client.error)}
+              onRetry={() => void client.refetch()}
+            />
+          ) : (
+            <HeaderCard
+              name={client.data.name || name || "Client"}
+              type={client.data.type}
+              source={client.data.source}
+              subtitle={[adviserName, org?.name].filter(Boolean).join(" · ")}
+              email={client.data.email}
+              phone={client.data.phone}
+              createdAt={client.data.createdAt}
+              archived={!!client.data.archivedAt}
+            />
+          )}
+        </View>
 
-        <View
-          style={{
-            flexDirection: "row",
-            gap: 12,
-            alignItems: "center",
-            backgroundColor: "#FFFFFF",
-            borderRadius: 16,
-            borderWidth: 1,
-            borderColor: theme.line,
-            padding: 16,
-          }}
-        >
-          <View style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: theme.soft, alignItems: "center", justifyContent: "center" }}>
-            <Sparkles size={17} color={theme.text} strokeWidth={2} />
-          </View>
-          <Text style={{ flex: 1, fontFamily: FONT.regular, fontSize: 14, lineHeight: 20, color: "#5B6B8C" }}>
-            The full client profile — fact find, notes, files and activity — is coming next.
-          </Text>
+        {/* 2 — section pills (sticky) */}
+        <View style={{ backgroundColor: "#F0F4FB", paddingVertical: 8 }}>
+          {client.data ? <SectionTabs sections={sections} value={active} onChange={setSection} /> : null}
+        </View>
+
+        {/* 3 — the selected section */}
+        <View style={{ paddingHorizontal: 20, paddingTop: 8 }}>
+          {client.data && adviceId ? (
+            active === "overview" ? (
+              <OverviewSection client={client.data} adviceId={adviceId} adviserName={adviserName} onOpenClient={openClient} />
+            ) : active === "revenue" ? (
+              <RevenueSection adviceId={adviceId} clientId={id} />
+            ) : active === "fact-find" ? (
+              <FactFindSection adviceId={adviceId} clientId={id} />
+            ) : active === "files" ? (
+              <FilesSection adviceId={adviceId} clientId={id} />
+            ) : active === "notes" ? (
+              <NotesSection adviceId={adviceId} clientId={id} />
+            ) : active === "annual-consent" ? (
+              <OngoingSection adviceId={adviceId} clientId={id} />
+            ) : (
+              <ActivitySection adviceId={adviceId} clientId={id} />
+            )
+          ) : null}
         </View>
       </ScrollView>
     </View>
+  );
+}
+
+/** Web header: colour band, rounded avatar, name + type/source badges, "adviser · org", email/phone, "Client since". */
+function HeaderCard({
+  name,
+  type,
+  source,
+  subtitle,
+  email,
+  phone,
+  createdAt,
+  archived,
+}: {
+  name: string;
+  type: string;
+  source: string;
+  subtitle: string;
+  email: string | null;
+  phone: string | null;
+  createdAt: string;
+  archived: boolean;
+}) {
+  const { theme } = useOrgTheme();
+  const t = clientTypeStyle(type);
+  return (
+    <View
+      style={{
+        backgroundColor: "#FFFFFF",
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: C.border,
+        overflow: "hidden",
+        shadowColor: "#0B2D6F",
+        shadowOpacity: 0.06,
+        shadowRadius: 3,
+        shadowOffset: { width: 0, height: 1 },
+        elevation: 1,
+      }}
+    >
+      <View style={{ height: 44, backgroundColor: theme.base }} />
+      <View style={{ padding: 16, paddingTop: 0, gap: 12 }}>
+        <View style={{ flexDirection: "row", alignItems: "flex-end", gap: 12, marginTop: -26 }}>
+          <View style={{ width: 60, height: 60, borderRadius: 16, backgroundColor: theme.base, borderWidth: 3, borderColor: "#FFFFFF", alignItems: "center", justifyContent: "center" }}>
+            <Text style={{ fontFamily: F.semibold, fontSize: 20, color: theme.onBase }}>{nameInitials(name)}</Text>
+          </View>
+          <View style={{ flex: 1 }} />
+          {email ? <RoundButton label="Email client" icon={Mail} onPress={() => void Linking.openURL(`mailto:${email}`)} /> : null}
+          {phone ? <RoundButton label="Call client" icon={Phone} onPress={() => void Linking.openURL(`tel:${phone.replace(/\s+/g, "")}`)} /> : null}
+        </View>
+
+        <View style={{ gap: 6 }}>
+          <Text style={{ fontFamily: F.bold, fontSize: 22, color: C.ink }}>{name}</Text>
+          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+            <View style={{ backgroundColor: t.bg, borderColor: t.ring, borderWidth: 1, borderRadius: 999, paddingHorizontal: 8, paddingVertical: 1 }}>
+              <Text style={{ fontFamily: F.medium, fontSize: 12, color: t.fg }}>{clientTypeLabel(type)}</Text>
+            </View>
+            <View style={{ backgroundColor: "#F5F5F5", borderColor: "#E5E5E5", borderWidth: 1, borderRadius: 999, paddingHorizontal: 8, paddingVertical: 1 }}>
+              <Text style={{ fontFamily: F.medium, fontSize: 12, color: "#404040" }}>{clientSourceLabel(source)}</Text>
+            </View>
+            {archived ? (
+              <View style={{ backgroundColor: "#FEF3C7", borderRadius: 999, paddingHorizontal: 8, paddingVertical: 1 }}>
+                <Text style={{ fontFamily: F.medium, fontSize: 12, color: "#92400E" }}>Archived</Text>
+              </View>
+            ) : null}
+          </View>
+          {subtitle ? <Text style={[text.meta, { fontSize: 13.5, color: C.muted }]}>{subtitle}</Text> : null}
+        </View>
+
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 6, alignSelf: "flex-start", borderWidth: 1, borderColor: "#E2E8F0", borderRadius: 999, paddingHorizontal: 10, paddingVertical: 5 }}>
+          <Calendar size={13} color="#6B7A99" strokeWidth={2} />
+          <Text style={{ fontFamily: F.medium, fontSize: 12.5, color: "#3B4A68" }}>{`Client since ${formatDateTime(createdAt)}`}</Text>
+        </View>
+      </View>
+    </View>
+  );
+}
+
+function RoundButton({ label, icon: Icon, onPress }: { label: string; icon: React.ComponentType<{ size?: number; color?: string; strokeWidth?: number }>; onPress: () => void }) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      onPress={onPress}
+      hitSlop={6}
+      style={{ width: 38, height: 38, borderRadius: 19, borderWidth: 1, borderColor: "#DCE3EE", backgroundColor: "#FFFFFF", alignItems: "center", justifyContent: "center" }}
+    >
+      <Icon size={16} color="#3B4A68" strokeWidth={2} />
+    </Pressable>
   );
 }

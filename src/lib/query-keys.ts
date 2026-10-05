@@ -18,4 +18,8 @@ export const qk = {
   clientRecords: (adviceId: string, filters: object) => ["client-records", adviceId, filters] as const,
   /** Whether the user can use Client Records in this org (403 → no). */
   clientRecordsAccess: (adviceId: string) => ["client-records-access", adviceId] as const,
+  /** GET …/client-records/[clientId] — one client. */
+  client: (adviceId: string, clientId: string) => ["client", adviceId, clientId] as const,
+  /** A client sub-section (partner, tags, workflows, revenue, fact-find, files, notes, annual-consent, activity). */
+  clientSection: (clientId: string, section: string, ...rest: string[]) => ["client", clientId, section, ...rest] as const,
 };

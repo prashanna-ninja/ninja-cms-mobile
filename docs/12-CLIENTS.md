@@ -1,7 +1,7 @@
 # 12 — Clients (Client Records)
 
 Started 2026-10-05 against the live CMS (`../cms`). Step 1 = **access-gated tab + list + filters** (read-only).
-Next: the full client profile, then Add client, then row actions.
+Step 2 (2026-10-07) = **client detail with all 7 sections** (§6). Next: the edit-heavy parts (§6 "Not yet"), Add client, row actions.
 
 ## 1. Web reference
 
@@ -56,6 +56,34 @@ Web → mobile:
 - Table → **cards** (monogram, name, type + source badges, email, phone, tags, "Added …"); 50/page, more on scroll;
   pull to refresh; skeletons, empty states (none / no matches / no archived), error + retry.
 - **Add client** and **row actions** are not in this step (user decision 2026-10-05: list first, read-only).
+
+## 6. Client detail (`clients/[id].tsx`), built 2026-10-07
+
+Web: `/portal/[adviceId]/client-records/[clientId]` (`ClientRecordDetail.tsx`). Mobile layout: **Go back** → **header
+card** (org-colour band, avatar in the org colour, name, type/source badges, "adviser · org", round email/call buttons,
+"Client since …") → **sticky section pills** (same order, labels, icons and accent tints as the web) → the section.
+`?tab=` selects a section. Pull to refresh reloads everything for the client.
+
+| Section | Endpoints ({base} = …/client-records/{clientId}) | Mobile |
+|---|---|---|
+| **Overview** | `GET {base}` · `PATCH {base} {source}` · `GET/PUT/DELETE {base}/partner` (+ `?q=` search) · `GET/PUT {base}/tags` · `GET {base}/workflows` | Contact (tap to email / call / maps), Details (org, adviser*, legal name, **Source: editable** via sheet, ABN, DOB), **Partner** (open, remove link, search + link), **Tags** (remove, add with suggestions, max 20), **Workflows** (read-only: stage, checklist, comment count) |
+| **Revenue** | `GET {base}/revenue?page&pageSize=20&sortBy=-datePaid` | FY total / upfront / ongoing + mapped transactions with "Show more". **Pill hidden on 403** (`revenueVisibilityEnabled` etc.) |
+| **Fact Find** | `GET {base}/fact-find` | 15 collapsible sections, **read-only**; labels/options from the **ported web config** `src/lib/fact-find/config.ts` (verbatim copy) + `sections.ts`; respects `dependsOn` |
+| **Files** | `GET/POST {base}/files` · `PATCH/DELETE {base}/files/{id}` · `POST/DELETE /api/upload` | **Upload** (expo-document-picker → presign → S3 PUT → register; PDF/Word/Excel/images ≤ 10 MB), open (public S3 URL, in-app browser), rename, delete |
+| **File Notes** | `GET/POST {base}/notes` · `DELETE {base}/notes/{id}` | write (≤ 5000, plain text), list, delete |
+| **Ongoing client** | `GET {base}/annual-consent` | consent status (overdue / due today / due in N days), history, review cycle — **read-only** |
+| **Activity Log** | `GET {base}/activity?limit=100` | timeline; icon chosen from the summary text (web logic) |
+
+\* The client GET returns no adviser or org names. The org name comes from the active org, and the adviser name is shown
+only when it's the signed-in user. (Backend option: include `adviser {name}` in the GET.)
+
+**Not yet on mobile (next pass):** fact-find editing + Generate PDF (PDF needs cookie-auth download →
+expo-file-system/expo-sharing), recording consent / setting the review (needs a date picker), adding to a
+workflow, archive / delete client, full client edit, Add client.
+
+**Files:** `src/api/client-detail.api.ts` (all hooks + mutations, upload flow), `src/types/client-detail.types.ts`,
+`src/components/client-detail/*` (`ui`, `section-tabs`, one file per section), `src/lib/format.ts` (money, file
+size, date-time, calendar date, initials), `src/lib/fact-find/*`.
 
 ## 5. Status
 

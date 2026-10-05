@@ -32,6 +32,9 @@ and what to build next. Keep it current at the end of every step.
 - **Clients tab = Client Records** (2026-10-05) — shown only to users the CMS allows (403 → hidden); list with
   search-as-you-type, Active/Archived, type/tag/source sheets, infinite scroll, pull to refresh; tap → client
   placeholder. Read-only. docs/12-CLIENTS.md.
+- **Client detail** (2026-10-07) — header card + 7 sections: Overview (contact, details, editable source, partner
+  link/unlink, tags, workflows), Revenue (gated by 403), Fact Find (read-only, web config ported), Files (upload /
+  open / rename / delete), File Notes (add / delete), Ongoing client (read-only), Activity Log. docs/12 §6.
 - **Settings** — org member card, organisation (switch), account (email, role, web profile/password), app
   version/build, **sign out** (moved here from the header), **delete account** (confirm → pre-filled email
   request to support, the CRM pattern).
@@ -118,7 +121,7 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
     `src/constants/app-icons.json`, run `node scripts/generate-app-icons.mjs`,
     never hand-edit `assets/app-icons/`. Alternate icons are native: **rebuild** after changing the list. docs/08.
 14. **New native module ⇒ rebuild the dev app** (`npx expo prebuild --clean && npx expo run:ios|android`). The register
-    and rebuild log are in docs/02 §6. The latest native addition is **expo-application** (2026-10-05).
+    and rebuild log are in docs/02 §6. The latest native addition is **expo-document-picker** (2026-10-07).
     After `npx expo prebuild`, also check `git diff package.json`, since it rewrites the android/ios scripts.
     Test app icons with a **dev build** (`npm run ios:dev` on a Mac / `npm run android:dev`), never Expo Go;
     `expo start` now targets the dev build (press `s` for Expo Go).
@@ -143,7 +146,8 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
 6. ✅ **EAS** — `eas.json` profiles, `.easignore`, production env + guard (2026-10-02). ⬜ `eas init` + first
    TestFlight build (needs your Expo/Apple logins) — docs/10-RELEASE-IOS.md §2–3.
 7. 🚧 **Portal home** — Notices ✅; next: quick links, events, … → proper dashboard. ⚠️ Check real notices on a device.
-8. ✅ Tabs. 🚧 Clients: list ✅ → ⬜ client profile → ⬜ Add client → ⬜ archive/delete (docs/12 §5). ⬜ Workflows, Revenue
+8. ✅ Tabs. 🚧 Clients: list ✅ → profile ✅ (7 sections) → ⬜ fact-find edit + PDF, consent/review edit, add to workflow,
+   archive/delete, Add client (docs/12 §6). ⬜ Workflows, Revenue
    (gate them like Clients).
 
 ## 9. Where things live
@@ -165,6 +169,7 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
 | `src/components/app-header.tsx`, `src/components/coming-soon.tsx` | shared app bar (avatar → Settings); tab placeholder |
 | `src/app/(app)/(tabs)/settings.tsx`, `src/components/settings/*`, `src/lib/user-display.ts` | Settings tab |
 | `src/app/(app)/(tabs)/clients/*`, `src/api/clients.api.ts`, `src/components/clients/*`, `src/lib/clients.ts` | Client Records |
+| `src/api/client-detail.api.ts`, `src/components/client-detail/*`, `src/lib/fact-find/*`, `src/lib/format.ts` | client detail (7 sections) |
 | `src/app/(app)/select-org.tsx`, `src/components/orgs/*` | org picker, card, gate states |
 | `src/lib/roles.ts` | `canAccessPortal` (ported from CMS lib/staff.ts) |
 | `src/constants/app-icons.json`, `scripts/generate-app-icons.mjs`, `assets/app-icons/` | per-org app icons (source, generator, output) |

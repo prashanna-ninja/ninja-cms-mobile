@@ -103,7 +103,7 @@ Code that uses an optional native module probes it first (`requireOptionalNative
 `lib/app-version.ts`, `lib/app-icon.ts`), so a stale build degrades quietly instead of showing a red error.
 
 **Native packages in the app** (anything with `ios/`, `android/` or `expo-module.config.json`): expo,
-expo-alternate-app-icons, expo-application, expo-constants, expo-dev-client, expo-font, expo-image,
+expo-alternate-app-icons, expo-application, expo-constants, expo-document-picker, expo-dev-client, expo-font, expo-image,
 expo-linear-gradient, expo-linking, expo-network, expo-router, expo-secure-store, expo-splash-screen,
 expo-status-bar, expo-symbols, expo-system-ui, expo-web-browser, react-native, react-native-gesture-handler,
 react-native-reanimated, react-native-safe-area-context, react-native-screens, react-native-svg,
@@ -120,6 +120,7 @@ react-native-worklets.
 | 2026-10-02 | brand-logo icons (native assets) | `5f105dd`, `f6aaf1b` | — |
 | 2026-10-02 | expo-secure-store `faceIDPermission: false` (Info.plist) | `3438774` | — |
 | 2026-10-05 | **expo-application** (Settings → version/build) | `4e665e2` | ✅ |
+| 2026-10-07 | **expo-document-picker** (client Files → Upload) | client detail commit | ✅ |
 
 ## 7. Order of work
 

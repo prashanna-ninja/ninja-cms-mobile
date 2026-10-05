@@ -65,3 +65,28 @@ export { default as Search } from "lucide-react-native/icons/search";
 export { default as SlidersHorizontal } from "lucide-react-native/icons/sliders-horizontal";
 export { default as Tag } from "lucide-react-native/icons/tag";
 export { default as X } from "lucide-react-native/icons/x";
+
+/* client detail */
+export { default as Activity } from "lucide-react-native/icons/activity";
+export { default as ArrowRightLeft } from "lucide-react-native/icons/arrow-right-left";
+export { default as CalendarClock } from "lucide-react-native/icons/calendar-clock";
+export { default as Compass } from "lucide-react-native/icons/compass";
+export { default as DollarSign } from "lucide-react-native/icons/dollar-sign";
+export { default as Download } from "lucide-react-native/icons/download";
+export { default as FileUp } from "lucide-react-native/icons/file-up";
+export { default as Folder } from "lucide-react-native/icons/folder";
+export { default as FolderOpen } from "lucide-react-native/icons/folder-open";
+export { default as GitBranch } from "lucide-react-native/icons/git-branch";
+export { default as IdCard } from "lucide-react-native/icons/id-card";
+export { default as Landmark } from "lucide-react-native/icons/landmark";
+export { default as LayoutGrid } from "lucide-react-native/icons/layout-grid";
+export { default as Link2 } from "lucide-react-native/icons/link-2";
+export { default as MapPin } from "lucide-react-native/icons/map-pin";
+export { default as MessageSquare } from "lucide-react-native/icons/message-square";
+export { default as MessageSquarePlus } from "lucide-react-native/icons/message-square-plus";
+export { default as Pencil } from "lucide-react-native/icons/pencil";
+export { default as Plus } from "lucide-react-native/icons/plus";
+export { default as Repeat } from "lucide-react-native/icons/repeat";
+export { default as StickyNote } from "lucide-react-native/icons/sticky-note";
+export { default as Trash } from "lucide-react-native/icons/trash";
+export { default as Upload } from "lucide-react-native/icons/upload";

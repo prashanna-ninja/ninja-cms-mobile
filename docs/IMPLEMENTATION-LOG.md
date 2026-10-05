@@ -5,6 +5,36 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-10-07 — Client detail: all 7 sections
+
+**Asked:** add all the other client stuff from the web client page (screenshot: Overview · Revenue · Fact Find ·
+Files · File Notes · Ongoing client · Activity Log).
+
+**Researched:** a research agent mapped every section of `ClientRecordDetail.tsx`, ~25 routes and their exact
+response shapes, permissions (all access-checked; Revenue extra-gated; only archive/delete are adviser-only),
+formats, and the pill icons/colours. Summary in docs/12 §6.
+
+**Did (pass 1: everything viewable + the common actions):** `client-detail.api.ts` (reads + mutations + the 3-step
+S3 upload), the header card + sticky section pills, and one component per section. The fact-find field config is
+**ported verbatim** from the web (`src/lib/fact-find/config.ts`) and rendered generically, so labels/options can't
+drift. Actions: source edit, partner link/unlink, tags add/remove, notes add/delete, files upload/open/rename/delete.
+
+**⚠️ New native module: `expo-document-picker`** (upload). It's in Expo Go; dev builds need
+`npx expo prebuild --clean && npx expo run:ios|android`. Logged in docs/02 §6.
+
+**Decisions:** Revenue pill hidden on 403 (ask-the-server pattern). Fact Find + Ongoing client are read-only for now:
+editing 15 form sections and date pickers is pass 2. Notes are plain text (matches the web). The adviser name is
+shown only when it's the signed-in user (the GET has no names).
+
+**Gotchas:** a custom `retry` fn makes TanStack type `error` as `unknown`, so there's an `errorMessage()` helper.
+en-AU Intl zero-pads the day in numeric mode ("03"), fixed with `Number(p.day)`.
+
+**Verified:** mocked web run with data for every endpoint; screenshots of all 7 sections incl. an expanded fact-find
+section; tsc ✅ lint ✅; Android bundle ✅ (5.9 MB). ⚠️ Not yet against real client data on a device; upload not
+tested end-to-end (needs a real device + S3).
+
+---
+
 ## 2026-10-05 — Clients tab: access gating + Client Records list
 
 **Asked:** only show the Clients tab to users who have access; start building it like the web Client Records
