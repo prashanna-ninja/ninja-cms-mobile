@@ -175,6 +175,16 @@ export function useLinkPartner(adviceId: string | undefined, clientId: string) {
   });
 }
 
+/** POST {base}/workflows {workflowId, stageId} — web ClientWorkflowsCard "Add to workflow". */
+export function useAddToWorkflow(adviceId: string | undefined, clientId: string) {
+  const invalidate = useInvalidate(clientId, adviceId);
+  return useMutation({
+    mutationFn: (body: { workflowId: string; stageId: string }) =>
+      apiFetch(`${base(adviceId!, clientId)}/workflows`, { method: "POST", ...json(body) }),
+    onSuccess: () => invalidate("workflows"),
+  });
+}
+
 export function useUnlinkPartner(adviceId: string | undefined, clientId: string) {
   const invalidate = useInvalidate(clientId, adviceId);
   return useMutation({

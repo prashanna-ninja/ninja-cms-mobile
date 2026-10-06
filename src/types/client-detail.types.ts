@@ -49,8 +49,20 @@ export type WorkflowMembership = {
   comments: { id: string; body: string; createdAt: string; authorName: string }[];
 };
 
+/** A workflow the user can add the client to (CMS listWorkflows; only the fields we use). */
+export type WorkflowSummary = {
+  id: string;
+  name: string;
+  description: string | null;
+  stageCount: number;
+  clientCount: number;
+  stages: { id: string; name: string }[];
+};
+
 export type ClientWorkflowsResponse = {
   memberships: WorkflowMembership[];
+  /** Empty when workflows are off for this user. */
+  workflows: WorkflowSummary[];
   workflowsEnabled: boolean;
 };
 

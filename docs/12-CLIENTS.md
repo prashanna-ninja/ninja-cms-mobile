@@ -66,7 +66,7 @@ card** (org-colour band, avatar in the org colour, name, type/source badges, "ad
 
 | Section | Endpoints ({base} = …/client-records/{clientId}) | Mobile |
 |---|---|---|
-| **Overview** | `GET {base}` · `PATCH {base} {source}` · `GET/PUT/DELETE {base}/partner` (+ `?q=` search) · `GET/PUT {base}/tags` · `GET {base}/workflows` | Contact (tap to email / call / maps), Details (org, adviser*, legal name, **Source: editable** via sheet, ABN, DOB), **Partner** (open, remove link, search + link), **Tags** (remove, add with suggestions, max 20), **Workflows** (read-only: stage, checklist, comment count) |
+| **Overview** | `GET {base}` · `PATCH {base} {source}` · `GET/PUT/DELETE {base}/partner` (+ `?q=` search) · `GET/PUT {base}/tags` · `GET/POST {base}/workflows` | Contact (tap to email / call / maps), Details (org, adviser*, legal name, **Source: editable** via sheet, ABN, DOB), **Partner** (open, remove link, search + link), **Tags** (remove, add with suggestions, max 20), **Workflows** (stage, checklist, comment count; **Add** → sheet: pick a workflow the client isn't on, pick the starting stage → `POST {workflowId, stageId}`; Add shown only when `workflowsEnabled`) |
 | **Revenue** | `GET {base}/revenue?page&pageSize=20&sortBy=-datePaid` | FY total / upfront / ongoing + mapped transactions with "Show more". **Pill hidden on 403** (`revenueVisibilityEnabled` etc.) |
 | **Fact Find** | `GET {base}/fact-find` | 15 collapsible sections, **read-only**; labels/options from the **ported web config** `src/lib/fact-find/config.ts` (verbatim copy) + `sections.ts`; respects `dependsOn` |
 | **Files** | `GET/POST {base}/files` · `PATCH/DELETE {base}/files/{id}` · `POST/DELETE /api/upload` | **Upload** (expo-document-picker → presign → S3 PUT → register; PDF/Word/Excel/images ≤ 10 MB), open (public S3 URL, in-app browser), rename, delete |
@@ -91,7 +91,7 @@ web `AddClientRecordForm` and the CMS `clientCoreShape`: type chips, source shee
 (required) + DOB, display name auto-filled from them until edited; others → ABN; email, phone, address. Empty strings =
 "not set". Staff rules match the web; the API enforces them anyway (403).
 
-**Not yet on mobile (next pass):** adding to a workflow; fact-find editing + Generate PDF (PDF needs a cookie-auth
+**Not yet on mobile (next pass):** fact-find editing + Generate PDF (PDF needs a cookie-auth
 download → expo-file-system / expo-sharing, a **native rebuild**).
 
 **Files:** `src/api/client-detail.api.ts` (all hooks + mutations, upload flow), `src/types/client-detail.types.ts`,

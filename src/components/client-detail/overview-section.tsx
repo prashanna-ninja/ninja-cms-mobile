@@ -11,6 +11,7 @@ import {
   useUnlinkPartner,
   useUpdateClientSource,
 } from "@/api/client-detail.api";
+import { AddWorkflowSheet } from "@/components/client-detail/add-workflow-sheet";
 import { Card, C, F, InfoRow, Loading, PillButton, text } from "@/components/client-detail/ui";
 import { OptionSheet } from "@/components/clients/option-sheet";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
@@ -273,15 +274,26 @@ function TagsCard({ clientId, adviceId }: { clientId: string; adviceId: string }
   );
 }
 
-/** Workflows — read-only memberships (web ClientWorkflowsCard). Adding to a workflow comes later. */
+/** Workflows — memberships (stage, checklist, comments) + "Add" to another workflow (web ClientWorkflowsCard). */
 function WorkflowsCard({ clientId, adviceId }: { clientId: string; adviceId: string }) {
   const { theme } = useOrgTheme();
   const wf = useClientWorkflows(adviceId, clientId);
+  const [adding, setAdding] = React.useState(false);
   const memberships = wf.data?.memberships ?? [];
+  // Web: offer only the workflows the client isn't on yet.
+  const used = new Set(memberships.map((m) => m.workflowId));
+  const available = (wf.data?.workflows ?? []).filter((w) => !used.has(w.id));
   if (wf.data && wf.data.workflowsEnabled === false && memberships.length === 0) return null;
 
   return (
-    <Card icon={GitBranch} iconBg={theme.soft} iconFg={theme.text} title="Workflows">
+    <Card
+      icon={GitBranch}
+      iconBg={theme.soft}
+      iconFg={theme.text}
+      title="Workflows"
+      right={wf.data?.workflowsEnabled ? <PillButton label="Add" icon={Plus} color={theme.text} onPress={() => setAdding(true)} /> : undefined}
+    >
+      {adding ? <AddWorkflowSheet adviceId={adviceId} clientId={clientId} workflows={available} onClose={() => setAdding(false)} /> : null}
       {wf.isPending ? (
         <Loading />
       ) : memberships.length === 0 ? (

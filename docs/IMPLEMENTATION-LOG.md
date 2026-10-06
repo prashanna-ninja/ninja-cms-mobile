@@ -5,6 +5,19 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-10-06 — Clients: Add to workflow
+
+Overview → Workflows card has an **Add** pill (only when the CMS says `workflowsEnabled`). It opens a bottom sheet
+(`src/components/client-detail/add-workflow-sheet.tsx`) like the web dialog: the workflows the client isn't on yet
+(from the same `GET {base}/workflows`, now typed as `workflows: WorkflowSummary[]`), then the starting stage (first
+stage preselected), then `POST {base}/workflows {workflowId, stageId}` via `useAddToWorkflow`. The sheet mounts only
+while open, so picks reset each time. Server errors show inside the sheet.
+
+Verified with mocked CMS responses on web: the workflow the client is already on is hidden; picking "Annual review" →
+"Meeting" sends `{"workflowId":"w2","stageId":"r2"}`. tsc ✅ lint ✅. No native changes.
+
+---
+
 ## 2026-10-06 — Clients: Add client, Edit, Archive / Restore, Delete (+ Ongoing client editing)
 
 - **Ongoing client** is now editable: record a consent date + note, delete history entries, set the review cycle
