@@ -280,3 +280,34 @@ export function useUploadFile(adviceId: string | undefined, clientId: string) {
     onSuccess: () => invalidate("files"),
   });
 }
+
+/* ------------------------- ongoing client ------------------------- */
+
+/** POST {base}/annual-consent — upserts the latest entry (web: "Save date"). */
+export function useSaveConsent(adviceId: string | undefined, clientId: string) {
+  const invalidate = useInvalidate(clientId, adviceId);
+  return useMutation({
+    mutationFn: (body: { consentedOn: string; note?: string }) =>
+      apiFetch(`${base(adviceId!, clientId)}/annual-consent`, { method: "POST", ...json(body) }),
+    onSuccess: () => invalidate("annual-consent"),
+  });
+}
+
+export function useDeleteConsent(adviceId: string | undefined, clientId: string) {
+  const invalidate = useInvalidate(clientId, adviceId);
+  return useMutation({
+    mutationFn: (consentId: string) =>
+      apiFetch(`${base(adviceId!, clientId)}/annual-consent/${encodeURIComponent(consentId)}`, { method: "DELETE" }),
+    onSuccess: () => invalidate("annual-consent"),
+  });
+}
+
+/** PUT {base}/ongoing-review {interval, nextReviewOn, leadDays}. */
+export function useSaveReview(adviceId: string | undefined, clientId: string) {
+  const invalidate = useInvalidate(clientId, adviceId);
+  return useMutation({
+    mutationFn: (body: { interval: "six_months" | "twelve_months"; nextReviewOn: string; leadDays: 30 | 60 | 90 }) =>
+      apiFetch(`${base(adviceId!, clientId)}/ongoing-review`, { method: "PUT", ...json(body) }),
+    onSuccess: () => invalidate("annual-consent"),
+  });
+}
