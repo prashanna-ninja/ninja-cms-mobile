@@ -5,6 +5,15 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-10-06 — Clients list: bigger, deeper Add-client button
+
+The **+** tile (40 → 46 px, icon 20 → 24) blended into the light page, especially with pale org colours. Its fill is
+now `mix(theme.text, black, 0.18)`: the org colour at its text-safe shade, a touch deeper. It has a white plus and a
+soft shadow in the same colour, and darkens further when pressed. It still follows the org colour (checked with blue `#2A4F80` and orange `#FF8900`).
+No native changes.
+
+---
+
 ## 2026-10-06 — Default app icon: bigger NINJA wordmark (matches CRM / PRM)
 
 **Reported:** on the home screen the Ninja CMS wordmark looked smaller than Ninja CRM / TOTP / PRM.
