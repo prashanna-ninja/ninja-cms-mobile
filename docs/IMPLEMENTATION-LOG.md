@@ -5,6 +5,27 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-10-06 — Clients: fact-find editing
+
+- Each Fact Find section now has an **Edit** (or **Fill in**) pill that opens `clients/fact-find?id=&section=`. The
+  web edits all 15 sections inline. On a phone each section gets its own screen: a Client 1 / Client 2 switch for
+  per-person fields, cards with Add / Remove for lists (dependants, assets, liabilities, funds…), then the section's
+  own fields. **Save** sits in the header, so it stays visible on long forms and above the keyboard. Back with
+  unsaved changes asks to discard.
+- Save = `PATCH {base}/fact-find {section, value}` (`useSaveFactFindSection`), the same as the web. The server
+  replaces the whole section.
+- `cleanForSave` drops blank strings and empty objects before saving. The CMS zod enums reject `""`, and "not set"
+  is a missing key, as with the web's Select.
+- Shared helpers moved to `src/lib/fact-find/values.ts` (visibility, money sanitising, row ids). The read view uses them too.
+- `FormScreenHeader` gained `onBack` and `right` (used for Save).
+
+Verified with mocked CMS responses on web. Personal details: Client 1 preferred name + citizen "No", Client 2
+surname/given names/title "Mrs" → PATCH `{"section":"personalDetails","value":{"client1":{…,"preferredName":"TJ",
+"australianCitizen":"no"},"client2":{"surname":"Chalise","givenNames":"Priya","title":"mrs"}}}`. Dependants: add
+row, remove row → items PATCHed with ids. tsc ✅ lint ✅. No native changes.
+
+---
+
 ## 2026-10-06 — Clients: Add to workflow
 
 Overview → Workflows card has an **Add** pill (only when the CMS says `workflowsEnabled`). It opens a bottom sheet

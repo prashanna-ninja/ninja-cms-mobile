@@ -68,7 +68,7 @@ card** (org-colour band, avatar in the org colour, name, type/source badges, "ad
 |---|---|---|
 | **Overview** | `GET {base}` · `PATCH {base} {source}` · `GET/PUT/DELETE {base}/partner` (+ `?q=` search) · `GET/PUT {base}/tags` · `GET/POST {base}/workflows` | Contact (tap to email / call / maps), Details (org, adviser*, legal name, **Source: editable** via sheet, ABN, DOB), **Partner** (open, remove link, search + link), **Tags** (remove, add with suggestions, max 20), **Workflows** (stage, checklist, comment count; **Add** → sheet: pick a workflow the client isn't on, pick the starting stage → `POST {workflowId, stageId}`; Add shown only when `workflowsEnabled`) |
 | **Revenue** | `GET {base}/revenue?page&pageSize=20&sortBy=-datePaid` | FY total / upfront / ongoing + mapped transactions with "Show more". **Pill hidden on 403** (`revenueVisibilityEnabled` etc.) |
-| **Fact Find** | `GET {base}/fact-find` | 15 collapsible sections, **read-only**; labels/options from the **ported web config** `src/lib/fact-find/config.ts` (verbatim copy) + `sections.ts`; respects `dependsOn` |
+| **Fact Find** | `GET/PATCH {base}/fact-find` | 15 collapsible sections; **Edit / Fill in** opens `clients/fact-find?id=&section=` (Client 1 / Client 2 switch, list rows with Add / Remove, then section fields; Save in the header PATCHes `{section, value}`; discard confirm); labels/options from the **ported web config** `src/lib/fact-find/config.ts` (verbatim copy) + `sections.ts`; respects `dependsOn` |
 | **Files** | `GET/POST {base}/files` · `PATCH/DELETE {base}/files/{id}` · `POST/DELETE /api/upload` | **Upload** (expo-document-picker → presign → S3 PUT → register; PDF/Word/Excel/images ≤ 10 MB), open (public S3 URL, in-app browser), rename, delete |
 | **File Notes** | `GET/POST {base}/notes` · `DELETE {base}/notes/{id}` | write (≤ 5000, plain text), list, delete |
 | **Ongoing client** | `GET/POST {base}/annual-consent` · `DELETE {base}/annual-consent/{id}` · `PUT {base}/ongoing-review` | consent status (overdue / due today / due in N days); **record a consent date + note** (pure-JS `DateField` calendar), delete history; **review cycle** (6 / 12 months, next review date, lead 30/60/90 days) |
@@ -91,7 +91,12 @@ web `AddClientRecordForm` and the CMS `clientCoreShape`: type chips, source shee
 (required) + DOB, display name auto-filled from them until edited; others → ABN; email, phone, address. Empty strings =
 "not set". Staff rules match the web; the API enforces them anyway (403).
 
-**Not yet on mobile (next pass):** fact-find editing + Generate PDF (PDF needs a cookie-auth
+**Fact-find editing notes:** inputs follow the web field types (`src/components/fact-find/fact-find-field.tsx`): money keeps
+digits + one dot, yes/no chips clear on a second tap, selects offer "Not specified", dates use `DateField`. Before
+saving, `cleanForSave` (`src/lib/fact-find/values.ts`) drops blank strings and empty person objects, because the
+server's enums reject `""`. New list rows get a local id (Hermes may lack `crypto.randomUUID`).
+
+**Not yet on mobile (next pass):** Generate PDF (PDF needs a cookie-auth
 download → expo-file-system / expo-sharing, a **native rebuild**).
 
 **Files:** `src/api/client-detail.api.ts` (all hooks + mutations, upload flow), `src/types/client-detail.types.ts`,

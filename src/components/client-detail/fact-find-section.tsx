@@ -1,17 +1,16 @@
+import { router } from "expo-router";
 import * as React from "react";
 import { LayoutAnimation, Pressable, Text, View } from "react-native";
 
 import { useClientFactFind } from "@/api/client-detail.api";
-import { C, ErrorNote, F, Loading, text } from "@/components/client-detail/ui";
+import { C, ErrorNote, F, Loading, PillButton, text } from "@/components/client-detail/ui";
 import type { FactFindFieldDef } from "@/lib/fact-find/config";
 import { FACT_FIND_SECTIONS, type FactFindSectionDef } from "@/lib/fact-find/sections";
+import { isFieldVisible, isObj, str, type Obj } from "@/lib/fact-find/values";
 import { formatCalendarDate, formatMoney } from "@/lib/format";
-import { ChevronDown, ChevronUp, FileText } from "@/lib/icons";
+import { ChevronDown, ChevronUp, Pencil } from "@/lib/icons";
 import { useOrgTheme } from "@/providers/org-theme-provider";
 
-type Obj = Record<string, unknown>;
-const isObj = (v: unknown): v is Obj => !!v && typeof v === "object" && !Array.isArray(v);
-const str = (v: unknown) => (typeof v === "string" ? v.trim() : typeof v === "number" ? String(v) : "");
 
 /** A field's display value from its definition (select → label, yes/no, money, date). Empty → null. */
 function display(def: FactFindFieldDef, raw: unknown): string | null {
@@ -31,21 +30,12 @@ function display(def: FactFindFieldDef, raw: unknown): string | null {
   }
 }
 
-/** Respect the web's `dependsOn` (e.g. "country of residence" only when not a resident). */
-function visible(def: FactFindFieldDef, obj: Obj): boolean {
-  const dep = def.dependsOn;
-  if (!dep) return true;
-  const sibling = str(obj[dep.field]);
-  if (dep.showWhen !== undefined) return ([] as string[]).concat(dep.showWhen).includes(sibling);
-  return !([] as string[]).concat(dep.unless ?? []).includes(sibling);
-}
-
 /** Label/value rows for every filled field of `obj`. Fields sharing a name (e.g. state select/text) show once. */
 function rows(fields: FactFindFieldDef[], obj: Obj) {
   const seen = new Set<string>();
   const out: { label: string; value: string; heading?: string }[] = [];
   for (const def of fields) {
-    if (seen.has(def.name) || !visible(def, obj)) continue;
+    if (seen.has(def.name) || !isFieldVisible(def, obj)) continue;
     const value = display(def, obj[def.name]);
     if (value === null) continue;
     seen.add(def.name);
@@ -125,8 +115,8 @@ function SectionBody({ def, value }: { def: FactFindSectionDef; value: Obj }) {
 }
 
 /**
- * Fact Find — the 15 web sections as collapsible, read-only cards (labels/options
- * from the ported web config, lib/fact-find). Editing + Generate PDF come next.
+ * Fact Find — the 15 web sections as collapsible cards (labels/options from the ported
+ * web config, lib/fact-find). "Edit" opens the section editor (clients/fact-find.tsx).
  */
 export function FactFindSection({ adviceId, clientId }: { adviceId: string; clientId: string }) {
   const { theme } = useOrgTheme();
@@ -149,11 +139,6 @@ export function FactFindSection({ adviceId, clientId }: { adviceId: string; clie
 
   return (
     <View style={{ gap: 10 }}>
-      <View style={{ flexDirection: "row", gap: 10, alignItems: "center", borderWidth: 1.5, borderStyle: "dashed", borderColor: "#DCE3EE", borderRadius: 14, padding: 12, backgroundColor: "#FFFFFF" }}>
-        <FileText size={16} color="#2563EB" strokeWidth={2} />
-        <Text style={[text.meta, { flex: 1, color: "#5B6B8C" }]}>Read-only on mobile for now — edit the fact find and generate the PDF in the web portal.</Text>
-      </View>
-
       {FACT_FIND_SECTIONS.map((def) => {
         const value = data[def.key];
         const isOpen = open.has(def.key);
@@ -178,6 +163,14 @@ export function FactFindSection({ adviceId, clientId }: { adviceId: string; clie
               <View style={{ paddingHorizontal: 14, paddingBottom: 14 }}>
                 <View style={{ height: 1, backgroundColor: C.hairline, marginBottom: 12 }} />
                 <SectionBody def={def} value={isObj(value) ? value : {}} />
+                <View style={{ alignItems: "flex-end", marginTop: 12 }}>
+                  <PillButton
+                    label={empty ? "Fill in" : "Edit"}
+                    icon={Pencil}
+                    color={theme.text}
+                    onPress={() => router.push({ pathname: "/clients/fact-find", params: { id: clientId, section: def.key } })}
+                  />
+                </View>
               </View>
             ) : null}
           </View>

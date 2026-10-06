@@ -383,3 +383,13 @@ export function useDeleteClient(adviceId: string | undefined, clientId: string) 
     },
   });
 }
+
+/** PATCH {base}/fact-find {section, value} — replaces one section (web useSaveFactFindSection). */
+export function useSaveFactFindSection(adviceId: string | undefined, clientId: string) {
+  const invalidate = useInvalidate(clientId, adviceId);
+  return useMutation({
+    mutationFn: (body: { section: string; value: unknown }) =>
+      apiFetch(`${base(adviceId!, clientId)}/fact-find`, { method: "PATCH", ...json(body) }),
+    onSuccess: () => invalidate("fact-find"),
+  });
+}
