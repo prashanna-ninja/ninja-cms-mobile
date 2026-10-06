@@ -18,7 +18,7 @@
 //
 // Sizing: iOS masks a rounded square; Android masks inside the central 66% safe
 // zone (a 676px circle on 1024). Each logo is fitted to its OWN aspect ratio:
-//   wordmark: 62% wide (iOS) / 52% wide (Android)
+//   wordmark: 76% wide (iOS) / 56% wide (Android), the same as Ninja CRM / PRM
 //   brand logos: as large as fits 84% × 50% (iOS), and on Android as large as fits
 //   66% × 40% with the logo's diagonal inside a 62% circle (safe zone minus margin),
 //   so wide logos (Dominic James 6:1) get more width and squarer ones (Cobalt
@@ -37,7 +37,7 @@ const SIZE = 1024;
 
 /** [max width, max height, optional max diagonal] as fractions of the icon size. */
 const BOX = {
-  wordmark: { ios: [0.62, 0.62], android: [0.52, 0.52] },
+  wordmark: { ios: [0.76, 0.76], android: [0.56, 0.56] }, // matches Ninja CRM / PRM (0.76 / 0.52–0.56 wide)
   brand: { ios: [0.84, 0.5], android: [0.66, 0.4, 0.62] },
 };
 

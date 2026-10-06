@@ -121,6 +121,7 @@ react-native-worklets.
 | 2026-10-02 | expo-secure-store `faceIDPermission: false` (Info.plist) | `3438774` | — |
 | 2026-10-05 | **expo-application** (Settings → version/build) | `4e665e2` | ✅ |
 | 2026-10-07 | **expo-document-picker** (client Files → Upload) | client detail commit | ✅ |
+| 2026-10-06 | default Ninja CMS icon: larger wordmark (native assets) | icon size commit | — |
 | 2026-10-06 | **expo-sharing** (Fact Find → Generate PDF). expo-file-system is now a direct dependency but already shipped inside `expo`, so it adds no native code | fact-find PDF commit | ✅ |
 
 ## 7. Order of work

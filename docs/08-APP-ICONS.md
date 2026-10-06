@@ -60,8 +60,10 @@ The colours were sampled from the web org picker (the card background is `Advice
 | `favicon.png` | web |
 | `preview.png` | contact sheet: iOS rounded square + Android circle crop per icon |
 
-Sizing: the wordmark is 62% wide on iOS (rounded-square mask) and 52% on the Android foreground, so it
-stays inside the 66% adaptive-icon safe zone under any launcher mask.
+Sizing: the wordmark is 76% wide on iOS (rounded-square mask) and 56% on the Android foreground. These match
+Ninja CRM / PRM (measured: 0.75–0.76 iOS, 0.52–0.56 Android), so the apps look alike side by side on a home
+screen. Android stays inside the 66% adaptive-icon safe zone under any launcher mask. (Was 62% / 52% until
+2026-10-06, which looked visibly smaller next to the other Ninja apps.)
 
 This also **replaced the Expo template art**: the app icon, adaptive icon, favicon, and the splash (now the
 CMS NINJA wordmark on navy `#0B2D6F`, 180dp).

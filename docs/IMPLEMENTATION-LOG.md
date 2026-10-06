@@ -5,6 +5,16 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-10-06 — Default app icon: bigger NINJA wordmark (matches CRM / PRM)
+
+**Reported:** on the home screen the Ninja CMS wordmark looked smaller than Ninja CRM / TOTP / PRM.
+**Measured:** the CRM and PRM icons fill 75–76% of the width (Android foreground 52–56%). Ours filled 61% (51%).
+**Fix:** `scripts/generate-app-icons.mjs` wordmark box raised from 0.62 / 0.52 to 0.76 / 0.56, then regenerated. The
+result is 74.5% / 55%. Only `Default.png`, `adaptive-foreground.png` and `monochrome.png` changed; per-org brand icons are untouched.
+Icons are native assets, so **rebuild** (`npx expo prebuild --clean && npx expo run:ios`) to see it. Logged in docs/02 §6.
+
+---
+
 ## 2026-10-06 — Clients: fact find Generate PDF (⚠️ new native module: expo-sharing)
 
 - Fact Find opens with a **Fact find PDF** card. **Generate PDF** calls `GET {base}/fact-find/pdf` (the server renders it),
