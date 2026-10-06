@@ -103,8 +103,8 @@ Code that uses an optional native module probes it first (`requireOptionalNative
 `lib/app-version.ts`, `lib/app-icon.ts`), so a stale build degrades quietly instead of showing a red error.
 
 **Native packages in the app** (anything with `ios/`, `android/` or `expo-module.config.json`): expo,
-expo-alternate-app-icons, expo-application, expo-constants, expo-document-picker, expo-dev-client, expo-font, expo-image,
-expo-linear-gradient, expo-linking, expo-network, expo-router, expo-secure-store, expo-splash-screen,
+expo-alternate-app-icons, expo-application, expo-constants, expo-document-picker, expo-dev-client, expo-file-system, expo-font, expo-image,
+expo-linear-gradient, expo-linking, expo-network, expo-router, expo-secure-store, expo-sharing, expo-splash-screen,
 expo-status-bar, expo-symbols, expo-system-ui, expo-web-browser, react-native, react-native-gesture-handler,
 react-native-reanimated, react-native-safe-area-context, react-native-screens, react-native-svg,
 react-native-worklets.
@@ -121,6 +121,7 @@ react-native-worklets.
 | 2026-10-02 | expo-secure-store `faceIDPermission: false` (Info.plist) | `3438774` | — |
 | 2026-10-05 | **expo-application** (Settings → version/build) | `4e665e2` | ✅ |
 | 2026-10-07 | **expo-document-picker** (client Files → Upload) | client detail commit | ✅ |
+| 2026-10-06 | **expo-sharing** (Fact Find → Generate PDF). expo-file-system is now a direct dependency but already shipped inside `expo`, so it adds no native code | fact-find PDF commit | ✅ |
 
 ## 7. Order of work
 

@@ -147,7 +147,7 @@ export default function ClientDetailScreen() {
             ) : active === "revenue" ? (
               <RevenueSection adviceId={adviceId} clientId={id} />
             ) : active === "fact-find" ? (
-              <FactFindSection adviceId={adviceId} clientId={id} />
+              <FactFindSection adviceId={adviceId} clientId={id} clientName={client.data.name} />
             ) : active === "files" ? (
               <FilesSection adviceId={adviceId} clientId={id} />
             ) : active === "notes" ? (

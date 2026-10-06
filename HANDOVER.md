@@ -33,7 +33,7 @@ and what to build next. Keep it current at the end of every step.
   search-as-you-type, Active/Archived, type/tag/source sheets, infinite scroll, pull to refresh; tap → client
   placeholder. Read-only. docs/12-CLIENTS.md.
 - **Client detail** (2026-10-07) — header card + 7 sections: Overview (contact, details, editable source, partner
-  link/unlink, tags, workflows + add to workflow), Revenue (gated by 403), Fact Find (edit per section, web config ported), Files (upload /
+  link/unlink, tags, workflows + add to workflow), Revenue (gated by 403), Fact Find (edit per section + Generate PDF → share sheet, web config ported), Files (upload /
   open / rename / delete), File Notes (add / delete), Ongoing client (record consent, set review), Activity Log. **Add client, Edit,
   Archive / Restore, Delete** (staff: edit only). docs/12 §6.
 - **Settings** — org member card, organisation (switch), account (email, role, web profile/password), app
@@ -148,8 +148,8 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
 6. ✅ **EAS** — `eas.json` profiles, `.easignore`, production env + guard (2026-10-02). ⬜ `eas init` + first
    TestFlight build (needs your Expo/Apple logins) — docs/10-RELEASE-IOS.md §2–3.
 7. 🚧 **Portal home** — Notices ✅; next: quick links, events, … → proper dashboard. ⚠️ Check real notices on a device.
-8. ✅ Tabs. 🚧 Clients: list ✅ → profile ✅ (7 sections) → add / edit / archive / delete ✅ → add to workflow ✅ → fact-find edit ✅ →
-   ⬜ Generate PDF (docs/12 §6). ⬜ Workflows, Revenue
+8. ✅ Tabs. 🚧 Clients: list ✅ → profile ✅ (7 sections) → add / edit / archive / delete ✅ → add to workflow ✅ → fact-find edit + PDF ✅
+   (docs/12 §6). ⬜ Workflows, Revenue
    (gate them like Clients).
 
 ## 9. Where things live

@@ -5,6 +5,23 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-10-06 — Clients: fact find Generate PDF (⚠️ new native module: expo-sharing)
+
+- Fact Find opens with a **Fact find PDF** card. **Generate PDF** calls `GET {base}/fact-find/pdf` (the server renders it),
+  saves it to the cache as "Fact Find - {client}.pdf" and opens the share sheet (save to Files, Mail, AirDrop, Drive…).
+- Download: `File.downloadFileAsync` from expo-file-system, with our own `Cookie` header (the native download runs
+  outside `apiFetch`). Non-2xx errors only carry the status code, so 401/403/404/other map to friendly messages.
+- **Native:** `expo-sharing` is new. **Rebuild dev builds** (`npx expo prebuild --clean && npx expo run:ios`, or
+  `run:android`). It works in Expo Go. expo-file-system was already inside `expo`; installing it directly adds no native code.
+  expo-sharing is imported lazily after a `requireOptionalNativeModule("ExpoSharing")` probe, so an older build
+  shows "Update the app" instead of a red screen. Logged in docs/02 §6.
+- `readCookie` is now exported from `src/lib/api-client.ts`.
+
+Verified with mocked CMS responses on web: the button sends the GET and the download is named
+"Fact Find - Test Chalise.pdf". tsc ✅ lint ✅. ⚠️ The native share sheet still needs testing on a device after the rebuild.
+
+---
+
 ## 2026-10-06 — Clients: fact-find editing
 
 - Each Fact Find section now has an **Edit** (or **Fill in**) pill that opens `clients/fact-find?id=&section=`. The

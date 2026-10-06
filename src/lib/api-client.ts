@@ -38,7 +38,7 @@ export function setUnauthorizedHandler(handler: (() => void) | null) {
  *    out". `omit` forces ONLY our explicit header.
  */
 /** The stored session cookie, or "" — never throws (SecureStore has no web implementation). */
-function readCookie(): string {
+export function readCookie(): string {
   try {
     return authClient.getCookie() || "";
   } catch {

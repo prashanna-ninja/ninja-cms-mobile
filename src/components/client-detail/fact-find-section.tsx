@@ -1,14 +1,15 @@
 import { router } from "expo-router";
 import * as React from "react";
-import { LayoutAnimation, Pressable, Text, View } from "react-native";
+import { Alert, LayoutAnimation, Pressable, Text, View } from "react-native";
 
 import { useClientFactFind } from "@/api/client-detail.api";
 import { C, ErrorNote, F, Loading, PillButton, text } from "@/components/client-detail/ui";
 import type { FactFindFieldDef } from "@/lib/fact-find/config";
 import { FACT_FIND_SECTIONS, type FactFindSectionDef } from "@/lib/fact-find/sections";
+import { SharingUnavailableError, shareFactFindPdf } from "@/lib/fact-find/pdf";
 import { isFieldVisible, isObj, str, type Obj } from "@/lib/fact-find/values";
 import { formatCalendarDate, formatMoney } from "@/lib/format";
-import { ChevronDown, ChevronUp, Pencil } from "@/lib/icons";
+import { ChevronDown, ChevronUp, Download, FileText, Pencil } from "@/lib/icons";
 import { useOrgTheme } from "@/providers/org-theme-provider";
 
 
@@ -118,10 +119,20 @@ function SectionBody({ def, value }: { def: FactFindSectionDef; value: Obj }) {
  * Fact Find — the 15 web sections as collapsible cards (labels/options from the ported
  * web config, lib/fact-find). "Edit" opens the section editor (clients/fact-find.tsx).
  */
-export function FactFindSection({ adviceId, clientId }: { adviceId: string; clientId: string }) {
+export function FactFindSection({ adviceId, clientId, clientName }: { adviceId: string; clientId: string; clientName: string }) {
   const { theme } = useOrgTheme();
   const q = useClientFactFind(adviceId, clientId);
   const [open, setOpen] = React.useState<Set<string>>(() => new Set());
+  const [pdfPending, setPdfPending] = React.useState(false);
+
+  const generatePdf = () => {
+    setPdfPending(true);
+    shareFactFindPdf(adviceId, clientId, clientName)
+      .catch((err: unknown) =>
+        Alert.alert(err instanceof SharingUnavailableError ? "Update the app" : "Couldn't generate PDF", err instanceof Error ? err.message : "Please try again."),
+      )
+      .finally(() => setPdfPending(false));
+  };
 
   if (q.isPending) return <Loading />;
   if (q.isError) return <ErrorNote message={q.error.message} onRetry={() => void q.refetch()} />;
@@ -139,6 +150,17 @@ export function FactFindSection({ adviceId, clientId }: { adviceId: string; clie
 
   return (
     <View style={{ gap: 10 }}>
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 12, backgroundColor: "#FFFFFF", borderRadius: 16, borderWidth: 1, borderColor: C.border, padding: 14 }}>
+        <View style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: "#EFF4FF", alignItems: "center", justifyContent: "center" }}>
+          <FileText size={17} color="#2563EB" strokeWidth={2} />
+        </View>
+        <View style={{ flex: 1 }}>
+          <Text style={text.value}>Fact find PDF</Text>
+          <Text style={text.meta}>All sections, ready to save or send.</Text>
+        </View>
+        <PillButton label={pdfPending ? "Generating…" : "Generate PDF"} icon={Download} color={theme.text} disabled={pdfPending} onPress={generatePdf} />
+      </View>
+
       {FACT_FIND_SECTIONS.map((def) => {
         const value = data[def.key];
         const isOpen = open.has(def.key);
