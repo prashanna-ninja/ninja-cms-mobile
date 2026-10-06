@@ -71,18 +71,31 @@ card** (org-colour band, avatar in the org colour, name, type/source badges, "ad
 | **Fact Find** | `GET {base}/fact-find` | 15 collapsible sections, **read-only**; labels/options from the **ported web config** `src/lib/fact-find/config.ts` (verbatim copy) + `sections.ts`; respects `dependsOn` |
 | **Files** | `GET/POST {base}/files` · `PATCH/DELETE {base}/files/{id}` · `POST/DELETE /api/upload` | **Upload** (expo-document-picker → presign → S3 PUT → register; PDF/Word/Excel/images ≤ 10 MB), open (public S3 URL, in-app browser), rename, delete |
 | **File Notes** | `GET/POST {base}/notes` · `DELETE {base}/notes/{id}` | write (≤ 5000, plain text), list, delete |
-| **Ongoing client** | `GET {base}/annual-consent` | consent status (overdue / due today / due in N days), history, review cycle — **read-only** |
+| **Ongoing client** | `GET/POST {base}/annual-consent` · `DELETE {base}/annual-consent/{id}` · `PUT {base}/ongoing-review` | consent status (overdue / due today / due in N days); **record a consent date + note** (pure-JS `DateField` calendar), delete history; **review cycle** (6 / 12 months, next review date, lead 30/60/90 days) |
 | **Activity Log** | `GET {base}/activity?limit=100` | timeline; icon chosen from the summary text (web logic) |
 
 \* The client GET returns no adviser or org names. The org name comes from the active org, and the adviser name is shown
 only when it's the signed-in user. (Backend option: include `adviser {name}` in the GET.)
 
-**Not yet on mobile (next pass):** fact-find editing + Generate PDF (PDF needs cookie-auth download →
-expo-file-system/expo-sharing), recording consent / setting the review (needs a date picker), adding to a
-workflow, archive / delete client, full client edit, Add client.
+**Add / edit / archive / delete (2026-10-06):**
+
+| Action | Endpoint | Mobile | Who |
+|---|---|---|---|
+| **Add client** | `POST /api/portal/{adviceId}/client-records` | `clients/new.tsx` — **+** tile in the list header; opens the new client on save | not staff |
+| **Edit** | `PATCH {base}` (full form) | `clients/edit.tsx?id=` — **Edit** pill under the header card; prefilled, back on save | everyone with access |
+| **Archive / Restore** | `PATCH {base} {archived}` | pill under the header card, confirm alert | not staff |
+| **Delete** | `DELETE {base}` | red pill, confirm alert → back to `/clients` | not staff |
+
+The form (`src/components/clients/client-form.tsx`, react-hook-form + `src/schemas/client.schema.ts`) mirrors the
+web `AddClientRecordForm` and the CMS `clientCoreShape`: type chips, source sheet, Individual → first + last name
+(required) + DOB, display name auto-filled from them until edited; others → ABN; email, phone, address. Empty strings =
+"not set". Staff rules match the web; the API enforces them anyway (403).
+
+**Not yet on mobile (next pass):** adding to a workflow; fact-find editing + Generate PDF (PDF needs a cookie-auth
+download → expo-file-system / expo-sharing, a **native rebuild**).
 
 **Files:** `src/api/client-detail.api.ts` (all hooks + mutations, upload flow), `src/types/client-detail.types.ts`,
-`src/components/client-detail/*` (`ui`, `section-tabs`, one file per section), `src/lib/format.ts` (money, file
+`src/components/client-detail/*` (`ui`, `section-tabs`, one file per section), `src/components/clients/client-form.tsx`, `src/schemas/client.schema.ts`, `src/components/forms/date-field.tsx`, `src/lib/format.ts` (money, file
 size, date-time, calendar date, initials), `src/lib/fact-find/*`.
 
 ## 5. Status

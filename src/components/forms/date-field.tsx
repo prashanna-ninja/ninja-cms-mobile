@@ -59,32 +59,35 @@ export function DateField({
   return (
     <View style={{ gap: 6 }}>
       {label ? <Text style={{ fontFamily: F.medium, fontSize: 13, color: "#3B4A68" }}>{label}</Text> : null}
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={`${label ?? "Date"}: ${value ? formatCalendarDate(value) : "not set"}. Change`}
-        onPress={() => setOpen(true)}
+      {/* Field + clear are siblings (a button inside a button is invalid on web / for screen readers). */}
+      <View
         style={{
           flexDirection: "row",
           alignItems: "center",
-          gap: 10,
           borderWidth: 1,
           borderColor: error ? "#DC2626" : "#DCE3EE",
           borderRadius: 12,
-          paddingHorizontal: 12,
           height: 46,
           backgroundColor: "#FFFFFF",
         }}
       >
-        <Calendar size={16} color="#8A97B5" strokeWidth={2} />
-        <Text style={{ flex: 1, fontFamily: F.regular, fontSize: 15, color: value ? "#0D1B3E" : "#A3AFC6" }}>
-          {value ? formatCalendarDate(value) : placeholder}
-        </Text>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`${label ?? "Date"}: ${value ? formatCalendarDate(value) : "not set"}. Change`}
+          onPress={() => setOpen(true)}
+          style={{ flex: 1, alignSelf: "stretch", flexDirection: "row", alignItems: "center", gap: 10, paddingLeft: 12, paddingRight: value && clearable ? 4 : 12 }}
+        >
+          <Calendar size={16} color="#8A97B5" strokeWidth={2} />
+          <Text style={{ flex: 1, fontFamily: F.regular, fontSize: 15, color: value ? "#0D1B3E" : "#A3AFC6" }}>
+            {value ? formatCalendarDate(value) : placeholder}
+          </Text>
+        </Pressable>
         {value && clearable ? (
-          <Pressable accessibilityRole="button" accessibilityLabel="Clear date" hitSlop={10} onPress={() => onChange("")}>
+          <Pressable accessibilityRole="button" accessibilityLabel="Clear date" hitSlop={10} onPress={() => onChange("")} style={{ paddingHorizontal: 12, alignSelf: "stretch", justifyContent: "center" }}>
             <X size={16} color="#8A97B5" strokeWidth={2.2} />
           </Pressable>
         ) : null}
-      </Pressable>
+      </View>
       {error ? <Text style={{ fontFamily: F.regular, fontSize: 12.5, color: "#DC2626" }}>{error}</Text> : null}
       {open ? (
         <CalendarSheet

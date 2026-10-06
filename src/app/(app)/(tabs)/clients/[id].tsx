@@ -1,9 +1,9 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
 import * as React from "react";
-import { Linking, Pressable, RefreshControl, ScrollView, Text, View } from "react-native";
+import { Alert, Linking, Pressable, RefreshControl, ScrollView, Text, View } from "react-native";
 
-import { useClientDetail, useClientRevenueAccess } from "@/api/client-detail.api";
+import { useArchiveClient, useClientDetail, useClientRevenueAccess, useDeleteClient } from "@/api/client-detail.api";
 import { AppHeader } from "@/components/app-header";
 import { ActivitySection } from "@/components/client-detail/activity-section";
 import { FactFindSection } from "@/components/client-detail/fact-find-section";
@@ -13,11 +13,11 @@ import { OngoingSection } from "@/components/client-detail/ongoing-section";
 import { OverviewSection } from "@/components/client-detail/overview-section";
 import { RevenueSection } from "@/components/client-detail/revenue-section";
 import { SECTIONS, SectionTabs, type SectionKey } from "@/components/client-detail/section-tabs";
-import { C, ErrorNote, F, Loading, errorMessage, text } from "@/components/client-detail/ui";
+import { C, ErrorNote, F, Loading, PillButton, errorMessage, text } from "@/components/client-detail/ui";
 import { ApiError } from "@/lib/api-client";
 import { clientSourceLabel, clientTypeLabel, clientTypeStyle } from "@/lib/clients";
 import { formatDateTime, nameInitials } from "@/lib/format";
-import { ArrowLeft, Calendar, Mail, Phone } from "@/lib/icons";
+import { Archive, ArrowLeft, Calendar, Mail, Pencil, Phone, RefreshCw, Trash } from "@/lib/icons";
 import { useOrgTheme } from "@/providers/org-theme-provider";
 import { useSession } from "@/providers/session-provider";
 
@@ -55,6 +55,32 @@ export default function ClientDetailScreen() {
     router.push({ pathname: "/clients/[id]", params: { id: clientId, name: clientName } });
 
   // The client GET has no adviser/org names; we know the org, and the adviser when it's the signed-in user.
+  // Staff can edit but not archive / delete (web: same — the API answers 403).
+  const canManage = session?.user.role !== "staff";
+  const archive = useArchiveClient(adviceId, id);
+  const remove = useDeleteClient(adviceId, id);
+  const archived = !!client.data?.archivedAt;
+  const fail = (title: string) => (e: Error) => Alert.alert(title, e.message);
+
+  const confirmArchive = () =>
+    Alert.alert(
+      archived ? "Restore client?" : "Archive client?",
+      archived ? "The client moves back to your active list." : "The client is hidden from your active list. You can restore it from Archived.",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: archived ? "Restore" : "Archive", onPress: () => archive.mutate(!archived, { onError: fail("Couldn’t update client") }) },
+      ],
+    );
+  const confirmDelete = () =>
+    Alert.alert("Delete client?", "This permanently deletes the client and their fact find, files, notes and history. This can’t be undone.", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: () => remove.mutate(undefined, { onSuccess: () => router.replace("/clients"), onError: fail("Couldn’t delete client") }),
+      },
+    ]);
+
   const adviserName = client.data && session?.user.id === client.data.adviserUserId ? session.user.name ?? undefined : undefined;
 
   return (
@@ -92,9 +118,20 @@ export default function ClientDetailScreen() {
               email={client.data.email}
               phone={client.data.phone}
               createdAt={client.data.createdAt}
-              archived={!!client.data.archivedAt}
+              archived={archived}
             />
           )}
+          {client.data ? (
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, marginTop: 12 }}>
+              <PillButton label="Edit" icon={Pencil} color={theme.text} onPress={() => router.push({ pathname: "/clients/edit", params: { id } })} />
+              {canManage ? (
+                <>
+                  <PillButton label={archived ? "Restore" : "Archive"} icon={archived ? RefreshCw : Archive} onPress={confirmArchive} disabled={archive.isPending} />
+                  <PillButton label="Delete" icon={Trash} tone="danger" onPress={confirmDelete} disabled={remove.isPending} />
+                </>
+              ) : null}
+            </View>
+          ) : null}
         </View>
 
         {/* 2 — section pills (sticky) */}

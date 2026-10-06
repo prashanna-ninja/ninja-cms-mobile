@@ -311,3 +311,65 @@ export function useSaveReview(adviceId: string | undefined, clientId: string) {
     onSuccess: () => invalidate("annual-consent"),
   });
 }
+
+/* --------------------- create / edit / archive / delete --------------------- */
+
+/** Body for POST (create) and PATCH (full edit) — CMS lib/validations/ClientSchema.ts clientCoreShape. */
+export type ClientFormBody = {
+  type: string;
+  source: string;
+  name: string;
+  email: string;
+  phone: string;
+  firstName: string;
+  lastName: string;
+  /** "YYYY-MM-DD" or "" */
+  dateOfBirth: string;
+  abn: string;
+  addressLine1: string;
+  addressTown: string;
+  addressPostcode: string;
+  state: string;
+};
+
+/** POST /api/portal/{adviceId}/client-records → 201 { client }. Staff can't (web canManageClients). */
+export function useCreateClient(adviceId: string | undefined) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (body: ClientFormBody) =>
+      apiFetch<{ client: ClientDetail }>(`/api/portal/${encodeURIComponent(adviceId!)}/client-records`, { method: "POST", ...json(body) }).then(
+        (r) => r.client,
+      ),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["client-records"] }),
+  });
+}
+
+/** PATCH {base} with the full form → { client }. */
+export function useUpdateClient(adviceId: string | undefined, clientId: string) {
+  const invalidate = useInvalidate(clientId, adviceId);
+  return useMutation({
+    mutationFn: (body: ClientFormBody) => apiFetch<{ client: ClientDetail }>(base(adviceId!, clientId), { method: "PATCH", ...json(body) }),
+    onSuccess: () => invalidate(),
+  });
+}
+
+/** PATCH {base} {archived} — staff get 403 ("Only the adviser can archive clients."). */
+export function useArchiveClient(adviceId: string | undefined, clientId: string) {
+  const invalidate = useInvalidate(clientId, adviceId);
+  return useMutation({
+    mutationFn: (archived: boolean) => apiFetch(base(adviceId!, clientId), { method: "PATCH", ...json({ archived }) }),
+    onSuccess: () => invalidate(),
+  });
+}
+
+/** DELETE {base} — permanent; staff get 403. */
+export function useDeleteClient(adviceId: string | undefined, clientId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => apiFetch(base(adviceId!, clientId), { method: "DELETE" }),
+    onSuccess: () => {
+      queryClient.removeQueries({ queryKey: qk.client(adviceId ?? "", clientId) });
+      return queryClient.invalidateQueries({ queryKey: ["client-records"] });
+    },
+  });
+}

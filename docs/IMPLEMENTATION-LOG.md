@@ -5,6 +5,27 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-10-06 — Clients: Add client, Edit, Archive / Restore, Delete (+ Ongoing client editing)
+
+- **Ongoing client** is now editable: record a consent date + note, delete history entries, set the review cycle
+  (interval, next review, lead days). New pure-JS `DateField` calendar (`src/components/forms/date-field.tsx`), with no
+  native date picker, so **no rebuild**.
+- **Client form** shared by `clients/new.tsx` (POST) and `clients/edit.tsx` (PATCH); the zod schema mirrors the CMS
+  `clientCoreShape` so the server never rejects what the form allows. Display name auto-fills from first + last name.
+- **Archive / Restore / Delete** pills under the header card with confirm alerts; delete removes the cached client
+  and returns to the list.
+- **Staff** (web rule): can edit, can't add / archive / delete. Buttons hidden by `session.user.role`; the API 403s
+  anyway.
+- DateField: the clear (×) button is now a sibling of the field button (nested buttons are invalid on web and for
+  screen readers).
+- The form uses `useWatch` / `getValues` instead of `watch()` (the React Compiler skips components that call `watch`).
+
+Verified with mocked CMS responses on web: + → form → validation errors → POST body correct → opens the new client;
+Edit prefilled from the GET → PATCH body correct → back. tsc ✅ lint ✅. Alerts don't render on react-native-web, so
+the archive/delete confirms were checked in code only. No native changes.
+
+---
+
 ## 2026-10-06 — Fix: Android "Unable to find explicit activity class …MainActivity"
 
 **Reported:** `expo run:android` failed with *"Unable to find explicit activity class … have you declared this activity

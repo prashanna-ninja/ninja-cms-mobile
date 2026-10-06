@@ -10,8 +10,9 @@ import { OptionSheet, type SheetOption } from "@/components/clients/option-sheet
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { CLIENT_SOURCES, CLIENT_TYPES, clientSourceLabel, clientTypeLabel } from "@/lib/clients";
 import { ApiError } from "@/lib/api-client";
-import { ChevronDown, Contact, Inbox, Search, X } from "@/lib/icons";
+import { ChevronDown, Contact, Inbox, Plus, Search, X } from "@/lib/icons";
 import { useOrgTheme } from "@/providers/org-theme-provider";
+import { useSession } from "@/providers/session-provider";
 import {
   DEFAULT_CLIENT_FILTERS,
   type ClientFilters,
@@ -41,6 +42,9 @@ type SheetKind = "type" | "tag" | "source" | null;
  */
 export default function ClientRecordsScreen() {
   const { org, theme } = useOrgTheme();
+  const { data: session } = useSession();
+  // Staff can open and edit clients but not add them (web hides "Add client" too).
+  const canAdd = session?.user.role !== "staff";
   const queryClient = useQueryClient();
 
   const [searchInput, setSearchInput] = React.useState("");
@@ -116,6 +120,17 @@ export default function ClientRecordsScreen() {
           </View>
           <Text style={{ fontFamily: FONT.regular, fontSize: 13, color: "#7089B8" }}>Client profiles, fact finds, and notes.</Text>
         </View>
+        {canAdd ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Add client"
+            onPress={() => router.push("/clients/new")}
+            hitSlop={6}
+            style={({ pressed }) => ({ width: 40, height: 40, borderRadius: 12, backgroundColor: theme.base, alignItems: "center", justifyContent: "center", opacity: pressed ? 0.85 : 1 })}
+          >
+            <Plus size={20} color={theme.onBase} strokeWidth={2.4} />
+          </Pressable>
+        ) : null}
       </View>
 
       {/* Search */}
