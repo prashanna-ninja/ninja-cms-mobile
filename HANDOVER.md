@@ -133,6 +133,9 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
 15. ~~Icons/splash are still the Expo template art~~ (replaced 2026-10-02) (colours set to navy `#0B2D6F`). Replace before any store build.
 16. `apiFetch` must use `credentials: "omit"` and send
    the cookie manually; signing out on 401, not on 403.
+17. **Never `style={({ pressed }) => …}` on `Pressable`.** NativeWind drops function styles on native (the button
+    renders unstyled or white, though web looks fine). Track pressed state with `onPressIn` / `onPressOut` instead, like `PillButton` and
+    `AddClientButton`.
 
 ## 8. Loose ends & what to build next
 

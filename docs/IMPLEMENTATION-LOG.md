@@ -5,6 +5,16 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-10-06 — Fix: Add-client button was white on the phone
+
+**Cause:** the **+** tile used `style={({ pressed }) => …}`. NativeWind’s `Pressable` drops function styles on native, so on
+devices it rendered with no background (white on the light page). Web screenshots looked fine, which hid it.
+**Fix:** new `src/components/clients/add-client-button.tsx` with plain object styles and a hand-tracked pressed state
+(the `PillButton` pattern). It’s a 40px tile (the same as the icon tile beside the title) with an org-colour gradient (primary → deeper shade),
+a white plus and a light shadow. **Rule:** never use a function `style` on `Pressable` in this app.
+
+---
+
 ## 2026-10-06 — Clients list: bigger, deeper Add-client button
 
 The **+** tile (40 → 46 px, icon 20 → 24) blended into the light page, especially with pale org colours. Its fill is
