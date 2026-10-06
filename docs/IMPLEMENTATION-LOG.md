@@ -5,6 +5,22 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-10-06 — Fix: Android "Unable to find explicit activity class …MainActivity"
+
+**Reported:** `expo run:android` failed with *"Unable to find explicit activity class … have you declared this activity
+in your AndroidManifest.xml, or does your intent not match its <intent-filter>?"*.
+
+**Cause (verified):** the per-org icon switch. expo-alternate-app-icons disables the real `.MainActivity` and enables an
+alias (the manifest keeps LAUNCHER on `.MainActivity` + disabled aliases; the native `setAlternateAppIcon` disables the
+current component). Explicit launches of `.MainActivity` then fail, and the state survives reinstalls.
+
+**Fix (JS only, no rebuild):** Android never switches icons; an already-switched install resets itself to the default on
+the next background (re-enables `.MainActivity`). iOS keeps per-org icons. Unstick now: `adb uninstall
+com.adviceninja.ninjacms`. Bringing Android icons back needs a default alias + a never-disabled MainActivity (custom
+plugin + forked module), recorded in docs/08 §6.
+
+---
+
 ## 2026-10-07 — Client detail: all 7 sections
 
 **Asked:** add all the other client stuff from the web client page (screenshot: Overview · Revenue · Fact Find ·

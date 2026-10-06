@@ -1,30 +1,32 @@
 import * as React from "react";
 import { AppState, Platform } from "react-native";
 
-import { appIconForColor, appIconUnavailableReason, canChangeAppIcon, setAppIcon } from "@/lib/app-icon";
+import { appIconForColor, appIconUnavailableReason, canChangeAppIcon, currentAppIcon, setAppIcon } from "@/lib/app-icon";
 import { useOrgTheme } from "@/providers/org-theme-provider";
 import { useSession } from "@/providers/session-provider";
 
 /**
- * Keeps the home-screen icon in step with the active org (docs/08-APP-ICONS.md):
- * signed in with an org → that org's icon (nearest preset colour); signed out or
- * no org yet → the default Ninja CMS blue icon.
+ * Per-org home-screen icon — **iOS only** (docs/08-APP-ICONS.md §6).
  *
- * When it switches:
- *  - **iOS:** immediately (iOS shows its own one-line "icon changed" alert).
- *  - **Android:** when the app next goes to the background. The switch disables
- *    the launcher alias the app is running under; doing that in the foreground can
- *    close the app on some launchers. The library also needs the activity to still
- *    exist, which it does at the background transition.
+ * iOS: signed in with an org → that org's icon (nearest preset colour); signed out
+ * / no org → the default Ninja CMS blue. Switches immediately (iOS shows its own
+ * one-line "icon changed" alert).
  *
- * No-op in Expo Go / web (no native module) — needs a development build.
+ * Android: always the DEFAULT icon. expo-alternate-app-icons switches on Android by
+ * DISABLING the real `.MainActivity` and enabling an alias. After that, anything that
+ * launches `.MainActivity` explicitly — `expo run:android`, the dev client, some deep
+ * links — fails with "Unable to find explicit activity class … .MainActivity". That
+ * disabled state also survives app updates (reported 2026-10-06). So on Android we
+ * never switch, and if a phone was switched by an earlier build we put it back to the
+ * default the next time the app goes to the background (re-enables `.MainActivity`).
+ *
+ * No-op in Expo Go / web (no native module).
  */
 export function useOrgAppIcon() {
   const { data: session, isPending } = useSession();
   const { org } = useOrgTheme();
   const signedIn = !!session?.user;
-  const desired = signedIn && org ? appIconForColor(org.colorTheme) : null;
-  const pending = React.useRef<string | null | undefined>(undefined);
+  const desired = Platform.OS === "ios" && signedIn && org ? appIconForColor(org.colorTheme) : null;
 
   React.useEffect(() => {
     // Don't flip to the default icon during cold start, before the stored session has loaded.
@@ -33,6 +35,7 @@ export function useOrgAppIcon() {
       // Dev-only trace so "why didn't my icon change?" is answerable from the Metro log.
       console.log(
         `[app-icon] org=${org?.name ?? "none"} colour=${org?.colorTheme ?? "-"} → icon=${desired ?? "Default"}` +
+          (Platform.OS === "android" ? " (Android: per-org icons disabled — default only)" : "") +
           (canChangeAppIcon()
             ? ""
             : ` — NOT APPLIED: native module unavailable (${appIconUnavailableReason()}). ` +
@@ -40,22 +43,16 @@ export function useOrgAppIcon() {
               "run `npx expo prebuild --clean` then `npx expo run:ios`."),
       );
     }
-    if (!canChangeAppIcon()) return;
-    if (Platform.OS === "ios") {
-      void setAppIcon(desired);
-    } else {
-      pending.current = desired;
-    }
+    if (Platform.OS === "ios" && canChangeAppIcon()) void setAppIcon(desired);
   }, [desired, isPending, org?.name, org?.colorTheme]);
 
+  // Android heal: an earlier build may have disabled `.MainActivity` by switching icon.
+  // Reset to the default when the app next goes to the background — switching the
+  // running alias while in the foreground can close the app on some launchers.
   React.useEffect(() => {
     if (Platform.OS !== "android" || !canChangeAppIcon()) return;
     const sub = AppState.addEventListener("change", (state) => {
-      if (state === "background" && pending.current !== undefined) {
-        const next = pending.current;
-        pending.current = undefined;
-        void setAppIcon(next);
-      }
+      if (state === "background" && currentAppIcon()) void setAppIcon(null);
     });
     return () => sub.remove();
   }, []);

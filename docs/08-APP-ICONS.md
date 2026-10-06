@@ -2,7 +2,7 @@
 
 Built 2026-10-02.
 
-> **What:** the phone's **home-screen icon** follows the organisation: **the org's own brand logo on the
+> **What:** the phone's **home-screen icon** follows the organisation (**iOS only since 2026-10-06; Android keeps the default, see §6**): **the org's own brand logo on the
 > org's colour** (`"style": "brand"`, since 2026-10-02 — trial, may be reverted), or the white CMS NINJA
 > wordmark on the org's colour (`"style": "ninja"`). Default (signed out / no org) = wordmark on Ninja CMS blue. After sign-in it switches to the active
 > org's icon, and on sign-out it goes back to the default.
@@ -148,3 +148,24 @@ entries (`.MainActivityIndependent` … `.MainActivityWhatIf`) + adaptive/monoch
 - The library generates a TypeScript union of icon names only at prebuild, so `setAppIcon` casts the
   name. Names always come from `app-icons.json`.
 - Changing the shared wordmark (`assets/images/ninja-cms-logo.png`) → re-run the generator.
+
+## 6. ⚠️ Android: per-org icons turned OFF (2026-10-06)
+
+**Bug:** after the icon switched on Android, `expo run:android` / the dev client failed with *"Unable to find explicit
+activity class com.adviceninja.ninjacms/.MainActivity; have you declared this activity in your AndroidManifest.xml…"*.
+
+**Cause (verified in the generated manifest + library source):** expo-alternate-app-icons keeps the LAUNCHER on the
+real `.MainActivity` and adds disabled `<activity-alias>`es (`.MainActivityDominicJames` …). Switching calls
+`setComponentEnabledSetting(.MainActivity, DISABLED)`, which **disables the app's real activity**. Anything that
+starts `.MainActivity` by name then fails, and the disabled state **persists across reinstalls/updates**.
+
+**Fix:** `use-org-app-icon.ts`: Android **never switches** (always the default icon). An install already switched
+by an older build **heals itself**: if the app was launched through an org alias, it resets to the default on the
+next background, which re-enables `.MainActivity`. iOS is unchanged (per-org icons work there; no activities involved).
+
+**Unstick a device right now:** `adb uninstall com.adviceninja.ninjacms` → `npx expo run:android` (or open the
+app from its home-screen icon once, then leave it).
+
+**Bringing Android back later needs a different native design:** the default icon must be an alias too
+(`.MainActivityDefault`), with `.MainActivity` having no LAUNCHER filter and **never disabled**. That means our own
+config plugin + a forked native module.
