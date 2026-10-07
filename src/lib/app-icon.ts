@@ -15,19 +15,43 @@ import { normalizeHex } from "@/lib/org-theme";
 
 type NativeIcons = typeof import("expo-alternate-app-icons");
 
+/** Our Android module (modules/ninja-app-icon): toggles launcher aliases, never MainActivity. */
+type AndroidIcons = {
+  getIcon(names: string[]): string | null;
+  setIcon(name: string | null, names: string[]): void;
+};
+const ALTERNATE_NAMES = appIcons.alternates.map((i) => i.name);
+
+/**
+ * One API over both platforms: iOS → expo-alternate-app-icons; Android → NinjaAppIcon
+ * (expo-alternate-app-icons' Android switch disables MainActivity — docs/08 §6).
+ */
+type IconBackend = { get(): string | null; set(name: string | null): Promise<void> };
+
 /**
  * The native module, or null where it doesn't exist (Expo Go, web). Importing
  * the package in Expo Go throws "Cannot find native module", so it's loaded
  * lazily inside a try.
  */
-let native: NativeIcons | null | undefined;
+let native: IconBackend | null | undefined;
 /** Why the native module is unavailable (shown in the dev log). */
 let unavailableReason = "";
-function getNative(): NativeIcons | null {
+function getNative(): IconBackend | null {
   if (native !== undefined) return native;
   if (Platform.OS === "web") {
     unavailableReason = "web";
     return (native = null);
+  }
+  if (Platform.OS === "android") {
+    const mod = requireOptionalNativeModule<AndroidIcons>("NinjaAppIcon");
+    if (!mod) {
+      unavailableReason = "native module NinjaAppIcon isn't in this build (Expo Go, or a dev build that needs rebuilding)";
+      return (native = null);
+    }
+    return (native = {
+      get: () => mod.getIcon(ALTERNATE_NAMES),
+      set: async (name) => mod.setIcon(name, ALTERNATE_NAMES),
+    });
   }
   // Probe first: requiring the package when its native side is missing throws (and
   // React Native dev reports it as a red error even inside try/catch).
@@ -37,11 +61,16 @@ function getNative(): NativeIcons | null {
   }
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    native = require("expo-alternate-app-icons") as NativeIcons;
-    if (!native.supportsAlternateIcons) {
+    const ios = require("expo-alternate-app-icons") as NativeIcons;
+    if (!ios.supportsAlternateIcons) {
       unavailableReason = "device reports supportsAlternateIcons = false";
-      native = null;
+      return (native = null);
     }
+    native = {
+      get: () => ios.getAppIconName(),
+      // The generated union type only exists after prebuild; names come from the same JSON.
+      set: async (name) => void (await ios.setAlternateAppIcon(name as Parameters<NativeIcons["setAlternateAppIcon"]>[0])),
+    };
   } catch (err) {
     // Expo Go, OR a dev build whose native project predates this module
     // (stale ios/ or android/ folder → `npx expo prebuild --clean`). docs/08 §5.
@@ -97,7 +126,7 @@ export function currentAppIcon(): string | null | undefined {
   const mod = getNative();
   if (!mod) return undefined;
   try {
-    return mod.getAppIconName();
+    return mod.get();
   } catch {
     return undefined;
   }
@@ -105,15 +134,15 @@ export function currentAppIcon(): string | null | undefined {
 
 /**
  * Switch the home-screen icon. Never throws — an icon is cosmetic.
- * iOS shows a one-line system alert ("You have changed the icon for …").
+ * iOS shows a one-line system alert ("You have changed the icon for …"). Android has no alert;
+ * call it while the app is in the background there (see use-org-app-icon.ts).
  */
 export async function setAppIcon(name: string | null): Promise<void> {
   const mod = getNative();
   if (!mod) return;
   try {
-    if (mod.getAppIconName() === name) return;
-    // The generated union type only exists after prebuild; names come from the same JSON.
-    await mod.setAlternateAppIcon(name as Parameters<NativeIcons["setAlternateAppIcon"]>[0]);
+    if (mod.get() === name) return;
+    await mod.set(name);
   } catch (err) {
     if (__DEV__) console.warn("[app-icon] couldn't switch icon:", err);
   }

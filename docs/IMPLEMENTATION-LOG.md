@@ -5,6 +5,23 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-10-07 — Android per-org app icons are back (⚠️ native: local module + config plugin)
+
+**Reported:** the icon doesn't change on Android. This was deliberate since 2026-10-06, because the library's Android switch
+disables `.MainActivity` and broke launches.
+**Now:** a safe design (docs/08 §6). `.MainActivity` keeps its deep links but loses its launcher entry and is never disabled.
+A `.MainActivityDefault` alias carries the default icon, and each org alias has a launcher filter only. Our local module
+`modules/ninja-app-icon` (Kotlin) only toggles aliases: it enables the new one first, then disables the rest. On start
+it re-enables `.MainActivity` if an older build disabled it. `src/lib/app-icon.ts` puts both platforms behind one API
+(iOS still uses expo-alternate-app-icons). `use-org-app-icon.ts` switches Android when the app goes to the background.
+
+Verified: `npx expo prebuild --platform android` produces the intended manifest; `expo run:android` resolves
+`.MainActivity` as the launch target; autolinking finds `ninja-app-icon`; tsc ✅ lint ✅. ⚠️ The Kotlin wasn't compiled
+here (no Android SDK on this machine), so the first device build is the real test.
+**Native change → rebuild:** `npx expo prebuild --clean && npx expo run:android`. Logged in docs/02 §6.
+
+---
+
 ## 2026-10-06 — Fix: Add-client button was white on the phone
 
 **Cause:** the **+** tile used `style={({ pressed }) => …}`. NativeWind’s `Pressable` drops function styles on native, so on

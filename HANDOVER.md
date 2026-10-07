@@ -43,8 +43,8 @@ and what to build next. Keep it current at the end of every step.
   (NEW badge, Brisbane dates, image/attachment counts), expand to read, filter chips + sort, pull to refresh.
   Content is rendered natively (rich text, images, documents, buttons, video/form links) by the reusable
   `components/content/*`. docs/09-NOTICES.md.
-- **Per-org home-screen icon (iOS only)** — Android keeps the default icon since 2026-10-06 (the library disables
-  `.MainActivity` → "Unable to find explicit activity class"; docs/08 §6). 7 icons generated in code (org colour + white CMS NINJA wordmark, default
+- **Per-org home-screen icon (iOS + Android)**. Android uses our own launcher aliases since 2026-10-07
+  (`modules/ninja-app-icon` + `plugins/with-android-icon-aliases.js`; `.MainActivity` is never disabled; docs/08 §6). 7 icons generated in code (org colour + white CMS NINJA wordmark, default
   login blue); the icon follows the active org (iOS: at once, Android: on next background). Also the real
   app icon/splash now. ⚠️ Needs a **development build** — no-op in Expo Go. docs/08-APP-ICONS.md.
 - Backend verified: the CMS accepts `ninjacms://` and Expo Go `exp://` origins (401 on bad creds, not 403).

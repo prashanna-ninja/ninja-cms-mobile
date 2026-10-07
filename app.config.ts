@@ -38,6 +38,8 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     ...(config as ExpoConfig),
     plugins: [
       ...(config.plugins ?? []),
+      // Android: launcher aliases that never disable MainActivity. Must stay BEFORE expo-alternate-app-icons (docs/08 §6).
+      "./plugins/with-android-icon-aliases",
       [
         "expo-alternate-app-icons",
         appIcons.alternates.map((icon) => ({
