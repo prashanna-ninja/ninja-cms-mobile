@@ -1,7 +1,7 @@
 import * as React from "react";
 import { AppState, Platform } from "react-native";
 
-import { appIconForColor, appIconUnavailableReason, canChangeAppIcon, currentAppIcon, setAppIcon } from "@/lib/app-icon";
+import { appIconForColor, appIconSwitchAllowed, appIconUnavailableReason, canChangeAppIcon, currentAppIcon, setAppIcon } from "@/lib/app-icon";
 import { useOrgTheme } from "@/providers/org-theme-provider";
 import { useSession } from "@/providers/session-provider";
 
@@ -15,7 +15,8 @@ import { useSession } from "@/providers/session-provider";
  *
  * Android: switches when the app goes to the BACKGROUND. Changing the launcher alias of a
  * running app can close it on some launchers, so we wait until the user leaves (e.g. after
- * signing in, the icon changes once they go home). Uses modules/ninja-app-icon, which only
+ * signing in, the icon changes once they go home). Skipped while the app's own picker / share
+ * sheet / browser is open (holdAppIconSwitch). Uses modules/ninja-app-icon, which only
  * toggles launcher aliases. It never disables `.MainActivity`, the 2026-10-06 bug with
  * expo-alternate-app-icons (docs/08 §6).
  *
@@ -54,7 +55,8 @@ export function useOrgAppIcon() {
     if (Platform.OS !== "android" || !canChangeAppIcon()) return;
     const sub = AppState.addEventListener("change", (state) => {
       const next = wanted.current;
-      if (state === "background" && next !== undefined && currentAppIcon() !== next) void setAppIcon(next);
+      // Not while the app itself opened a picker / share sheet / browser (holdAppIconSwitch).
+      if (state === "background" && next !== undefined && appIconSwitchAllowed() && currentAppIcon() !== next) void setAppIcon(next);
     });
     return () => sub.remove();
   }, []);

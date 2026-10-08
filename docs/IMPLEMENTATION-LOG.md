@@ -5,6 +5,25 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-10-08 — Fix: Android file upload "Different document picking in progress"
+
+**Reported (Android, after the icon rebuild):** tapping Upload file threw `ExpoDocumentPicker.getDocumentAsync … rejected →
+Different document picking in progress` on every tap (uncaught promise errors), then the bundle reloaded.
+**Cause:** opening the picker sends the app to the **background**, and the new Android icon switch (2026-10-07) runs on
+background. That session wanted a different icon (Berrylium → Default, while the phone still showed Cobalt), so the
+launcher alias changed while the picker was open. The app was disrupted, the picker result was lost, and
+expo-document-picker stayed "in progress", so every later tap was rejected.
+**Fix:**
+- `holdAppIconSwitch(fn)` in `src/lib/app-icon.ts` wraps the app's own system screens: document picker (Files), share
+  sheet (fact-find PDF) and in-app browser (`openUrl`). The background icon switch is skipped while one is open and for
+  2 s after (Android's browser call resolves before the app backgrounds). The switch happens on the next real "leave the app".
+- Files: a ref guard ignores taps while a pick is open, and picker errors show an alert instead of an uncaught rejection.
+- `MATCH_DISTANCE` 48 → 64: Berrylium's `#c93636` (≈ 60 from the Beryllium preset `#8F2A2A`) now gets the
+  Beryllium icon. Navy brands like AIAFSL (≈ 70 from Cobalt) still fall back to the default.
+JS only, no rebuild. A phone already stuck needs the app force-closed once (the native picker state lives until then).
+
+---
+
 ## 2026-10-07 — Android per-org app icons are back (⚠️ native: local module + config plugin)
 
 **Reported:** the icon doesn't change on Android. This was deliberate since 2026-10-06, because the library's Android switch

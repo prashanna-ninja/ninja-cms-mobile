@@ -93,8 +93,9 @@ export const canChangeAppIcon = () => getNative() !== null;
  * Max RGB distance for an org colour to count as "that preset". Generous enough
  * for small CMS tweaks (e.g. #71AF43 vs #6DAE43 ≈ 6), tight enough that a
  * different brand (e.g. AIAFSL navy vs Cobalt blue ≈ 70) falls back to default.
+ * 64 since 2026-10-08: Berrylium's #c93636 is ≈ 60 from the Beryllium preset (#8F2A2A).
  */
-const MATCH_DISTANCE = 48;
+const MATCH_DISTANCE = 64;
 
 function rgb(hex: string) {
   const n = parseInt(hex.slice(1), 16);
@@ -147,3 +148,29 @@ export async function setAppIcon(name: string | null): Promise<void> {
     if (__DEV__) console.warn("[app-icon] couldn't switch icon:", err);
   }
 }
+
+/**
+ * Android switches the icon when the app goes to the background (use-org-app-icon.ts). But the
+ * app ALSO goes to the background when it opens a system screen itself: document picker, share
+ * sheet, in-app browser. Switching the launcher alias then disrupts the app, the picker's
+ * result is lost, and expo-document-picker stays "in progress" ("Different document picking in
+ * progress", reported 2026-10-08). Wrap those calls in `holdAppIconSwitch`: no switch while one
+ * is open, nor for a short grace period after (Android's browser call resolves before the app
+ * actually backgrounds).
+ */
+let holds = 0;
+let holdUntil = 0;
+const HOLD_GRACE_MS = 2000;
+
+export async function holdAppIconSwitch<T>(fn: () => Promise<T>): Promise<T> {
+  holds += 1;
+  try {
+    return await fn();
+  } finally {
+    holds -= 1;
+    holdUntil = Date.now() + HOLD_GRACE_MS;
+  }
+}
+
+/** False while the app has its own system screen open (see holdAppIconSwitch). */
+export const appIconSwitchAllowed = () => holds === 0 && Date.now() > holdUntil;

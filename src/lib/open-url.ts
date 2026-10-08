@@ -1,6 +1,8 @@
 import * as WebBrowser from "expo-web-browser";
 import { Alert, Linking } from "react-native";
 
+import { holdAppIconSwitch } from "@/lib/app-icon";
+
 /**
  * Open a link from CMS content (notice/article links, documents, buttons, videos, forms).
  *
@@ -15,11 +17,14 @@ export async function openUrl(url: string | undefined | null, tint?: string) {
   if (!href) return;
   try {
     if (/^https?:\/\//i.test(href)) {
-      await WebBrowser.openBrowserAsync(href, {
-        controlsColor: tint,
-        toolbarColor: tint,
-        presentationStyle: WebBrowser.WebBrowserPresentationStyle.PAGE_SHEET,
-      });
+      // Held: the browser backgrounds the app, which must not trigger the Android icon switch.
+      await holdAppIconSwitch(() =>
+        WebBrowser.openBrowserAsync(href, {
+          controlsColor: tint,
+          toolbarColor: tint,
+          presentationStyle: WebBrowser.WebBrowserPresentationStyle.PAGE_SHEET,
+        }),
+      );
       return;
     }
     await Linking.openURL(href);

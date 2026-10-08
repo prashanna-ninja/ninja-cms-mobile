@@ -4,6 +4,7 @@ import { Platform } from "react-native";
 
 import { API_BASE_URL } from "@/constants/env";
 import { readCookie } from "@/lib/api-client";
+import { holdAppIconSwitch } from "@/lib/app-icon";
 
 /** The CMS file name: "Fact Find - {client}.pdf" (lib/clients/generate-fact-find-pdf.ts). */
 const pdfName = (clientName: string) => `Fact Find - ${clientName.replace(/[\\/:*?"<>|]+/g, " ").trim() || "Client"}.pdf`;
@@ -51,7 +52,7 @@ export async function shareFactFindPdf(adviceId: string, clientId: string, clien
           : "The PDF couldn't be generated. Please try again.",
     );
   }
-  await Sharing.shareAsync(file.uri, { mimeType: "application/pdf", UTI: "com.adobe.pdf", dialogTitle: pdfName(clientName) });
+  await holdAppIconSwitch(() => Sharing.shareAsync(file.uri, { mimeType: "application/pdf", UTI: "com.adobe.pdf", dialogTitle: pdfName(clientName) }));
 }
 
 /** react-native-web (mock testing): same as the web portal — fetch the blob and click a download link. */

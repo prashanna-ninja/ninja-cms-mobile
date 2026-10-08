@@ -4,6 +4,7 @@ import { Alert, Modal, Pressable, Text, TextInput, View } from "react-native";
 
 import { UPLOAD_MIME_TYPES, useClientFiles, useDeleteFile, useRenameFile, useUploadFile } from "@/api/client-detail.api";
 import { C, Card, Empty, ErrorNote, F, Loading, PillButton, text } from "@/components/client-detail/ui";
+import { holdAppIconSwitch } from "@/lib/app-icon";
 import { formatDateTime, formatFileSize } from "@/lib/format";
 import { FileText, FolderOpen, Pencil, Trash, Upload } from "@/lib/icons";
 import { openUrl } from "@/lib/open-url";
@@ -24,8 +25,23 @@ export function FilesSection({ adviceId, clientId }: { adviceId: string; clientI
   const remove = useDeleteFile(adviceId, clientId);
   const [renaming, setRenaming] = React.useState<ClientFile | null>(null);
 
+  // One picker at a time: a second getDocumentAsync while one is open rejects
+  // ("Different document picking in progress"), so extra taps are ignored.
+  const picking = React.useRef(false);
   const pick = async () => {
-    const res = await DocumentPicker.getDocumentAsync({ type: UPLOAD_MIME_TYPES, copyToCacheDirectory: true, multiple: false });
+    if (picking.current) return;
+    picking.current = true;
+    let res: DocumentPicker.DocumentPickerResult;
+    try {
+      res = await holdAppIconSwitch(() =>
+        DocumentPicker.getDocumentAsync({ type: UPLOAD_MIME_TYPES, copyToCacheDirectory: true, multiple: false }),
+      );
+    } catch (err) {
+      alertError(err);
+      return;
+    } finally {
+      picking.current = false;
+    }
     if (res.canceled || !res.assets?.[0]) return;
     const a = res.assets[0];
     upload.mutate(

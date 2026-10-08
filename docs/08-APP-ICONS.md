@@ -179,6 +179,9 @@ That **disables the app's real activity**, and the state survives reinstalls. An
 - **When:** iOS switches at once. Android switches when the app goes to the **background** (sign in → leave the app
   → the icon changes), because changing a running app's launcher alias can close it on some launchers. Some launchers
   take a few seconds to refresh. A home-screen shortcut pinned to the old alias may disappear; re-add it from the app drawer.
+- **Not while the app opened a system screen itself** (document picker, share sheet, in-app browser): those also
+  background the app, and switching then broke the picker (2026-10-08). Wrap any new such call in
+  `holdAppIconSwitch()` from `src/lib/app-icon.ts`.
 
 **A phone still stuck from the old build** ("Unable to find explicit activity class"): `adb uninstall
 com.adviceninja.ninjacms`, then `npx expo run:android`.
