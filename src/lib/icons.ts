@@ -90,3 +90,13 @@ export { default as Repeat } from "lucide-react-native/icons/repeat";
 export { default as StickyNote } from "lucide-react-native/icons/sticky-note";
 export { default as Trash } from "lucide-react-native/icons/trash";
 export { default as Upload } from "lucide-react-native/icons/upload";
+
+// Workflows
+export { default as Circle } from "lucide-react-native/icons/circle";
+export { default as CircleAlert } from "lucide-react-native/icons/circle-alert";
+export { default as CircleCheck } from "lucide-react-native/icons/circle-check";
+export { default as ListChecks } from "lucide-react-native/icons/list-checks";
+export { default as Share2 } from "lucide-react-native/icons/share-2";
+export { default as SquareKanban } from "lucide-react-native/icons/square-kanban";
+export { default as UserCheck } from "lucide-react-native/icons/user-check";
+export { default as UserPlus } from "lucide-react-native/icons/user-plus";

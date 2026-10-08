@@ -27,7 +27,7 @@ and what to build next. Keep it current at the end of every step.
   (`(app)/select-org.tsx`, web-style coloured cards); 0 → "No organisations assigned"; editor/user → "use the
   web". Remembered per user; "Switch organisation" on the home banner when 2+.
 - **Bottom tabs** (2026-10-05) — Dashboard (welcome banner + Notices) · Clients · Workflows · Revenue · **Settings**,
-  tinted in the org colour; Clients/Workflows/Revenue are clean "Coming soon" placeholders. Shared `AppHeader`
+  tinted in the org colour; Revenue is still a clean "Coming soon" placeholder. Shared `AppHeader`
   (wordmark + initials avatar → Settings). docs/11-NAVIGATION.md.
 - **Clients tab = Client Records** (2026-10-05) — shown only to users the CMS allows (403 → hidden); list with
   search-as-you-type, Active/Archived, type/tag/source sheets, infinite scroll, pull to refresh; tap → client
@@ -36,6 +36,9 @@ and what to build next. Keep it current at the end of every step.
   link/unlink, tags, workflows + add to workflow), Revenue (gated by 403), Fact Find (edit per section + Generate PDF → share sheet, web config ported), Files (upload /
   open / rename / delete), File Notes (add / delete), Ongoing client (record consent, set review), Activity Log. **Add client, Edit,
   Archive / Restore, Delete** (staff: edit only). docs/12 §6.
+- **Workflows tab** (2026-10-08) — access-gated like Clients; list (yours + shared) → board as a **stage rail +
+  swipeable stage pages** → Add client (existing / create new) → client on a board (move stage, assign, due date,
+  checklists, to-dos, comments, remove). Structure editing stays on the web. docs/13-WORKFLOWS.md.
 - **Settings** — org member card, organisation (switch), account (email, role, web profile/password), app
   version/build, **sign out** (moved here from the header), **delete account** (confirm → pre-filled email
   request to support, the CRM pattern).
@@ -152,7 +155,7 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
    TestFlight build (needs your Expo/Apple logins) — docs/10-RELEASE-IOS.md §2–3.
 7. 🚧 **Portal home** — Notices ✅; next: quick links, events, … → proper dashboard. ⚠️ Check real notices on a device.
 8. ✅ Tabs. 🚧 Clients: list ✅ → profile ✅ (7 sections) → add / edit / archive / delete ✅ → add to workflow ✅ → fact-find edit + PDF ✅
-   (docs/12 §6). ⬜ Workflows, Revenue
+   (docs/12 §6). ✅ Workflows (2026-10-08, docs/13). ⬜ Revenue
    (gate them like Clients).
 
 ## 9. Where things live

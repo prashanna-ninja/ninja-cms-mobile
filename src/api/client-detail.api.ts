@@ -178,10 +178,17 @@ export function useLinkPartner(adviceId: string | undefined, clientId: string) {
 /** POST {base}/workflows {workflowId, stageId} — web ClientWorkflowsCard "Add to workflow". */
 export function useAddToWorkflow(adviceId: string | undefined, clientId: string) {
   const invalidate = useInvalidate(clientId, adviceId);
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (body: { workflowId: string; stageId: string }) =>
       apiFetch(`${base(adviceId!, clientId)}/workflows`, { method: "POST", ...json(body) }),
-    onSuccess: () => invalidate("workflows"),
+    // Also the Workflows tab: board cards + list counts.
+    onSuccess: () =>
+      Promise.all([
+        invalidate("workflows"),
+        queryClient.invalidateQueries({ queryKey: ["workflows"] }),
+        queryClient.invalidateQueries({ queryKey: ["workflow"] }),
+      ]),
   });
 }
 

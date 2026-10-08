@@ -22,4 +22,12 @@ export const qk = {
   client: (adviceId: string, clientId: string) => ["client", adviceId, clientId] as const,
   /** A client sub-section (partner, tags, workflows, revenue, fact-find, files, notes, annual-consent, activity). */
   clientSection: (clientId: string, section: string, ...rest: string[]) => ["client", clientId, section, ...rest] as const,
+  /** GET …/workflows — your boards + boards shared with you. Also the Workflows-tab access probe (403 → hidden). */
+  workflows: (adviceId: string) => ["workflows", adviceId] as const,
+  /** GET …/workflows/{workflowId} — one board (stages + client cards). */
+  workflowBoard: (adviceId: string, workflowId: string) => ["workflow", adviceId, workflowId] as const,
+  /** GET …/workflows/{workflowId}/clients/{placementId} — one client on a board. */
+  placement: (workflowId: string, placementId: string) => ["workflow", "placement", workflowId, placementId] as const,
+  /** GET …/workflows/available-clients?workflowId= — your clients not yet on the board. */
+  availableClients: (workflowId: string) => ["workflow", "available-clients", workflowId] as const,
 };

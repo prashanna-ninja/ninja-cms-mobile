@@ -5,6 +5,27 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-10-08 — Workflows tab: list, board, add client, client on a board
+
+- **Access:** `useWorkflowsAccess` reuses `GET …/workflows`; 403 → the tab is hidden (like Clients).
+- **List** (`workflows/index.tsx`): "Yours" + "Shared with you". Each card shows its stages as a mini rail of dots.
+- **Board** (`workflows/[workflowId].tsx`): the web's side-scrolling columns become a sticky **stage rail** (numbered
+  nodes, counts, red dot for overdue work, auto-scrolls) over **full-width stage pages** in a paged FlatList, so you
+  swipe or tap. Stage roles like "(Admin)" become badges (`splitStageName`). "Find a client" filters all stages.
+- **Add client** sheet: Existing (server search) | Create new (name + phone, optional email); opens the new card.
+- **Client on a board** (`workflows/[workflowId]/[placementId].tsx`): an org-colour stage card with **Move to {next} →**
+  and Change, assignee sheet, due date, stage checklist (optimistic ticks), earlier stages, client to-dos, comments,
+  remove. "Full record" goes to the client page.
+- Board route is `[workflowId].tsx`, not `[workflowId]/index.tsx`: typed routes then accept
+  `/workflows/[workflowId]` (the index form only typed as `…/index`).
+- The rail's horizontal ScrollView needs `flexGrow: 0`, or it stretches and leaves a big gap.
+- The client page's "Add to workflow" now also refreshes the boards.
+
+Verified with mocked CMS responses on web (list, board, rail switching, add → POST, tick → PATCH checklist,
+move → PATCH stageId). tsc ✅ lint ✅. No native changes. Docs: new docs/13-WORKFLOWS.md, 11, README, HANDOVER.
+
+---
+
 ## 2026-10-08 — Fix: Android file upload "Different document picking in progress"
 
 **Reported (Android, after the icon rebuild):** tapping Upload file threw `ExpoDocumentPicker.getDocumentAsync … rejected →

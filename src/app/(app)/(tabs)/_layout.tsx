@@ -4,6 +4,7 @@ import { Pressable, type ColorValue } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useClientRecordsAccess } from "@/api/clients.api";
+import { useWorkflowsAccess } from "@/api/workflows.api";
 import { ChartLine, LayoutDashboard, Settings, Users, Workflow } from "@/lib/icons";
 import { useOrgTheme } from "@/providers/org-theme-provider";
 
@@ -71,13 +72,16 @@ function TabButton({
  * Each screen renders its own AppHeader (headerShown: false).
  *
  * Clients is hidden unless the server grants Client Records access (asked via
- * `useClientRecordsAccess` — mirrors the web exactly). Workflows / Revenue will be
- * gated the same way when they're built. See docs/11-NAVIGATION.md, docs/12-CLIENTS.md.
+ * `useClientRecordsAccess` — mirrors the web exactly). Workflows is gated the same way
+ * (`useWorkflowsAccess`); Revenue will be once it's built. See docs/11-NAVIGATION.md, docs/12-CLIENTS.md,
+ * docs/13-WORKFLOWS.md.
  */
 export default function TabsLayout() {
   const { org, theme } = useOrgTheme();
   // Clients shows only when the CMS grants Client Records access (403 → hidden).
   const canSeeClients = useClientRecordsAccess(org?.id) === true;
+  // Workflows: Client Records + workflowsEnabled on the adviser (and staff user); 403 → hidden.
+  const canSeeWorkflows = useWorkflowsAccess(org?.id) === true;
   const insets = useSafeAreaInsets();
 
   return (
@@ -122,6 +126,7 @@ export default function TabsLayout() {
         name="workflows"
         options={{
           title: "Workflows",
+          href: canSeeWorkflows ? undefined : null,
           tabBarIcon: ({ color, focused }) => <TabIcon icon={Workflow} color={color} focused={focused} />,
         }}
       />
