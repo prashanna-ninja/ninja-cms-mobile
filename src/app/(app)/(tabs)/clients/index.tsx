@@ -5,9 +5,9 @@ import { ActivityIndicator, FlatList, Pressable, RefreshControl, ScrollView, Tex
 
 import { useClientRecords } from "@/api/clients.api";
 import { AppHeader } from "@/components/app-header";
-import { AddClientButton } from "@/components/clients/add-client-button";
 import { ClientCard } from "@/components/clients/client-card";
 import { OptionSheet, type SheetOption } from "@/components/clients/option-sheet";
+import { HeaderAddButton } from "@/components/header-add-button";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { CLIENT_SOURCES, CLIENT_TYPES, clientSourceLabel, clientTypeLabel } from "@/lib/clients";
 import { ApiError } from "@/lib/api-client";
@@ -121,7 +121,7 @@ export default function ClientRecordsScreen() {
           </View>
           <Text style={{ fontFamily: FONT.regular, fontSize: 13, color: "#7089B8" }}>Client profiles, fact finds, and notes.</Text>
         </View>
-        {canAdd ? <AddClientButton /> : null}
+        {canAdd ? <HeaderAddButton label="Add client" onPress={() => router.push("/clients/new")} /> : null}
       </View>
 
       {/* Search */}

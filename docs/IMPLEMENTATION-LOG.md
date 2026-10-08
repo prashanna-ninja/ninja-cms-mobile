@@ -5,6 +5,14 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-10-08 — Workflows: "+" tile instead of the New workflow pill
+
+The filled "New workflow" pill on its own row looked out of place. The Clients **+** tile is now a shared
+`src/components/header-add-button.tsx` (`HeaderAddButton {label, onPress}`, moved from `clients/add-client-button.tsx`).
+Workflows uses it beside the title, exactly like Client Records. No native changes.
+
+---
+
 ## 2026-10-08 — Workflows: New workflow from templates + Add a stage
 
 - **New workflow** (list header) as a bottom sheet, like the web dialog: **Start fresh** (blank preset), **licensee shared

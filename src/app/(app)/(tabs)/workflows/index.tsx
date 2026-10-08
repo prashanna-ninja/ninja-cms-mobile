@@ -5,9 +5,10 @@ import { Pressable, RefreshControl, ScrollView, Text, View } from "react-native"
 
 import { useWorkflows } from "@/api/workflows.api";
 import { AppHeader } from "@/components/app-header";
-import { C, Empty, ErrorNote, F, Loading, PillButton, errorMessage, text } from "@/components/client-detail/ui";
+import { C, Empty, ErrorNote, F, Loading, errorMessage, text } from "@/components/client-detail/ui";
+import { HeaderAddButton } from "@/components/header-add-button";
 import { NewWorkflowSheet } from "@/components/workflows/new-workflow-sheet";
-import { ArrowRight, Plus, Share2, SquareKanban } from "@/lib/icons";
+import { ArrowRight, Share2, SquareKanban } from "@/lib/icons";
 import { qk } from "@/lib/query-keys";
 import { splitStageName } from "@/lib/workflows";
 import { useOrgTheme } from "@/providers/org-theme-provider";
@@ -66,19 +67,15 @@ export default function WorkflowsScreen() {
             </View>
             <Text style={{ fontFamily: F.regular, fontSize: 13, color: C.muted }}>Stages, checklists, and the clients on each one.</Text>
           </View>
+          {q.data ? <HeaderAddButton label="New workflow" onPress={() => setCreating(true)} /> : null}
         </View>
-        {q.data ? (
-          <View style={{ flexDirection: "row", justifyContent: "flex-end", marginTop: -4 }}>
-            <PillButton label="New workflow" icon={Plus} filled color={theme.base} onPress={() => setCreating(true)} />
-          </View>
-        ) : null}
 
         {q.isPending ? (
           <Loading />
         ) : q.isError ? (
           <ErrorNote message={errorMessage(q.error)} onRetry={() => void q.refetch()} />
         ) : own.length + shared.length === 0 ? (
-          <Empty icon={SquareKanban} title="No workflows yet" message="Tap New workflow to start fresh or from a shared template." />
+          <Empty icon={SquareKanban} title="No workflows yet" message="Tap + to start one fresh or from a shared template." />
         ) : (
           <>
             {own.length ? <Section title="Yours" items={own} onOpen={open} /> : null}

@@ -79,7 +79,7 @@ Assigned to (sheet; staff marked "(staff)"), Due date (`DateField`), the stage c
 earlier stages (collapsible, tickable), client to-dos (add / tick / delete, max 40), comments (post, delete your own),
 and **Remove from workflow** (confirm). Tags, files, partner and details stay on the full client record.
 
-**New workflow** (list → New workflow, `new-workflow-sheet.tsx`): Start fresh (To do · In progress · Complete), the
+**New workflow** (list → the **+** tile beside the title, `new-workflow-sheet.tsx`): Start fresh (To do · In progress · Complete), the
 licensee shared templates for this org, or **Copy a shared template** (search adviser templates; licensee results are
 hidden there because they're already listed above). Picking a template fills in the name. Create opens the new board.
 

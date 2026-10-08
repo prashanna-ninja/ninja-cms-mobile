@@ -139,7 +139,7 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
    the cookie manually; signing out on 401, not on 403.
 17. **Never `style={({ pressed }) => …}` on `Pressable`.** NativeWind drops function styles on native (the button
     renders unstyled or white, though web looks fine). Track pressed state with `onPressIn` / `onPressOut` instead, like `PillButton` and
-    `AddClientButton`.
+    `HeaderAddButton` (`src/components/header-add-button.tsx`).
 
 ## 8. Loose ends & what to build next
 
