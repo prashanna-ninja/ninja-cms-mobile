@@ -2,6 +2,7 @@ import * as React from "react";
 import { Pressable, ScrollView, Text, View, type LayoutChangeEvent } from "react-native";
 
 import { C, F } from "@/components/client-detail/ui";
+import { Plus } from "@/lib/icons";
 import { splitStageName } from "@/lib/workflows";
 import { useOrgTheme } from "@/providers/org-theme-provider";
 
@@ -12,7 +13,18 @@ export type RailStage = { id: string; name: string; count: number; overdue: numb
  * stage name and its client count under each. The active stage is filled in the org colour,
  * and the rail keeps it in view as you swipe between stages. A red dot marks overdue work.
  */
-export function StageRail({ stages, active, onSelect }: { stages: RailStage[]; active: number; onSelect: (index: number) => void }) {
+export function StageRail({
+  stages,
+  active,
+  onSelect,
+  onAddStage,
+}: {
+  stages: RailStage[];
+  active: number;
+  onSelect: (index: number) => void;
+  /** Owners only: a dashed "+" node after the last stage (web: "Add a stage" column). */
+  onAddStage?: () => void;
+}) {
   const { theme } = useOrgTheme();
   const scroll = React.useRef<ScrollView>(null);
   const offsets = React.useRef<number[]>([]);
@@ -85,6 +97,14 @@ export function StageRail({ stages, active, onSelect }: { stages: RailStage[]; a
           </View>
         );
       })}
+      {onAddStage ? (
+        <Pressable accessibilityRole="button" accessibilityLabel="Add a stage" onPress={onAddStage} hitSlop={6} style={{ width: 84, alignItems: "center", gap: 6 }}>
+          <View style={{ width: 32, height: 32, borderRadius: 16, borderWidth: 1.5, borderStyle: "dashed", borderColor: theme.base, alignItems: "center", justifyContent: "center", backgroundColor: "#FFFFFF" }}>
+            <Plus size={16} color={theme.text} strokeWidth={2.4} />
+          </View>
+          <Text style={{ fontFamily: F.medium, fontSize: 12, color: theme.text }}>Add stage</Text>
+        </Pressable>
+      ) : null}
     </ScrollView>
   );
 }

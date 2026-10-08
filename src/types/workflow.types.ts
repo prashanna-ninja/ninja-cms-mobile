@@ -127,3 +127,18 @@ export type PlacementDetail = {
 
 /** GET …/workflows/available-clients — your own clients not yet on the workflow (max 50). */
 export type AvailableClient = { id: string; name: string; email: string | null; phone: string | null; type: ClientType; source: ClientSource };
+
+/** A workflow template you can start a board from (GET …/workflows/templates, …/templates/search). */
+export type WorkflowTemplateSummary = {
+  id: string;
+  name: string;
+  description: string | null;
+  isShared: boolean;
+  isOwn: boolean;
+  /** Made by the licensee (not an adviser); shown as "System" / "Licensee shared". */
+  isLicenseeTemplate: boolean;
+  stageCount: number;
+  createdByName: string;
+  /** Licensee templates only: the organisations it's shared with. */
+  organisationIds?: string[];
+};

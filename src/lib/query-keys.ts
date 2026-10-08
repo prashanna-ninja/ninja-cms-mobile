@@ -28,6 +28,10 @@ export const qk = {
   workflowBoard: (adviceId: string, workflowId: string) => ["workflow", adviceId, workflowId] as const,
   /** GET …/workflows/{workflowId}/clients/{placementId} — one client on a board. */
   placement: (workflowId: string, placementId: string) => ["workflow", "placement", workflowId, placementId] as const,
+  /** GET …/workflows/templates — licensee templates shared with this org. */
+  workflowTemplates: (adviceId: string) => ["workflows", adviceId, "templates"] as const,
+  /** GET …/workflows/templates/search?q= — licensee + adviser templates (≥ 2 chars). */
+  workflowTemplateSearch: (adviceId: string, q: string) => ["workflows", adviceId, "templates", "search", q] as const,
   /** GET …/workflows/available-clients?workflowId= — your clients not yet on the board. */
   availableClients: (workflowId: string) => ["workflow", "available-clients", workflowId] as const,
 };

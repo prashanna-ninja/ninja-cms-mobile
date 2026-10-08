@@ -38,8 +38,12 @@ Mobile: `useWorkflowsAccess(adviceId)` reuses the list request (`GET …/workflo
 | Stage checklist item | `PATCH …/{placementId}/checklist` `{itemId, done?, assignedToUserId?, dueOn?}` |
 | Client to-dos | `POST …/personal-checklist {title}` · `PATCH/DELETE …/personal-checklist/{itemId}` |
 | Comments | `POST …/comments {body ≤ 4000}` · `DELETE …/comments/{commentId}` (own only) |
+| New workflow | `POST` `{name?, preset:"blank"}` or `{name?, templateId}` → 201 `{workflow:{id}}` |
+| Licensee templates | `GET /templates` → `{templates}` (keep those whose `organisationIds` include this org, like the web) |
+| Search templates | `GET /templates/search?q=` (≥ 2 chars, ≤ 20; mixed licensee / adviser / own) |
+| Add a stage | `POST /{workflowId}/stages {name ≤ 80}` (owner only, max 40) |
 
-Not on mobile yet (web only): create/rename/delete workflows, stages + stage checklists, templates, sharing,
+Not on mobile yet (web only): rename/delete workflows, rename/reorder/delete stages + stage checklists, making templates, sharing,
 collaborators, form ingest keys, drag reordering, shared checklist templates, the Summary tables.
 
 ## 4. Mobile implementation
@@ -75,6 +79,13 @@ Assigned to (sheet; staff marked "(staff)"), Due date (`DateField`), the stage c
 earlier stages (collapsible, tickable), client to-dos (add / tick / delete, max 40), comments (post, delete your own),
 and **Remove from workflow** (confirm). Tags, files, partner and details stay on the full client record.
 
+**New workflow** (list → New workflow, `new-workflow-sheet.tsx`): Start fresh (To do · In progress · Complete), the
+licensee shared templates for this org, or **Copy a shared template** (search adviser templates; licensee results are
+hidden there because they're already listed above). Picking a template fills in the name. Create opens the new board.
+
+**Add a stage**: owners (`canManageStructure`) get a dashed **+ Add stage** node at the end of the stage rail
+(`add-stage-sheet.tsx`).
+
 **Add client** sheet: Existing client (server search, radio pick) | Create new (name + phone required, email optional).
 After adding, the app opens the new card.
 
@@ -89,4 +100,8 @@ overdue dot, cards) → Add client sheet → POST `{stageId, clientId}` → open
 ⚠️ Not yet against real boards on a device. Swiping between stage pages needs checking on a phone (the web test used rail taps).
 
 **Next:** per-item assignee / due date editing on checklist rows, applying shared checklist templates, the Summary
-(overdue per person), and maybe creating workflows from templates.
+(overdue per person).
+
+2026-10-08 (later): New workflow (fresh / licensee template / copy shared template) and Add a stage. Verified with
+mocks: POST `{"name":"Test","templateId":"tp1"}` → opens the board; another org's licensee template is hidden; POST
+stages `{"name":"Waiting on documents"}`.

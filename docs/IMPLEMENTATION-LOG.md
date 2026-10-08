@@ -5,6 +5,19 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-10-08 — Workflows: New workflow from templates + Add a stage
+
+- **New workflow** (list header) as a bottom sheet, like the web dialog: **Start fresh** (blank preset), **licensee shared
+  templates** (`GET …/workflows/templates`, filtered to this org's `organisationIds`), or **Copy a shared template**
+  (`GET …/templates/search?q=`, ≥ 2 chars, adviser + own results). The name is prefilled from the template.
+  `POST …/workflows` → opens the new board.
+- **Add a stage** for board owners: a dashed "+" node at the end of the stage rail → `POST …/{id}/stages {name}`.
+- Rename/reorder/delete stages, stage checklists, sharing and collaborators stay on the web.
+
+Verified with mocked CMS responses on web. tsc ✅ lint ✅. No native changes.
+
+---
+
 ## 2026-10-08 — Workflows tab: list, board, add client, client on a board
 
 - **Access:** `useWorkflowsAccess` reuses `GET …/workflows`; 403 → the tab is hidden (like Clients).

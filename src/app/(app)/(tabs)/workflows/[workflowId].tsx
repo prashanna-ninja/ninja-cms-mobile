@@ -7,6 +7,7 @@ import { useWorkflowBoard } from "@/api/workflows.api";
 import { AppHeader } from "@/components/app-header";
 import { C, ErrorNote, F, Loading, PillButton, errorMessage, text } from "@/components/client-detail/ui";
 import { AddClientSheet } from "@/components/workflows/add-client-sheet";
+import { AddStageSheet } from "@/components/workflows/add-stage-sheet";
 import { RoleBadge } from "@/components/workflows/badges";
 import { BoardCardView } from "@/components/workflows/board-card";
 import { StageRail } from "@/components/workflows/stage-rail";
@@ -35,6 +36,7 @@ export default function WorkflowBoardScreen() {
   const [active, setActive] = React.useState<number | null>(null);
   const [pageWidth, setPageWidth] = React.useState(0);
   const [adding, setAdding] = React.useState<BoardStage | null>(null);
+  const [addingStage, setAddingStage] = React.useState(false);
   const [refreshing, setRefreshing] = React.useState(false);
   const pager = React.useRef<FlatList<BoardStage>>(null);
 
@@ -125,6 +127,8 @@ export default function WorkflowBoardScreen() {
             stages={stages.map((s) => ({ id: s.id, name: s.name, count: s.clients.length, overdue: s.clients.filter(cardIsOverdue).length }))}
             active={current}
             onSelect={goTo}
+            // Owners only (collaborators get 404 from the stages routes).
+            onAddStage={board.data.canManageStructure ? () => setAddingStage(true) : undefined}
           />
           <View style={{ flex: 1 }} onLayout={(e) => setPageWidth(e.nativeEvent.layout.width)}>
             {pageWidth ? (
@@ -156,6 +160,10 @@ export default function WorkflowBoardScreen() {
           </View>
         </>
       )}
+
+      {addingStage && org ? (
+        <AddStageSheet adviceId={org.id} workflowId={workflowId} onClose={() => setAddingStage(false)} onAdded={() => setAddingStage(false)} />
+      ) : null}
 
       {adding && org ? (
         <AddClientSheet

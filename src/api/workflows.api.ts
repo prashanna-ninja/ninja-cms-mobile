@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { ApiError, apiFetch } from "@/lib/api-client";
 import { qk } from "@/lib/query-keys";
-import type { AvailableClient, PlacementDetail, WorkflowBoard, WorkflowsResponse } from "@/types/workflow.types";
+import type { AvailableClient, PlacementDetail, WorkflowBoard, WorkflowsResponse, WorkflowTemplateSummary } from "@/types/workflow.types";
 
 /**
  * Workflows (pipeline boards): the web's /portal/[adviceId]/workflows.
@@ -204,4 +204,46 @@ export function usePlacementComments(adviceId: string | undefined, workflowId: s
     onSuccess: () => refresh(placementId),
   });
   return { add, remove };
+}
+
+/** Licensee templates shared with this organisation (web CreateWorkflowDialog filters by organisationIds). */
+export function useLicenseeTemplates(adviceId: string | undefined, enabled: boolean) {
+  return useQuery({
+    queryKey: qk.workflowTemplates(adviceId ?? ""),
+    queryFn: () =>
+      apiFetch<{ templates: WorkflowTemplateSummary[] }>(`${root(adviceId!)}/templates`).then((r) =>
+        r.templates.filter((t) => !t.organisationIds || t.organisationIds.includes(adviceId!)),
+      ),
+    enabled: enabled && !!adviceId,
+  });
+}
+
+/** Shared templates by name or adviser (server needs ≥ 2 characters; returns ≤ 20). */
+export function useTemplateSearch(adviceId: string | undefined, q: string) {
+  return useQuery({
+    queryKey: qk.workflowTemplateSearch(adviceId ?? "", q),
+    queryFn: () =>
+      apiFetch<{ templates: WorkflowTemplateSummary[] }>(`${root(adviceId!)}/templates/search?q=${encodeURIComponent(q)}`).then((r) => r.templates),
+    enabled: !!adviceId && q.length >= 2,
+  });
+}
+
+/** POST …/workflows — a blank board (To do · In progress · Complete) or a copy of a template. */
+export function useCreateWorkflow(adviceId: string | undefined) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (body: { name?: string; templateId?: string; preset?: "blank" }) =>
+      apiFetch<{ workflow: { id: string } }>(root(adviceId!), { method: "POST", ...json(body) }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: qk.workflows(adviceId ?? "") }),
+  });
+}
+
+/** POST …/{workflowId}/stages {name} — owner only (collaborators get 404); max 40 stages. */
+export function useAddStage(adviceId: string | undefined, workflowId: string) {
+  const refresh = useRefreshWorkflow(adviceId, workflowId);
+  return useMutation({
+    mutationFn: (name: string) =>
+      apiFetch<{ stage: { id: string; name: string } }>(`${board(adviceId!, workflowId)}/stages`, { method: "POST", ...json({ name }) }),
+    onSuccess: () => refresh(),
+  });
 }

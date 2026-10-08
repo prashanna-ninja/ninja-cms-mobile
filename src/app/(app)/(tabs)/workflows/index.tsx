@@ -5,8 +5,9 @@ import { Pressable, RefreshControl, ScrollView, Text, View } from "react-native"
 
 import { useWorkflows } from "@/api/workflows.api";
 import { AppHeader } from "@/components/app-header";
-import { C, Empty, ErrorNote, F, Loading, errorMessage, text } from "@/components/client-detail/ui";
-import { ArrowRight, Share2, SquareKanban } from "@/lib/icons";
+import { C, Empty, ErrorNote, F, Loading, PillButton, errorMessage, text } from "@/components/client-detail/ui";
+import { NewWorkflowSheet } from "@/components/workflows/new-workflow-sheet";
+import { ArrowRight, Plus, Share2, SquareKanban } from "@/lib/icons";
 import { qk } from "@/lib/query-keys";
 import { splitStageName } from "@/lib/workflows";
 import { useOrgTheme } from "@/providers/org-theme-provider";
@@ -15,13 +16,15 @@ import type { WorkflowSummary } from "@/types/workflow.types";
 /**
  * Workflows — the web's /portal/[adviceId]/workflows: your boards, then boards other advisers
  * share with you. Each card shows its stages as a small "rail" (the board's shape at a glance).
- * Creating / editing boards and templates stays on the web for now. docs/13-WORKFLOWS.md.
+ * "New" starts a board fresh or from a licensee / shared template (NewWorkflowSheet). Editing a board's
+ * structure beyond "Add a stage" stays on the web. docs/13-WORKFLOWS.md.
  */
 export default function WorkflowsScreen() {
   const { org, theme } = useOrgTheme();
   const queryClient = useQueryClient();
   const q = useWorkflows(org?.id);
   const [refreshing, setRefreshing] = React.useState(false);
+  const [creating, setCreating] = React.useState(false);
 
   const own = q.data?.workflows ?? [];
   const shared = q.data?.sharedWorkflows ?? [];
@@ -64,13 +67,18 @@ export default function WorkflowsScreen() {
             <Text style={{ fontFamily: F.regular, fontSize: 13, color: C.muted }}>Stages, checklists, and the clients on each one.</Text>
           </View>
         </View>
+        {q.data ? (
+          <View style={{ flexDirection: "row", justifyContent: "flex-end", marginTop: -4 }}>
+            <PillButton label="New workflow" icon={Plus} filled color={theme.base} onPress={() => setCreating(true)} />
+          </View>
+        ) : null}
 
         {q.isPending ? (
           <Loading />
         ) : q.isError ? (
           <ErrorNote message={errorMessage(q.error)} onRetry={() => void q.refetch()} />
         ) : own.length + shared.length === 0 ? (
-          <Empty icon={SquareKanban} title="No workflows yet" message="Create your first workflow in the web portal, then follow your clients through it here." />
+          <Empty icon={SquareKanban} title="No workflows yet" message="Tap New workflow to start fresh or from a shared template." />
         ) : (
           <>
             {own.length ? <Section title="Yours" items={own} onOpen={open} /> : null}
@@ -78,6 +86,16 @@ export default function WorkflowsScreen() {
           </>
         )}
       </ScrollView>
+      {creating && org ? (
+        <NewWorkflowSheet
+          adviceId={org.id}
+          onClose={() => setCreating(false)}
+          onCreated={(id, name) => {
+            setCreating(false);
+            router.push({ pathname: "/workflows/[workflowId]", params: { workflowId: id, name } });
+          }}
+        />
+      ) : null}
     </View>
   );
 }

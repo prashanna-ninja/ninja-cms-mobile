@@ -38,7 +38,8 @@ and what to build next. Keep it current at the end of every step.
   Archive / Restore, Delete** (staff: edit only). docs/12 §6.
 - **Workflows tab** (2026-10-08) — access-gated like Clients; list (yours + shared) → board as a **stage rail +
   swipeable stage pages** → Add client (existing / create new) → client on a board (move stage, assign, due date,
-  checklists, to-dos, comments, remove). Structure editing stays on the web. docs/13-WORKFLOWS.md.
+  checklists, to-dos, comments, remove). **New workflow** (fresh / licensee template / copy a shared template) and
+  **Add a stage**; other structure editing stays on the web. docs/13-WORKFLOWS.md.
 - **Settings** — org member card, organisation (switch), account (email, role, web profile/password), app
   version/build, **sign out** (moved here from the header), **delete account** (confirm → pre-filled email
   request to support, the CRM pattern).
