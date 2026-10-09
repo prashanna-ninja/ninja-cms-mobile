@@ -5,6 +5,33 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-10-09 — Revenue tab: My Revenue + Map Clients
+
+Web `/portal/[adviceId]/my-revenue` (+ `/map-client`) on a phone. The data is the user's **own** revenue from
+`/api/my-revenue/*`, not org-scoped. Full write-up: docs/14-REVENUE.md.
+
+- **Gate:** `useRevenueAccess()` = the unfiltered `GET /api/my-revenue/stats`; 403 → the tab is hidden (like Clients /
+  Workflows). Admin/orgadmin, or an adviser with `revenueVisibilityEnabled`; staff get 403.
+- **My Revenue:** the 4 web stat cards become one **org-coloured statement card** (Gross headline, Net · Txns · Clients
+  tiles, corner rings, all from `useOrgTheme()`). There's an amber "N accounts not mapped" nudge, search (account), and
+  chips → sheets for date paid (week / month / FY / custom range), licensee and sort. Transactions are a **ledger grouped
+  by month** (pages of 25). Tap a transaction → map its account.
+- **Map Clients:** progress card (mapped / total, %), search, All / Mapped / Unmapped switch, account cards (green /
+  amber edge) → `MapAccountSheet` (summary, client search, Map / Save / Unmap) + a `FlashNote` confirmation.
+- **Web bug worked around:** the server only maps *unmapped* transactions, so changing an already-mapped account answers
+  404 (the web's "Save" fails). Mobile unmaps, then maps.
+- Product filter left out (its options are server-rendered, no API). No per-month totals (pages can split a month).
+- New shared bits: `components/flash-note.tsx` (toast), icons Link2Off / Wallet.
+
+Verified with mocked CMS responses on web (Metro web bundle + headless Chrome): statement card, ledger, date sheet,
+FY + Cobalt filters re-query stats and list, map sheet from a transaction, Map Clients → pick → `POST
+bulk-assign-client {accountName, accountNumber, clientId}` → counts refresh + toast; 403 → no Revenue tab.
+tsc ✅ lint ✅. **No native changes.**
+Note: `npx expo export --platform web` currently fails at static render (`window is not defined` from the network
+listener); web/native dev is unaffected.
+
+---
+
 ## 2026-10-09 — Session wrap-up: docs, loose ends, a standing "changing session" routine
 
 - **Routine written down** (the user asked for it once): when the user wants a new session, update the docs, tighten

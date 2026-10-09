@@ -20,6 +20,7 @@ Feature docs (added as each page/feature is built):
 11. [11-NAVIGATION.md](11-NAVIGATION.md) — route tree + bottom tabs (Dashboard · Clients · Workflows · Revenue · Settings)
 12. [12-CLIENTS.md](12-CLIENTS.md) — Client Records: access-gated tab, list + filters
 13. [13-WORKFLOWS.md](13-WORKFLOWS.md) — Workflows: list, board (stage rail + swipeable stages), add client, client on a board
+14. [14-REVENUE.md](14-REVENUE.md) — My Revenue (statement card, filters, monthly ledger) + Map Clients (account → client)
 
 Living docs:
 

@@ -9,7 +9,7 @@ and what to build next. Keep it current at the end of every step.
 
 > **Status (2026-10-09):** ✅ Login + org selection, portal home (Notices), **Clients** (list + full client record,
 > add / edit / archive / delete, fact find edit + PDF), **Workflows** (list, board, add client, client on a board,
-> new workflow from templates), Settings, per-org app icons (iOS + Android). ⬜ **Revenue tab** is next.
+> new workflow from templates), **Revenue** (My Revenue + Map Clients), Settings, per-org app icons (iOS + Android).
 > ⚠️ Most features were verified with mocked CMS responses on web. See §8 for the device-test checklist.
 
 ## 1. What works today
@@ -27,7 +27,7 @@ and what to build next. Keep it current at the end of every step.
   (`(app)/select-org.tsx`, web-style coloured cards); 0 → "No organisations assigned"; editor/user → "use the
   web". Remembered per user; "Switch organisation" on the home banner when 2+.
 - **Bottom tabs** (2026-10-05) — Dashboard (welcome banner + Notices) · Clients · Workflows · Revenue · **Settings**,
-  tinted in the org colour; Revenue is still a clean "Coming soon" placeholder. Shared `AppHeader`
+  tinted in the org colour. Shared `AppHeader`
   (wordmark + initials avatar → Settings). docs/11-NAVIGATION.md.
 - **Clients tab = Client Records** (2026-10-05) — shown only to users the CMS allows (403 → hidden); list with
   search-as-you-type, Active/Archived, type/tag/source sheets, infinite scroll, pull to refresh; **+** → Add client;
@@ -40,6 +40,10 @@ and what to build next. Keep it current at the end of every step.
   swipeable stage pages** → Add client (existing / create new) → client on a board (move stage, assign, due date,
   checklists, to-dos, comments, remove). **New workflow** (fresh / licensee template / copy a shared template) and
   **Add a stage**; other structure editing stays on the web. docs/13-WORKFLOWS.md.
+- **Revenue tab** (2026-10-09) — the user's own revenue (`/api/my-revenue/*`, not org-scoped), hidden on 403. My Revenue:
+  org-coloured statement card (gross, net, txns, clients), "N accounts not mapped" nudge, search + date / licensee / sort
+  sheets, a month-grouped ledger; tap a transaction → map its account. **Map Clients:** progress, All / Mapped / Unmapped,
+  account cards → map / change / unmap. docs/14-REVENUE.md.
 - **Settings** — org member card, organisation (switch), account (email, role, web profile/password), app
   version/build, **sign out** (moved here from the header), **delete account** (confirm → pre-filled email
   request to support, the CRM pattern).
@@ -160,14 +164,17 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
 8. ✅ Tabs. ✅ Clients: list, record (7 sections), add / edit / archive / delete, add to workflow, fact-find edit + PDF
    (docs/12). ✅ Workflows: list, board, add client, client on a board, new workflow from templates, add a stage
    (docs/13; later maybe: checklist-item assignee / due editing, shared checklist templates, the Summary).
-9. ⬜ **Revenue tab** (next): web `/portal/[adviceId]/revenue`; gate it like Clients (403 → hidden). The client page
-   already has a Revenue section (`src/components/client-detail/revenue-section.tsx`) to reuse.
+9. ✅ **Revenue tab** — My Revenue + Map Clients (docs/14). Later maybe: product filter (needs a CMS API for the
+   provider list). Tell the CMS team: the web's "Save" when changing a mapped account's client fails with 404 (docs/14 §3).
+10. ⬜ **Next:** ask the user. Candidates: the Dashboard (quick links, events), or more Workflows editing.
 
 **Device-test checklist** (built + mock-tested, not yet confirmed on a phone):
 - Android per-org icon switches after leaving the app; launching via `expo run:android` still works.
 - File upload on Android (picker no longer stuck); Generate PDF → share sheet (iOS + Android).
 - Fact-find section editor with the keyboard; the Save button in the header.
 - Workflows: swiping between stage pages; add client; move stage; ticking checklists.
+- Revenue: statement card with a pale and a dark org colour; date / licensee sheets; map / change / unmap an account
+  (the custom date range opens a calendar sheet inside a sheet: check it on iOS).
 - Confirm alerts (archive / delete client, remove from workflow, discard fact-find changes): they don't render on web.
 
 **Rebuild needed?** The last native changes are listed in docs/02 §6. A dev build made before 2026-10-09 should be
@@ -188,13 +195,15 @@ rebuilt once to pick up the Expo patch updates (`npx expo prebuild --clean && np
 | `src/components/org-logo.tsx` | org logo / initials tile |
 | `src/components/brand/ninja-cms-logo.tsx` | tintable CMS NINJA wordmark |
 | `src/app/(app)/_layout.tsx` | org gate (0 / 1 / many orgs) + guarded stack |
-| `src/app/(app)/(tabs)/*` | bottom tabs: Dashboard (index), clients, workflows, revenue |
+| `src/app/(app)/(tabs)/*` | bottom tabs: Dashboard (index), clients, workflows, revenue, settings |
 | `src/components/app-header.tsx`, `src/components/coming-soon.tsx` | shared app bar (avatar → Settings); tab placeholder |
 | `src/app/(app)/(tabs)/settings.tsx`, `src/components/settings/*`, `src/lib/user-display.ts` | Settings tab |
 | `src/app/(app)/(tabs)/clients/*`, `src/api/clients.api.ts`, `src/components/clients/*`, `src/lib/clients.ts` | Client Records |
 | `src/api/client-detail.api.ts`, `src/components/client-detail/*`, `src/lib/fact-find/*`, `src/lib/format.ts` | client detail (7 sections) |
 | `src/app/(app)/(tabs)/clients/{new,edit,fact-find}.tsx`, `src/components/clients/client-form.tsx`, `src/schemas/client.schema.ts` | add / edit client, fact-find section editor |
 | `src/app/(app)/(tabs)/workflows/*`, `src/api/workflows.api.ts`, `src/components/workflows/*`, `src/lib/workflows.ts`, `src/types/workflow.types.ts` | Workflows tab |
+| `src/app/(app)/(tabs)/revenue/*`, `src/api/revenue.api.ts`, `src/components/revenue/*`, `src/lib/revenue.ts`, `src/types/revenue.types.ts` | Revenue tab (My Revenue, Map Clients) |
+| `src/components/flash-note.tsx` | short confirmation toast |
 | `src/components/header-add-button.tsx`, `src/components/forms/date-field.tsx` | shared "+" header tile; pure-JS date picker |
 | `modules/ninja-app-icon/`, `plugins/with-android-icon-aliases.js` | Android per-org icons (local native module + manifest plugin) |
 | `src/app/(app)/select-org.tsx`, `src/components/orgs/*` | org picker, card, gate states |

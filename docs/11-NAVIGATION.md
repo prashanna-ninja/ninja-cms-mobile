@@ -16,11 +16,11 @@ src/app/
         ├── index.tsx         Dashboard — welcome banner + Notices (docs/09)
         ├── clients/          Clients    — Stack: index (Client Records list) + [id] (client). Hidden without access.
         ├── workflows/        Workflows  — list · [workflowId] board · [workflowId]/[placementId] (docs/13)
-        ├── revenue.tsx       Revenue    — placeholder
+        ├── revenue/          Revenue    — index (My Revenue) · map-client (Map Clients) (docs/14). Hidden without access.
         └── settings.tsx      Settings   — member card, org, account, app, sign out, delete account
 ```
 
-URLs: `/` (Dashboard), `/clients`, `/workflows`, `/revenue`, `/settings`, `/select-org`, `/sign-in`, `/forgot-password`.
+URLs: `/` (Dashboard), `/clients`, `/workflows`, `/revenue`, `/revenue/map-client`, `/settings`, `/select-org`, `/sign-in`, `/forgot-password`.
 
 ## 2. Tab bar
 
@@ -82,7 +82,7 @@ with one memorable piece. Staggered `FadeIn` on open.
 ## 5. Later
 
 - **Hide tabs per user.** ✅ Clients is done: hidden unless `GET …/client-records` is allowed (403 → `href: null`),
-  docs/12-CLIENTS.md §2. Workflows: same approach (`useWorkflowsAccess`, docs/13 §2). Revenue: same when built. The web shows these portal sections only when the user's CMS flags allow:
+  docs/12-CLIENTS.md §2. Workflows: same approach (`useWorkflowsAccess`, docs/13 §2). Revenue: same (`useRevenueAccess`, the unfiltered `/api/my-revenue/stats`, docs/14 §2). The web shows these portal sections only when the user's CMS flags allow:
   `clientRecordsEnabled`, `workflowsEnabled`, `revenueVisibilityEnabled` (on `User`; not in the session yet,
   so they need `GET /api/me` or a session field). Expo Router: `href: null` on a `Tabs.Screen` hides it.
 - In-app profile/password editing (today: the web portal settings page), theme toggle.
