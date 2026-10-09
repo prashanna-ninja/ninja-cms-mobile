@@ -7,9 +7,10 @@ and what to build next. Keep it current at the end of every step.
 > organisation's **colour and logo** (`Advice.colorTheme` / `Advice.logo`). Read
 > [docs/07-ORG-THEMING.md](docs/07-ORG-THEMING.md) before building any signed-in screen.
 
-> **Status (2026-09-30):** 🚧 **Login done** — email + password sign-in, forgot password, session guard,
-> `apiFetch`, org selection (picker / direct) with per-org colour + tinted logo. The portal home is a
-> placeholder. ⚠️ Real sign-in on a device not yet tested. Next: **portal home**.
+> **Status (2026-10-09):** ✅ Login + org selection, portal home (Notices), **Clients** (list + full client record,
+> add / edit / archive / delete, fact find edit + PDF), **Workflows** (list, board, add client, client on a board,
+> new workflow from templates), Settings, per-org app icons (iOS + Android). ⬜ **Revenue tab** is next.
+> ⚠️ Most features were verified with mocked CMS responses on web. See §8 for the device-test checklist.
 
 ## 1. What works today
 
@@ -19,7 +20,6 @@ and what to build next. Keep it current at the end of every step.
 - **Keyboard avoidance** on both auth screens — focused field + button stay above the keyboard (iOS + Android,
   Expo Go). ⚠️ Needs a device check.
 - **Session guard** — `Stack.Protected` in `src/app/_layout.tsx`, session from `providers/session-provider.tsx`.
-- **Signed-in placeholder** (`(app)/index.tsx`) — name, email, role, sign out.
 - **Org theming** — `lib/org-theme.ts` + `providers/org-theme-provider.tsx`: the active org's colour
   overrides the NativeWind tokens across `(app)`; the CMS NINJA wordmark is **tinted the org colour**
   (Ninja CMS blue before an org is chosen); `<OrgLogo>` shows the org's own logo or initials.
@@ -30,8 +30,8 @@ and what to build next. Keep it current at the end of every step.
   tinted in the org colour; Revenue is still a clean "Coming soon" placeholder. Shared `AppHeader`
   (wordmark + initials avatar → Settings). docs/11-NAVIGATION.md.
 - **Clients tab = Client Records** (2026-10-05) — shown only to users the CMS allows (403 → hidden); list with
-  search-as-you-type, Active/Archived, type/tag/source sheets, infinite scroll, pull to refresh; tap → client
-  placeholder. Read-only. docs/12-CLIENTS.md.
+  search-as-you-type, Active/Archived, type/tag/source sheets, infinite scroll, pull to refresh; **+** → Add client;
+  tap → the client record (below). docs/12-CLIENTS.md.
 - **Client detail** (2026-10-07) — header card + 7 sections: Overview (contact, details, editable source, partner
   link/unlink, tags, workflows + add to workflow), Revenue (gated by 403), Fact Find (edit per section + Generate PDF → share sheet, web config ported), Files (upload /
   open / rename / delete), File Notes (add / delete), Ongoing client (record consent, set review), Activity Log. **Add client, Edit,
@@ -55,8 +55,8 @@ and what to build next. Keep it current at the end of every step.
 - TanStack Query client with app-foreground refetch (`focusManager` ↔ `AppState`) and offline pause
   (`onlineManager` ↔ `expo-network`) — `src/lib/query-client.ts`, `src/providers/query-provider.tsx`.
 - Query-key factory `src/lib/query-keys.ts`; `cn()` in `src/lib/utils.ts`; `Screen` / `Container` shells.
-- Verified: `npx tsc --noEmit` ✅, `npx expo lint` ✅, `npx expo-doctor` 20/20 ✅, `expo export -p android` bundles ✅.
-  Not yet run on a physical device.
+- Verified 2026-10-09: `npx tsc --noEmit` ✅, `npx expo lint` ✅, `npx expo-doctor` 20/20 ✅ (Expo 57.0.27).
+  The user has run it on Android + iOS dev builds (login, icons, clients). Newer features still need a device pass (§8).
 
 ## 2. Prerequisites
 
@@ -110,7 +110,7 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
 4. **Auth imports from `better-auth/client`, never `better-auth/react`**, and the session comes from
    `useSession()` in `providers/session-provider.tsx` (React 19 tearing — PRM bug). See docs/06-AUTH.md §6.
 5. **better-auth packages are pinned exactly to 1.6.11** (incl. `@better-auth/core`) = the CMS. Bump them together.
-6. **No function `style` on `Pressable`** — NativeWind drops it (invisible button, PRM bug). Use plain objects.
+6. **No function `style` on `Pressable`** — see 17.
 7. **Animated values via `useState(() => new Animated.Value(0))`**, not `useRef().current` — the React
    Compiler lint (`eslint-config-expo` 57) errors on reading refs during render.
 8. **Icons from `@/lib/icons`** (per-icon subpaths), never the `lucide-react-native` barrel (+3MB).
@@ -127,14 +127,16 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
     `src/constants/app-icons.json`, run `node scripts/generate-app-icons.mjs`,
     never hand-edit `assets/app-icons/`. Alternate icons are native: **rebuild** after changing the list. docs/08.
 14. **New native module ⇒ rebuild the dev app** (`npx expo prebuild --clean && npx expo run:ios|android`). The register
-    and rebuild log are in docs/02 §6. The latest native addition is **expo-document-picker** (2026-10-07).
+    and rebuild log are in docs/02 §6. The latest native changes are the **local module `modules/ninja-app-icon` + the
+    `plugins/with-android-icon-aliases.js` manifest plugin** (2026-10-07) and **expo-sharing** (2026-10-06).
     After `npx expo prebuild`, also check `git diff package.json`, since it rewrites the android/ios scripts.
     Test app icons with a **dev build** (`npm run ios:dev` on a Mac / `npm run android:dev`), never Expo Go;
     `expo start` now targets the dev build (press `s` for Expo Go).
     **Changed app.json / app.config.ts / app-icons.json / a native package? → `npx expo prebuild --clean`
     before `npx expo run:ios|android`** — otherwise the dev build runs a stale native project (template icon,
     missing modules).
-15. ~~Icons/splash are still the Expo template art~~ (replaced 2026-10-02) (colours set to navy `#0B2D6F`). Replace before any store build.
+15. **Opening a system screen from the app** (picker, share sheet, browser): wrap it in `holdAppIconSwitch()` from
+    `src/lib/app-icon.ts`. Otherwise the Android icon switch runs on "background" and breaks it (docs/08 §6).
 16. `apiFetch` must use `credentials: "omit"` and send
    the cookie manually; signing out on 401, not on 403.
 17. **Never `style={({ pressed }) => …}` on `Pressable`.** NativeWind drops function styles on native (the button
@@ -155,9 +157,21 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
 6. ✅ **EAS** — `eas.json` profiles, `.easignore`, production env + guard (2026-10-02). ⬜ `eas init` + first
    TestFlight build (needs your Expo/Apple logins) — docs/10-RELEASE-IOS.md §2–3.
 7. 🚧 **Portal home** — Notices ✅; next: quick links, events, … → proper dashboard. ⚠️ Check real notices on a device.
-8. ✅ Tabs. 🚧 Clients: list ✅ → profile ✅ (7 sections) → add / edit / archive / delete ✅ → add to workflow ✅ → fact-find edit + PDF ✅
-   (docs/12 §6). ✅ Workflows (2026-10-08, docs/13). ⬜ Revenue
-   (gate them like Clients).
+8. ✅ Tabs. ✅ Clients: list, record (7 sections), add / edit / archive / delete, add to workflow, fact-find edit + PDF
+   (docs/12). ✅ Workflows: list, board, add client, client on a board, new workflow from templates, add a stage
+   (docs/13; later maybe: checklist-item assignee / due editing, shared checklist templates, the Summary).
+9. ⬜ **Revenue tab** (next): web `/portal/[adviceId]/revenue`; gate it like Clients (403 → hidden). The client page
+   already has a Revenue section (`src/components/client-detail/revenue-section.tsx`) to reuse.
+
+**Device-test checklist** (built + mock-tested, not yet confirmed on a phone):
+- Android per-org icon switches after leaving the app; launching via `expo run:android` still works.
+- File upload on Android (picker no longer stuck); Generate PDF → share sheet (iOS + Android).
+- Fact-find section editor with the keyboard; the Save button in the header.
+- Workflows: swiping between stage pages; add client; move stage; ticking checklists.
+- Confirm alerts (archive / delete client, remove from workflow, discard fact-find changes): they don't render on web.
+
+**Rebuild needed?** The last native changes are listed in docs/02 §6. A dev build made before 2026-10-09 should be
+rebuilt once to pick up the Expo patch updates (`npx expo prebuild --clean && npx expo run:ios|android`).
 
 ## 9. Where things live
 
@@ -179,6 +193,10 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
 | `src/app/(app)/(tabs)/settings.tsx`, `src/components/settings/*`, `src/lib/user-display.ts` | Settings tab |
 | `src/app/(app)/(tabs)/clients/*`, `src/api/clients.api.ts`, `src/components/clients/*`, `src/lib/clients.ts` | Client Records |
 | `src/api/client-detail.api.ts`, `src/components/client-detail/*`, `src/lib/fact-find/*`, `src/lib/format.ts` | client detail (7 sections) |
+| `src/app/(app)/(tabs)/clients/{new,edit,fact-find}.tsx`, `src/components/clients/client-form.tsx`, `src/schemas/client.schema.ts` | add / edit client, fact-find section editor |
+| `src/app/(app)/(tabs)/workflows/*`, `src/api/workflows.api.ts`, `src/components/workflows/*`, `src/lib/workflows.ts`, `src/types/workflow.types.ts` | Workflows tab |
+| `src/components/header-add-button.tsx`, `src/components/forms/date-field.tsx` | shared "+" header tile; pure-JS date picker |
+| `modules/ninja-app-icon/`, `plugins/with-android-icon-aliases.js` | Android per-org icons (local native module + manifest plugin) |
 | `src/app/(app)/select-org.tsx`, `src/components/orgs/*` | org picker, card, gate states |
 | `src/lib/roles.ts` | `canAccessPortal` (ported from CMS lib/staff.ts) |
 | `src/constants/app-icons.json`, `scripts/generate-app-icons.mjs`, `assets/app-icons/` | per-org app icons (source, generator, output) |
@@ -206,3 +224,14 @@ npx tsc --noEmit         # typecheck
 npx expo-doctor          # dependency/config health
 npx expo install --fix   # align package versions with the SDK
 ```
+
+## 12. Changing session (new chat) — the routine
+
+When the user says they want to **change session / start a new chat**, do all of this without being asked again
+(full checklist + prompt template: [docs/PROMPTS.md](docs/PROMPTS.md) § "Changing session"):
+
+1. **Docs:** IMPLEMENTATION-LOG entry for anything unlogged; this file current (status line, §1, §7, §8, §9); feature
+   docs (`docs/NN-*.md`) and the docs/02 §6 rebuild log up to date.
+2. **Loose ends:** `npx tsc --noEmit`, `npx expo lint`, `npx expo-doctor` (fix patch drift with `npx expo install
+   --fix`); `git status` clean (remove stray files, add ignores); stale TODOs/claims fixed; commit everything.
+3. **Hand-off prompt:** give the user a ready-to-paste prompt for the new session (template in docs/PROMPTS.md).

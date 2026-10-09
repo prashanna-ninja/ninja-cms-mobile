@@ -5,6 +5,19 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-10-09 — Session wrap-up: docs, loose ends, a standing "changing session" routine
+
+- **Routine written down** (the user asked for it once): when the user wants a new session, update the docs, tighten
+  loose ends and hand over a ready-to-paste prompt. Checklist + template: `docs/PROMPTS.md` §"Changing session";
+  pointers in `AGENTS.md` and `HANDOVER.md` §12.
+- **Loose ends:** `expo-doctor` flagged 4 Expo patch versions → `npx expo install --fix` (20/20 now; rebuild the dev
+  client once). Removed the Gradle cache that the local module produced and added ignore rules (git + EAS).
+- **HANDOVER refreshed:** status line (2026-10-09), dropped the stale "signed-in placeholder" / "read-only clients"
+  bullets, gotcha 14 names the latest native changes, gotcha 15 = `holdAppIconSwitch`, §8 = next step (Revenue) + a
+  device-test checklist + the rebuild note, §9 lists the Clients editors, Workflows and the icon module.
+
+---
+
 ## 2026-10-08 — Workflows: "+" tile instead of the New workflow pill
 
 The filled "New workflow" pill on its own row looked out of place. The Clients **+** tile is now a shared
