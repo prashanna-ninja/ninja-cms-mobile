@@ -51,3 +51,7 @@ yarn-error.*
 # Not needed to build the app (icon/wordmark source art, review sheet)
 assets/source/
 assets/app-icons/preview.png
+
+# Gradle caches / outputs of local Expo modules (recreated on every build)
+modules/*/android/.gradle/
+modules/*/android/build/

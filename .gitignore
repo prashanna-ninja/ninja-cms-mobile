@@ -46,3 +46,7 @@ example
 
 # Reference projects (read-only — CMS web/backend + CRM mobile)
 /ref
+
+# Gradle caches / outputs of local Expo modules (recreated on every build)
+modules/*/android/.gradle/
+modules/*/android/build/
