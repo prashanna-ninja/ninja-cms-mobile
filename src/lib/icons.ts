@@ -100,3 +100,7 @@ export { default as Share2 } from "lucide-react-native/icons/share-2";
 export { default as SquareKanban } from "lucide-react-native/icons/square-kanban";
 export { default as UserCheck } from "lucide-react-native/icons/user-check";
 export { default as UserPlus } from "lucide-react-native/icons/user-plus";
+
+// Revenue
+export { default as Link2Off } from "lucide-react-native/icons/link-2-off";
+export { default as Wallet } from "lucide-react-native/icons/wallet";

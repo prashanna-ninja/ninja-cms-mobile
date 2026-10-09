@@ -4,6 +4,7 @@ import { Pressable, type ColorValue } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useClientRecordsAccess } from "@/api/clients.api";
+import { useRevenueAccess } from "@/api/revenue.api";
 import { useWorkflowsAccess } from "@/api/workflows.api";
 import { ChartLine, LayoutDashboard, Settings, Users, Workflow } from "@/lib/icons";
 import { useOrgTheme } from "@/providers/org-theme-provider";
@@ -73,8 +74,8 @@ function TabButton({
  *
  * Clients is hidden unless the server grants Client Records access (asked via
  * `useClientRecordsAccess` — mirrors the web exactly). Workflows is gated the same way
- * (`useWorkflowsAccess`); Revenue will be once it's built. See docs/11-NAVIGATION.md, docs/12-CLIENTS.md,
- * docs/13-WORKFLOWS.md.
+ * (`useWorkflowsAccess`), and Revenue too (`useRevenueAccess` — the user's own revenue). See
+ * docs/11-NAVIGATION.md, docs/12-CLIENTS.md, docs/13-WORKFLOWS.md, docs/14-REVENUE.md.
  */
 export default function TabsLayout() {
   const { org, theme } = useOrgTheme();
@@ -82,6 +83,8 @@ export default function TabsLayout() {
   const canSeeClients = useClientRecordsAccess(org?.id) === true;
   // Workflows: Client Records + workflowsEnabled on the adviser (and staff user); 403 → hidden.
   const canSeeWorkflows = useWorkflowsAccess(org?.id) === true;
+  // Revenue: admin/orgadmin, or an adviser with revenueVisibilityEnabled (web "My Revenue"); 403 → hidden.
+  const canSeeRevenue = useRevenueAccess() === true;
   const insets = useSafeAreaInsets();
 
   return (
@@ -134,6 +137,7 @@ export default function TabsLayout() {
         name="revenue"
         options={{
           title: "Revenue",
+          href: canSeeRevenue ? undefined : null,
           tabBarIcon: ({ color, focused }) => <TabIcon icon={ChartLine} color={color} focused={focused} />,
         }}
       />

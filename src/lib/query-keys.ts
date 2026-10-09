@@ -34,4 +34,14 @@ export const qk = {
   workflowTemplateSearch: (adviceId: string, q: string) => ["workflows", adviceId, "templates", "search", q] as const,
   /** GET …/workflows/available-clients?workflowId= — your clients not yet on the board. */
   availableClients: (workflowId: string) => ["workflow", "available-clients", workflowId] as const,
+  /** Everything under /api/my-revenue — the user's own revenue (not org-scoped). Prefix for invalidation. */
+  revenue: () => ["my-revenue"] as const,
+  /** GET /api/my-revenue/stats (per filter set). The unfiltered one is also the Revenue-tab access probe. */
+  revenueStats: (filters: object) => ["my-revenue", "stats", filters] as const,
+  /** GET /api/my-revenue/transactions (infinite, per filter set). */
+  revenueTransactions: (filters: object) => ["my-revenue", "transactions", filters] as const,
+  /** GET /api/my-revenue/account-groups (infinite, per mapped filter + search). */
+  revenueAccounts: (filters: object) => ["my-revenue", "accounts", filters] as const,
+  /** GET /api/my-revenue/clients?search= — your clients for the map-to-client picker. */
+  revenueClients: (search: string) => ["my-revenue", "clients", search] as const,
 };
