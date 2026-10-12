@@ -4,6 +4,7 @@ import * as React from "react";
 import { ScrollView, Text, View, type TextStyle } from "react-native";
 
 import { openUrl } from "@/lib/open-url";
+import { useStoredImage } from "@/lib/stored-file";
 
 /**
  * Native renderer for the CMS's rich text (Tiptap HTML, the `rich-text` block).
@@ -129,9 +130,11 @@ const isBlank = (runs: React.ReactNode[]) =>
 
 function InlineImage({ src, alt }: { src: string; alt?: string }) {
   const [ratio, setRatio] = React.useState(16 / 9);
+  const stored = useStoredImage(src);
   return (
     <Image
-      source={{ uri: src }}
+      source={stored.source}
+      onError={stored.onError}
       accessibilityLabel={alt}
       style={{ width: "100%", aspectRatio: ratio, borderRadius: 10 }}
       contentFit="contain"

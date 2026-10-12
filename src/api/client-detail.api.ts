@@ -253,12 +253,44 @@ export const UPLOAD_MAX_BYTES = 10 * 1024 * 1024;
 export type PickedFile = { uri: string; name: string; mimeType: string; size: number };
 
 /**
- * Upload a file to the client — the web's 3 steps (ClientFilesTab.tsx):
- *  1. POST /api/upload {key, contentType, contentLength} → presigned S3 PUT (5 min)
- *  2. PUT the bytes to S3
+ * Upload a file to the client — the web's 3 steps (ClientFilesTab.tsx + lib/services/storage.ts):
+ *  1. POST /api/upload {key, contentType, contentLength} → presigned R2 PUT (5 min) + a database
+ *     fallback link (`/api/upload/local?token=…`, no cookie needed) — since 2026-10-08 the CMS uses R2, not S3
+ *  2. PUT the bytes to R2; if R2 refuses, PUT them to the fallback and use `fallbackPublicUrl`
+ *     (web putFileWithFallback)
  *  3. POST {base}/files {fileName, fileUrl, bucketKey, contentType, fileSizeBytes}
  * If step 3 fails, the uploaded object is removed (DELETE /api/upload).
  */
+type UploadTarget = {
+  uploadUrl: string;
+  publicUrl: string;
+  fallbackUploadUrl?: string | null;
+  fallbackPublicUrl?: string | null;
+  key: string;
+};
+
+/** PUT to the issued URL; on failure retry the database fallback once. Returns the URL that opens the file. */
+async function putWithFallback(target: UploadTarget, body: Blob, contentType: string): Promise<string> {
+  const put = (url: string) => fetch(url, { method: "PUT", credentials: "omit", headers: { "Content-Type": contentType }, body });
+  const fallbackUrl = target.fallbackUploadUrl?.trim();
+  const canFallback = !!fallbackUrl && fallbackUrl !== target.uploadUrl;
+
+  let status = 0;
+  try {
+    const primary = await put(target.uploadUrl);
+    if (primary.ok) return target.publicUrl;
+    status = primary.status;
+  } catch {
+    // Network error reaching the bucket — try the fallback.
+  }
+  if (canFallback) {
+    const fallback = await put(fallbackUrl).catch(() => null);
+    if (fallback?.ok) return target.fallbackPublicUrl?.trim() || target.publicUrl;
+    status = fallback?.status ?? status;
+  }
+  throw new Error(status ? `Upload failed (${status}). Please try again.` : "Upload failed. Check your connection and try again.");
+}
+
 export function useUploadFile(adviceId: string | undefined, clientId: string) {
   const invalidate = useInvalidate(clientId, adviceId);
   return useMutation({
@@ -269,21 +301,20 @@ export function useUploadFile(adviceId: string | undefined, clientId: string) {
       if (file.size > UPLOAD_MAX_BYTES) throw new Error("Files must be 10 MB or smaller.");
 
       const key = `uploads/documents/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
-      const presign = await apiFetch<{ uploadUrl: string; publicUrl: string; key: string }>("/api/upload", {
+      const presign = await apiFetch<UploadTarget>("/api/upload", {
         method: "POST",
         ...json({ key, contentType: file.mimeType, contentLength: file.size }),
       });
 
       const bytes = await (await fetch(file.uri)).blob();
-      const put = await fetch(presign.uploadUrl, { method: "PUT", headers: { "Content-Type": file.mimeType }, body: bytes });
-      if (!put.ok) throw new Error(`Upload failed (${put.status}). Please try again.`);
+      const fileUrl = await putWithFallback(presign, bytes, file.mimeType);
 
       try {
         return await apiFetch<{ file: ClientFile }>(`${base(adviceId!, clientId)}/files`, {
           method: "POST",
           ...json({
             fileName: file.name.slice(0, 255),
-            fileUrl: presign.publicUrl,
+            fileUrl,
             bucketKey: presign.key,
             contentType: file.mimeType,
             fileSizeBytes: file.size,

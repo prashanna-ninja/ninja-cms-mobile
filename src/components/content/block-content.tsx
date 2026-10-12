@@ -5,6 +5,7 @@ import { Pressable, Text, View } from "react-native";
 import { RichText } from "@/components/content/rich-text";
 import { CirclePlay, ClipboardList, ExternalLink, FileText } from "@/lib/icons";
 import { openUrl } from "@/lib/open-url";
+import { useStoredImage } from "@/lib/stored-file";
 import type { OrgTheme } from "@/lib/org-theme";
 import type { BlockContent, Row } from "@/schemas/grid-builder.schema";
 
@@ -32,9 +33,11 @@ function ContentImage({ src, alt, caption, redirectUrl, backgroundColor, tint }:
   tint: string;
 }) {
   const [ratio, setRatio] = React.useState(4 / 3);
+  const stored = useStoredImage(src);
   const image = (
     <Image
-      source={{ uri: src }}
+      source={stored.source}
+      onError={stored.onError}
       accessibilityLabel={alt}
       style={{ width: "100%", aspectRatio: ratio, maxHeight: 500, borderRadius: 10 }}
       contentFit="contain"

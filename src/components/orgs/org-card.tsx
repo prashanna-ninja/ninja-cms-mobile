@@ -3,6 +3,7 @@ import * as React from "react";
 import { Pressable, Text, View } from "react-native";
 
 import { buildOrgTheme } from "@/lib/org-theme";
+import { useStoredImage } from "@/lib/stored-file";
 import { ArrowRight } from "@/lib/icons";
 import type { OrgSummary } from "@/types/advice.types";
 
@@ -23,9 +24,9 @@ import type { OrgSummary } from "@/types/advice.types";
 export function OrgCard({ org, onPress }: { org: OrgSummary; onPress: (org: OrgSummary) => void }) {
   const theme = buildOrgTheme(org.colorTheme);
   const [pressed, setPressed] = React.useState(false);
-  const [logoFailed, setLogoFailed] = React.useState(false);
+  const logo = useStoredImage(org.logo);
   const onDark = theme.onBase === "#FFFFFF";
-  const showLogo = !!org.logo && !logoFailed;
+  const showLogo = !!org.logo && !logo.failed;
 
   return (
     <Pressable
@@ -56,12 +57,12 @@ export function OrgCard({ org, onPress }: { org: OrgSummary; onPress: (org: OrgS
 
       {showLogo ? (
         <Image
-          source={{ uri: org.logo! }}
+          source={logo.source}
           style={{ width: "86%", height: "52%" }}
           contentFit="contain"
           cachePolicy="disk"
           transition={150}
-          onError={() => setLogoFailed(true)}
+          onError={logo.onError}
         />
       ) : (
         <View style={{ alignItems: "center", gap: 4, paddingHorizontal: 4 }}>
