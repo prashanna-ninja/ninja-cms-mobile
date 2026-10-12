@@ -111,16 +111,31 @@ export type ClientNote = {
   author: { id: string; name: string } | null;
 };
 
+/** GET {base}/annual-consent — CMS lib/clients/annual-consent.ts listClientAnnualConsents + the route's `workflows`. */
 export type AnnualConsentResponse = {
-  entries: { id: string; consentedOn: string; note: string | null; createdAt: string; recordedBy: { id: string; name: string } | null }[];
-  schedule: { consentedOn: string; dueOn: string; daysUntil: number } | null;
+  arrangement: { status: "active" | "cancelled"; nextDueOn: string; daysUntil: number } | null;
+  /** Newest first. */
+  events: {
+    id: string;
+    kind: "setup" | "received" | "not_renewed";
+    dueOn: string;
+    note: string | null;
+    createdAt: string;
+    file: { id: string; fileName: string; fileUrl: string } | null;
+    recordedBy: { id: string; name: string } | null;
+  }[];
   review: {
     interval: "six_months" | "twelve_months";
     nextReviewOn: string;
     leadDays: number;
+    addToWorkflow: boolean;
+    workflowId: string | null;
+    stageId: string | null;
     updatedAt: string;
     updatedBy: { id: string; name: string } | null;
   } | null;
+  /** The client adviser's workflows in this org, for "add a card to a workflow". */
+  workflows: { id: string; name: string; stages: { id: string; name: string }[] }[];
 };
 
 export type ClientActivity = {

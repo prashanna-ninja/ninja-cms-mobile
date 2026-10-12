@@ -1,13 +1,12 @@
-import * as DocumentPicker from "expo-document-picker";
 import * as React from "react";
 import { Alert, Modal, Pressable, Text, TextInput, View } from "react-native";
 
-import { UPLOAD_MIME_TYPES, useClientFiles, useDeleteFile, useRenameFile, useUploadFile } from "@/api/client-detail.api";
+import { useClientFiles, useDeleteFile, useRenameFile, useUploadFile } from "@/api/client-detail.api";
 import { C, Card, Empty, ErrorNote, F, Loading, PillButton, text } from "@/components/client-detail/ui";
-import { holdAppIconSwitch } from "@/lib/app-icon";
 import { formatDateTime, formatFileSize } from "@/lib/format";
 import { FileText, FolderOpen, Pencil, Trash, Upload } from "@/lib/icons";
 import { openUrl } from "@/lib/open-url";
+import { pickDocument } from "@/lib/pick-document";
 import { useOrgTheme } from "@/providers/org-theme-provider";
 import type { ClientFile } from "@/types/client-detail.types";
 
@@ -15,7 +14,7 @@ const alertError = (err: unknown) => Alert.alert("Something went wrong", err ins
 
 /**
  * Files — web ClientFilesTab: upload (PDF / Word / Excel / images, ≤ 10 MB), open
- * (public S3 URL in the in-app browser), rename, delete. Anyone with access can do all.
+ * (R2 link in the in-app browser; a CMS-database copy via the share sheet — lib/stored-file.ts), rename, delete. Anyone with access can do all.
  * Upload uses expo-document-picker (native module — dev builds need a rebuild).
  */
 export function FilesSection({ adviceId, clientId }: { adviceId: string; clientId: string }) {
@@ -25,29 +24,13 @@ export function FilesSection({ adviceId, clientId }: { adviceId: string; clientI
   const remove = useDeleteFile(adviceId, clientId);
   const [renaming, setRenaming] = React.useState<ClientFile | null>(null);
 
-  // One picker at a time: a second getDocumentAsync while one is open rejects
-  // ("Different document picking in progress"), so extra taps are ignored.
-  const picking = React.useRef(false);
   const pick = async () => {
-    if (picking.current) return;
-    picking.current = true;
-    let res: DocumentPicker.DocumentPickerResult;
     try {
-      res = await holdAppIconSwitch(() =>
-        DocumentPicker.getDocumentAsync({ type: UPLOAD_MIME_TYPES, copyToCacheDirectory: true, multiple: false }),
-      );
+      const file = await pickDocument();
+      if (file) upload.mutate(file, { onError: alertError });
     } catch (err) {
       alertError(err);
-      return;
-    } finally {
-      picking.current = false;
     }
-    if (res.canceled || !res.assets?.[0]) return;
-    const a = res.assets[0];
-    upload.mutate(
-      { uri: a.uri, name: a.name, mimeType: a.mimeType ?? "application/octet-stream", size: a.size ?? 0 },
-      { onError: alertError },
-    );
   };
 
   const confirmDelete = (f: ClientFile) =>

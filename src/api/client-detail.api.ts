@@ -259,15 +259,6 @@ export const UPLOAD_MAX_BYTES = 10 * 1024 * 1024;
 
 export type PickedFile = { uri: string; name: string; mimeType: string; size: number };
 
-/**
- * Upload a file to the client — the web's 3 steps (ClientFilesTab.tsx + lib/services/storage.ts):
- *  1. POST /api/upload {key, contentType, contentLength} → presigned R2 PUT (5 min) + a database
- *     fallback link (`/api/upload/local?token=…`, no cookie needed) — since 2026-10-08 the CMS uses R2, not S3
- *  2. PUT the bytes to R2; if R2 refuses, PUT them to the fallback and use `fallbackPublicUrl`
- *     (web putFileWithFallback)
- *  3. POST {base}/files {fileName, fileUrl, bucketKey, contentType, fileSizeBytes}
- * If step 3 fails, the uploaded object is removed (DELETE /api/upload).
- */
 type UploadTarget = {
   uploadUrl: string;
   publicUrl: string;
@@ -298,37 +289,53 @@ async function putWithFallback(target: UploadTarget, body: Blob, contentType: st
   throw new Error(status ? `Upload failed (${status}). Please try again.` : "Upload failed. Check your connection and try again.");
 }
 
+/**
+ * Steps 1–2 of an upload (shared with the annual-consent "received" action): checks type + size,
+ * presigns and PUTs the bytes. Returns what step 3 registers.
+ */
+async function uploadToStorage(file: PickedFile) {
+  if (!UPLOAD_MIME_TYPES.includes(file.mimeType)) {
+    throw new Error("That file type isn't supported. Use a PDF, Word, Excel or image file.");
+  }
+  if (file.size > UPLOAD_MAX_BYTES) throw new Error("Files must be 10 MB or smaller.");
+
+  const key = `uploads/documents/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+  const presign = await apiFetch<UploadTarget>("/api/upload", {
+    method: "POST",
+    ...json({ key, contentType: file.mimeType, contentLength: file.size }),
+  });
+  const bytes = await (await fetch(file.uri)).blob();
+  const fileUrl = await putWithFallback(presign, bytes, file.mimeType);
+  return {
+    fileName: file.name.slice(0, 255),
+    fileUrl,
+    bucketKey: presign.key,
+    contentType: file.mimeType,
+    fileSizeBytes: file.size,
+  };
+}
+
+/** Remove an uploaded object whose registration failed (best effort). */
+const discardUpload = (key: string) => apiFetch("/api/upload", { method: "DELETE", ...json({ key }) }).catch(() => {});
+
+/**
+ * Upload a file to the client — the web's 3 steps (ClientFilesTab.tsx + lib/services/storage.ts):
+ *  1. POST /api/upload {key, contentType, contentLength} → presigned R2 PUT (5 min) + a database
+ *     fallback link (`/api/upload/local?token=…`, no cookie needed) — since 2026-10-08 the CMS uses R2, not S3
+ *  2. PUT the bytes to R2; if R2 refuses, PUT them to the fallback and use `fallbackPublicUrl`
+ *     (web putFileWithFallback)
+ *  3. POST {base}/files {fileName, fileUrl, bucketKey, contentType, fileSizeBytes}
+ * If step 3 fails, the uploaded object is removed (DELETE /api/upload).
+ */
 export function useUploadFile(adviceId: string | undefined, clientId: string) {
   const invalidate = useInvalidate(clientId, adviceId);
   return useMutation({
     mutationFn: async (file: PickedFile) => {
-      if (!UPLOAD_MIME_TYPES.includes(file.mimeType)) {
-        throw new Error("That file type isn't supported. Use a PDF, Word, Excel or image file.");
-      }
-      if (file.size > UPLOAD_MAX_BYTES) throw new Error("Files must be 10 MB or smaller.");
-
-      const key = `uploads/documents/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
-      const presign = await apiFetch<UploadTarget>("/api/upload", {
-        method: "POST",
-        ...json({ key, contentType: file.mimeType, contentLength: file.size }),
-      });
-
-      const bytes = await (await fetch(file.uri)).blob();
-      const fileUrl = await putWithFallback(presign, bytes, file.mimeType);
-
+      const stored = await uploadToStorage(file);
       try {
-        return await apiFetch<{ file: ClientFile }>(`${base(adviceId!, clientId)}/files`, {
-          method: "POST",
-          ...json({
-            fileName: file.name.slice(0, 255),
-            fileUrl,
-            bucketKey: presign.key,
-            contentType: file.mimeType,
-            fileSizeBytes: file.size,
-          }),
-        });
+        return await apiFetch<{ file: ClientFile }>(`${base(adviceId!, clientId)}/files`, { method: "POST", ...json(stored) });
       } catch (err) {
-        await apiFetch("/api/upload", { method: "DELETE", ...json({ key: presign.key }) }).catch(() => {});
+        await discardUpload(stored.bucketKey);
         throw err;
       }
     },
@@ -338,31 +345,52 @@ export function useUploadFile(adviceId: string | undefined, clientId: string) {
 
 /* ------------------------- ongoing client ------------------------- */
 
-/** POST {base}/annual-consent — upserts the latest entry (web: "Save date"). */
-export function useSaveConsent(adviceId: string | undefined, clientId: string) {
+export type ConsentAction =
+  | { action: "setup"; nextDueOn: string }
+  | { action: "received"; file: PickedFile }
+  | { action: "not_renewed" };
+
+/**
+ * POST {base}/annual-consent — the arrangement lifecycle (CMS lib/clients/annual-consent.ts, since 2026-10-06):
+ * `setup` (next due date, when none is active) · `received` (the signed consent is uploaded, saved as a client
+ * file, and the due date moves on a year) · `not_renewed` (cancels the arrangement).
+ */
+export function useConsentAction(adviceId: string | undefined, clientId: string) {
   const invalidate = useInvalidate(clientId, adviceId);
   return useMutation({
-    mutationFn: (body: { consentedOn: string; note?: string }) =>
-      apiFetch(`${base(adviceId!, clientId)}/annual-consent`, { method: "POST", ...json(body) }),
-    onSuccess: () => invalidate("annual-consent"),
+    mutationFn: async (input: ConsentAction) => {
+      const url = `${base(adviceId!, clientId)}/annual-consent`;
+      if (input.action !== "received") return apiFetch(url, { method: "POST", ...json(input) });
+      const file = await uploadToStorage(input.file);
+      try {
+        return await apiFetch(url, { method: "POST", ...json({ action: "received", file }) });
+      } catch (err) {
+        await discardUpload(file.bucketKey);
+        throw err;
+      }
+    },
+    onSuccess: (_d, input) => {
+      invalidate("annual-consent");
+      if (input.action === "received") invalidate("files");
+    },
   });
 }
 
-export function useDeleteConsent(adviceId: string | undefined, clientId: string) {
-  const invalidate = useInvalidate(clientId, adviceId);
-  return useMutation({
-    mutationFn: (consentId: string) =>
-      apiFetch(`${base(adviceId!, clientId)}/annual-consent/${encodeURIComponent(consentId)}`, { method: "DELETE" }),
-    onSuccess: () => invalidate("annual-consent"),
-  });
-}
-
-/** PUT {base}/ongoing-review {interval, nextReviewOn, leadDays}. */
+/**
+ * PUT {base}/ongoing-review. `addToWorkflow` is required; when true, `workflowId` + `stageId` too
+ * (a card is added to that stage `leadDays` before the review).
+ */
 export function useSaveReview(adviceId: string | undefined, clientId: string) {
   const invalidate = useInvalidate(clientId, adviceId);
   return useMutation({
-    mutationFn: (body: { interval: "six_months" | "twelve_months"; nextReviewOn: string; leadDays: 30 | 60 | 90 }) =>
-      apiFetch(`${base(adviceId!, clientId)}/ongoing-review`, { method: "PUT", ...json(body) }),
+    mutationFn: (body: {
+      interval: "six_months" | "twelve_months";
+      nextReviewOn: string;
+      leadDays: 30 | 60 | 90;
+      addToWorkflow: boolean;
+      workflowId?: string;
+      stageId?: string;
+    }) => apiFetch(`${base(adviceId!, clientId)}/ongoing-review`, { method: "PUT", ...json(body) }),
     onSuccess: () => invalidate("annual-consent"),
   });
 }
