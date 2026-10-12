@@ -246,6 +246,10 @@ function AccountCard({ account, onPress }: { account: RevenueAccountGroup; onPre
               {accountLabel(account)}
             </Text>
             <Text style={{ fontFamily: F.regular, fontSize: 12, color: "#9AA6BF", fontVariant: ["tabular-nums"] }}>
+              {[account.productProvider, account.accountNumber ? `Acc ${account.accountNumber}` : null].filter(Boolean).join(" · ") ||
+                "No provider or account number"}
+            </Text>
+            <Text style={{ fontFamily: F.regular, fontSize: 12, color: "#9AA6BF", fontVariant: ["tabular-nums"] }}>
               {`${n} transaction${n === 1 ? "" : "s"} · gross ${formatMoney(account.grossAmount)}`}
             </Text>
           </View>

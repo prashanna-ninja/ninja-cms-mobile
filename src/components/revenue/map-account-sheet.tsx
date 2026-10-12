@@ -15,8 +15,11 @@ import { useOrgTheme } from "@/providers/org-theme-provider";
 
 /** What the sheet maps: an account group (Map Clients) or a transaction's account (My Revenue). */
 export type MappableAccount = {
+  productProvider: string | null;
   accountName: string | null;
   accountNumber: string | null;
+  /** Set only for a transaction with no account number — then only that transaction is mapped. */
+  transactionId: string | null;
   client: { id: string; name: string } | null;
   transactionCount?: number;
   grossAmount?: string;
@@ -48,13 +51,14 @@ export function MapAccountSheet({
   const clients = useRevenueClients(debounced, true);
   const map = useMapRevenueAccount();
   const current = account.client;
-  const ids = { accountName: account.accountName, accountNumber: account.accountNumber };
+  const ids = { productProvider: account.productProvider, accountNumber: account.accountNumber, transactionId: account.transactionId };
+  const single = !account.accountNumber;
   const plural = (n: number) => `${n} transaction${n === 1 ? "" : "s"}`;
 
   const submit = () => {
     if (!picked) return;
     map.mutate(
-      { ...ids, clientId: picked.id, remap: !!current },
+      { ...ids, clientId: picked.id },
       {
         onSuccess: ({ count }) => {
           onDone(`Mapped ${plural(count)} to ${picked.name}.`);
@@ -115,7 +119,9 @@ export function MapAccountSheet({
                 <Text style={{ fontFamily: F.bold, fontSize: 17, color: C.ink }} numberOfLines={1}>
                   {accountLabel(account)}
                 </Text>
-                {account.accountName && account.accountNumber ? <Text style={text.meta}>{account.accountNumber}</Text> : null}
+                <Text style={text.meta} numberOfLines={1}>
+                  {[account.productProvider ?? "No provider", account.accountNumber ? `Acc ${account.accountNumber}` : "No account number"].join(" · ")}
+                </Text>
               </View>
             </View>
             {account.transactionCount !== undefined ? (
@@ -134,9 +140,11 @@ export function MapAccountSheet({
           <View style={{ paddingHorizontal: 20, gap: 2, marginBottom: 10 }}>
             <Text style={{ fontFamily: F.bold, fontSize: 16, color: C.ink }}>{current ? "Change client" : "Map to a client"}</Text>
             <Text style={text.meta}>
-              {account.transactionCount !== undefined
-                ? `All ${plural(account.transactionCount)} for this account move to the client you pick.`
-                : "Every transaction for this account moves to the client you pick."}
+              {single
+                ? "No account number, so only this transaction moves to the client you pick."
+                : account.transactionCount !== undefined
+                  ? `All ${plural(account.transactionCount)} for this account move to the client you pick, and future imports follow.`
+                  : "Every transaction for this account moves to the client you pick, and future imports follow."}
             </Text>
           </View>
 

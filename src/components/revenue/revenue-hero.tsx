@@ -66,7 +66,7 @@ export function RevenueHero({ stats, rangeLabel, dim }: { stats: RevenueStats | 
         <View style={{ flexDirection: "row", gap: 8, opacity: dim ? 0.55 : 1 }}>
           <Tile bg={tile} icon={Wallet} label="Net" hint="after GST" value={stats ? formatMoney(stats.netAmount) : "—"} ink={ink} soft={soft} wide />
           <Tile bg={tile} icon={FileText} label="Txns" value={stats ? String(count) : "—"} ink={ink} soft={soft} />
-          <Tile bg={tile} icon={Users} label="Clients" value={stats ? String(stats.accountCount) : "—"} ink={ink} soft={soft} />
+          <Tile bg={tile} icon={Users} label="Clients" value={stats ? String(stats.clientCount ?? stats.accountCount) : "—"} ink={ink} soft={soft} />
         </View>
       </LinearGradient>
     </View>

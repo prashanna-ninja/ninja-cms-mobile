@@ -2,6 +2,8 @@ import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tansta
 
 import { ApiError, apiFetch } from "@/lib/api-client";
 import { qk } from "@/lib/query-keys";
+import { todayYmd } from "@/components/forms/date-field";
+import { presetStart } from "@/lib/revenue";
 import type {
   AnnualConsentResponse,
   ClientActivity,
@@ -72,12 +74,17 @@ export function useClientWorkflows(adviceId: string | undefined, clientId: strin
   });
 }
 
-/** Revenue — 10 per page like the web; 403 = the user can't see revenue (tab hidden). */
+/**
+ * Revenue, financial year to date — the web tab's default (ClientRevenueTab, resolveRevenuePeriod). Since
+ * CMS #121 the summary covers all dates unless a range is sent. 403 = the user can't see revenue (tab hidden).
+ */
 export function useClientRevenue(adviceId: string | undefined, clientId: string) {
   return useInfiniteQuery({
     queryKey: qk.clientSection(clientId, "revenue"),
     queryFn: ({ pageParam }) =>
-      apiFetch<ClientRevenueResponse>(`${base(adviceId!, clientId)}/revenue?page=${pageParam}&pageSize=20&sortBy=-datePaid`),
+      apiFetch<ClientRevenueResponse>(
+        `${base(adviceId!, clientId)}/revenue?page=${pageParam}&pageSize=20&sortBy=-datePaid&datePaidFrom=${presetStart("fy")}&datePaidTo=${todayYmd()}`,
+      ),
     initialPageParam: 1,
     getNextPageParam: (last) =>
       last.transactions.page < last.transactions.totalPages ? last.transactions.page + 1 : undefined,

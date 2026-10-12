@@ -23,7 +23,7 @@ export function RevenueSection({ adviceId, clientId }: { adviceId: string; clien
 
   return (
     <View style={{ gap: 14 }}>
-      <Text style={[text.label, { letterSpacing: 1, marginLeft: 4 }]}>THIS FINANCIAL YEAR</Text>
+      <Text style={[text.label, { letterSpacing: 1, marginLeft: 4 }]}>FINANCIAL YEAR TO DATE</Text>
       <View style={{ gap: 10 }}>
         <Stat label="Total revenue" value={formatMoney(summary.totalNet)} color={C.ink} big />
         <View style={{ flexDirection: "row", gap: 10 }}>
@@ -37,7 +37,7 @@ export function RevenueSection({ adviceId, clientId }: { adviceId: string; clien
           <Empty
             icon={DollarSign}
             title="No revenue mapped yet"
-            message="Map this client's account to revenue transactions from Manage Revenue to see them here."
+            message="No revenue this financial year. Map this client's accounts from Revenue › Map clients to see them here."
           />
         ) : (
           <View>

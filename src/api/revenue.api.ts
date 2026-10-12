@@ -105,26 +105,23 @@ export function useRevenueClients(search: string, enabled: boolean) {
   });
 }
 
-type MapBody = { accountNumber: string | null; accountName: string | null; clientId: string | null };
-const bulkAssign = (body: MapBody) =>
-  apiFetch<{ count: number }>("/api/my-revenue/bulk-assign-client", { method: "POST", ...json(body) });
+/**
+ * CMS lib/clients/revenue-mapping.ts: an account = productProvider + accountNumber (case-insensitive; a null
+ * provider only matches rows without one). No account number → `transactionId` maps that one row.
+ */
+type MapBody = { productProvider: string | null; accountNumber: string | null; transactionId: string | null; clientId: string | null };
 
 /**
- * Map (clientId) or unmap (null) every transaction of one account.
- *
- * Changing an already-mapped account to another client = unmap, then map: the server's
- * map only touches *unmapped* transactions (lib/clients/revenue-mapping.ts), so a direct
- * remap answers 404 "No unmapped transactions" (the web's "Save" has that bug).
+ * Map (clientId) or unmap (null) every transaction of one account. Mapping an already-mapped account to
+ * another client moves it in one call (the server also remembers it for future imports).
  *
  * Refreshes everything revenue-related, plus the client pages' Revenue + Activity sections.
  */
 export function useMapRevenueAccount() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ remap, ...body }: MapBody & { remap?: boolean }) => {
-      if (remap && body.clientId) await bulkAssign({ ...body, clientId: null });
-      return bulkAssign(body);
-    },
+    mutationFn: (body: MapBody) =>
+      apiFetch<{ count: number }>("/api/my-revenue/bulk-assign-client", { method: "POST", ...json(body) }),
     onSettled: () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: qk.revenue() }),

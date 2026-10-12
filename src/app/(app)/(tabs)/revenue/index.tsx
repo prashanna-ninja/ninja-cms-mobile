@@ -235,7 +235,15 @@ export default function MyRevenueScreen() {
               <TransactionRow
                 tx={item}
                 first={first}
-                onPress={() => setMapping({ accountName: item.accountName, accountNumber: item.accountNumber, client: item.client })}
+                onPress={() =>
+                  setMapping({
+                    productProvider: item.productProvider,
+                    accountName: item.accountName,
+                    accountNumber: item.accountNumber,
+                    transactionId: item.accountNumber ? null : item.id,
+                    client: item.client,
+                  })
+                }
               />
             </View>
           );

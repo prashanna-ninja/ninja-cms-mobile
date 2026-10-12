@@ -37,6 +37,12 @@ export type RevenueStats = {
   netAmount: string;
   /** Distinct client accounts in this view. */
   accountCount: number;
+  /** Distinct clients (mapped client, else account) — the web's "Total Clients" card. */
+  clientCount: number;
+  upfrontNet: string;
+  upfrontCount: number;
+  ongoingNet: string;
+  ongoingCount: number;
 };
 
 /** Filters shared by the transactions list and the stats (web MyRevenueClient). */
@@ -59,11 +65,18 @@ export const DEFAULT_REVENUE_FILTERS: RevenueFilters = {
   sortBy: "",
 };
 
-/** One revenue account (grouped by account name, else number) — the Map Clients list. */
+/**
+ * One revenue account — the Map Clients list. Since CMS #122 an account is **product provider + account
+ * number** (key "p:<provider>|n:<number>"); a transaction with no account number is its own row
+ * (key "t:<id>", `transactionId` + `datePaid` set) and maps alone. `accountName` joins the names seen.
+ */
 export type RevenueAccountGroup = {
   key: string;
+  transactionId: string | null;
+  productProvider: string | null;
   accountNumber: string | null;
   accountName: string | null;
+  datePaid: string | null;
   transactionCount: number;
   grossAmount: string;
   netAmount: string;
