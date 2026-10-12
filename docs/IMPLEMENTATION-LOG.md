@@ -5,6 +5,14 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-10-12 — Map Clients: title scrolls with the list
+
+The "Go back / Map Clients" title sat fixed above the list, unlike every other page. It's now part of the list
+header (`map-client.tsx`), so the whole screen scrolls together, like Clients, Workflows and My Revenue. Only the app
+header (logo bar) stays put.
+
+---
+
 ## 2026-10-09 — Revenue tab: My Revenue + Map Clients
 
 Web `/portal/[adviceId]/my-revenue` (+ `/map-client`) on a phone. The data is the user's **own** revenue from

@@ -60,6 +60,15 @@ export default function MapClientsScreen() {
 
   const header = (
     <View style={{ gap: 14, paddingBottom: 10 }}>
+      {/* Title scrolls with the list, like the other tabs (cancel the list's padding — the header brings its own) */}
+      <View style={{ marginHorizontal: -20, marginTop: -16, marginBottom: 2 }}>
+        <FormScreenHeader
+          title="Map Clients"
+          subtitle="Map your revenue accounts to your own clients."
+          onBack={() => (router.canGoBack() ? router.back() : router.replace("/revenue"))}
+        />
+      </View>
+
       {/* Progress — the web's Total / Mapped / Unmapped cards as one gauge */}
       <View style={{ backgroundColor: "#FFFFFF", borderRadius: 20, borderWidth: 1, borderColor: "#D6E0F2", padding: 16, gap: 12 }}>
         <View style={{ flexDirection: "row", alignItems: "flex-end", justifyContent: "space-between" }}>
@@ -158,11 +167,6 @@ export default function MapClientsScreen() {
   return (
     <View className="bg-background flex-1">
       <AppHeader />
-      <FormScreenHeader
-        title="Map Clients"
-        subtitle="Map your revenue accounts to your own clients."
-        onBack={() => (router.canGoBack() ? router.back() : router.replace("/revenue"))}
-      />
       <FlatList<RevenueAccountGroup>
         data={rows}
         keyExtractor={(a) => a.key}
