@@ -7,7 +7,7 @@ and what to build next. Keep it current at the end of every step.
 > organisation's **colour and logo** (`Advice.colorTheme` / `Advice.logo`). Read
 > [docs/07-ORG-THEMING.md](docs/07-ORG-THEMING.md) before building any signed-in screen.
 
-> **Status (2026-10-12):** ✅ Login + org selection, portal home (Notices), **Clients** (list + full client record,
+> **Status (2026-10-12, CMS synced to `a3876ca`):** ✅ Login + org selection, portal home (Notices), **Clients** (list + full client record,
 > add / edit / archive / delete, fact find edit + PDF), **Workflows** (list, board, add client, client on a board,
 > new workflow from templates), **Revenue** (My Revenue + Map Clients), Settings, per-org app icons (iOS + Android).
 > ⚠️ Most features were verified with mocked CMS responses on web. See §8 for the device-test checklist.
@@ -164,8 +164,11 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
 8. ✅ Tabs. ✅ Clients: list, record (7 sections), add / edit / archive / delete, add to workflow, fact-find edit + PDF
    (docs/12). ✅ Workflows: list, board, add client, client on a board, new workflow from templates, add a stage
    (docs/13; later maybe: checklist-item assignee / due editing, shared checklist templates, the Summary).
-9. ✅ **Revenue tab** — My Revenue + Map Clients (docs/14). Later maybe: product filter (needs a CMS API for the
-   provider list). Tell the CMS team: the web's "Save" when changing a mapped account's client fails with 404 (docs/14 §3).
+9. ✅ **Revenue tab** — My Revenue + Map Clients (docs/14). Later maybe: product-provider filter (needs a CMS API for the
+   provider list), upfront / ongoing tiles, revenue by client, CSV/PDF export (all on the web since CMS #121).
+9a. ✅ **CMS sync 2026-10-12** (ref/cms `a3876ca`): S3 → R2 storage, mapping by provider + account number, consent
+   arrangement + review workflow, new fact find (9 sections). See the log. ⬜ Not built yet (new on the web):
+   **personal details editor** on Overview (`client.personalProfile`), **service packages** (per client, in Ongoing).
 10. ⬜ **Next:** ask the user. Candidates: the Dashboard (quick links, events), or more Workflows editing.
 
 **Device-test checklist** (built + mock-tested, not yet confirmed on a phone):
@@ -176,6 +179,9 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
 - Revenue: statement card with a pale and a dark org colour; date / licensee sheets; map / change / unmap an account
   (the custom date range opens a calendar sheet inside a sheet: check it on iOS).
 - Confirm alerts (archive / delete client, remove from workflow, discard fact-find changes): they don't render on web.
+- **R2 (2026-10-12):** upload a client file and open it; open an older (S3) file; org logos still show. Ongoing client:
+  set up consent → upload consent → not renewed; save a review with "add a card to a workflow". Fact find: edit income /
+  entities (checkboxes) / insurance owner. Map Clients: map, change and unmap an account.
 
 **Rebuild needed?** The last native changes are listed in docs/02 §6. A dev build made before 2026-10-09 should be
 rebuilt once to pick up the Expo patch updates (`npx expo prebuild --clean && npx expo run:ios|android`).

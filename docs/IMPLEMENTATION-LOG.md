@@ -5,6 +5,47 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-10-12 — CMS sync: S3 → R2 storage, revenue mapping, consent arrangement, new fact find
+
+Re-checked every CMS commit since our screens were built (ref/cms HEAD `a3876ca`, 2026-10-09). Four changes broke or
+affected the app. All are fixed. No native changes: expo-file-system ships with `expo`, and expo-sharing and
+expo-document-picker were already in.
+
+- **Storage moved from S3 to Cloudflare R2** (CMS `39992cb`, `70f6b1a`, `9bb57f1`). `POST /api/upload` now returns an
+  R2 presign **plus** `fallbackUploadUrl` / `fallbackPublicUrl`, a token link that stores the file in the CMS database.
+  Our upload now does what the web's `putFileWithFallback` does: PUT to R2, and if that fails PUT to the fallback.
+  Files in the database are served by `GET /api/files/<key>`, **which needs the session cookie**, and old rows still
+  point at the S3 bucket (which may be offline). New `src/lib/stored-file.ts`:
+  - `useStoredImage()` loads `/api/files` images with our cookie (re-pointed at `API_BASE_URL`). An S3 image that
+    fails falls back once to its database copy, like the web's `FallbackImage`. Used for org logos (header and
+    picker) and notice images.
+  - `openUrl()` → `openStoredFile()`: an R2 link opens in the in-app browser as before. A database copy is downloaded
+    with the cookie and shown in the share sheet. An S3 link is opened only if the bucket answers a HEAD; otherwise
+    the database copy is used.
+- **Revenue mapping is now keyed by product provider + account number** (CMS #122). `bulk-assign-client` takes
+  `{productProvider, accountNumber, transactionId, clientId}` and no longer reads `accountName`. We were still
+  sending the old body, so most map/unmap calls hit the wrong rows or failed. A remap is now a single call (the
+  unmap-then-map workaround is gone). A transaction with no account number maps on its own. Cards and the sheet show
+  the provider. The "Clients" tile uses the new `clientCount`.
+- **Client record Revenue**: the CMS summary now covers all dates unless a range is sent (CMS #121). We send
+  financial-year-to-date (the web default) and the heading says so.
+- **Ongoing client** (CMS `9bb57f1`): annual consent is now an **arrangement**, with *Set up* (next due date), then
+  *Upload consent* (the signed file is saved as a client file and the due date moves on a year) or *Not renewed*
+  (cancels it). History is the event list; there's no note and no delete any more. The old screen crashed on the new
+  response. The review PUT now requires `addToWorkflow`: added a checkbox plus workflow and stage chips.
+- **Fact find** (CMS `9bb57f1`): 9 sections instead of 15, and a single client (no Client 1/2 switch). Personal
+  details moved to the client record. Income, expenses and associated entities are lists; super is fund + type +
+  balance; asset/liability owner is the client's name or "Joint"; insurance owner is the client or one of their super
+  funds; new checkbox fields. `config.ts` was re-ported verbatim. The PATCH rejects the old section keys, so editing
+  them would have failed.
+- Client `state` max is now 80 (CMS).
+- Not built yet (new on the web): personal details editor (`client.personalProfile`) on Overview, service packages,
+  revenue export (CSV/PDF), revenue by client, product-provider filter, upfront/ongoing tiles. See HANDOVER §8.
+
+tsc ✅ lint ✅.
+
+---
+
 ## 2026-10-12 — Map Clients: title scrolls with the list
 
 The "Go back / Map Clients" title sat fixed above the list, unlike every other page. It's now part of the list

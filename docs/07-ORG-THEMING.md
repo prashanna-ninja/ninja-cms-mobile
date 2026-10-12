@@ -13,7 +13,7 @@ Researched 2026-10-01 against the live CMS (`../cms`, HEAD `1271309`).
 |---|---|---|
 | Org colour | `Advice.colorTheme` (`String?`, hex), set per org in back office `/manage-advice` | Nav background: `advice.colorTheme ?? "#0B2D6F"` (`app/portal/[adviceId]/layout.tsx`, `_components/PortalNav.tsx`). Home sections take a `themeColor` prop (`app/portal/[adviceId]/page.tsx`). |
 | Tints | inline styles | Hex-alpha on the org colour, e.g. `borderColor: \`${themeColor}1a\`` (`WelcomeBanner.tsx`). |
-| Org logo | `Advice.logo` (`String?`, S3 URL) | `<img>` in the nav, 36px high, `object-contain`. **No logo → initials tile** (`rgba(255,255,255,0.15)` bg, white initials) + the org name split over two lines. |
+| Org logo | `Advice.logo` (`String?`, R2 / old S3 / CMS `/api/files` URL — loaded via `useStoredImage`) | `<img>` in the nav, 36px high, `object-contain`. **No logo → initials tile** (`rgba(255,255,255,0.15)` bg, white initials) + the org name split over two lines. |
 | Practice logo | `User.practiceLogo` (adviser's own practice) | Shown in the adviser menu (not the org logo). Hidden for `onboarding`. |
 | Active org | URL `/portal/[adviceId]` + `localStorage["portal_advice_id"]` | 0 memberships → "No organisations assigned"; 1 → auto-redirect; >1 → org picker (`OrgSwitcher`, `OrgCard`). "Switch org" clears the key. |
 | Default colour | — | ⚠️ The web is inconsistent: the layout/nav use `#0B2D6F`, but `lib/portal.ts` `DEFAULT_THEME_COLOR` is `#1e3a5f` (the home page). **Mobile uses `#0B2D6F`**, which is what frames every portal page. |

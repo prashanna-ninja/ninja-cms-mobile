@@ -27,20 +27,20 @@ organisation shows the same revenue (as on the web). Keys carry no adviceId; sig
 
 | Use | Endpoint |
 |---|---|
-| Totals | `GET /stats?search&entity&datePaidFrom&datePaidTo` → `{transactionCount, grossAmount, netAmount, accountCount, …}` |
+| Totals | `GET /stats?search&entity&datePaidFrom&datePaidTo` → `{transactionCount, grossAmount, netAmount, accountCount, clientCount, upfrontNet, ongoingNet, …}` |
 | Transactions | `GET /transactions?…&sortBy&page&pageSize` (≤ 100) → `{data, total, page, pageSize, totalPages, counts}` |
 | Accounts | `GET /account-groups?search&mapped=all\|mapped\|unmapped&page&pageSize` → `{data, total, …, counts}` (counts ignore the filters) |
 | Your clients | `GET /clients?search&pageSize` (≤ 50) → `{data: [{id, name, type, …}]}` |
-| Map / unmap | `POST /bulk-assign-client {accountNumber, accountName, clientId \| null}` → `{count}` |
+| Map / unmap | `POST /bulk-assign-client {productProvider, accountNumber, transactionId, clientId \| null}` → `{count}` |
 
 - `search` matches **account name / number only** (`accountOnlySearch`). `entity` ∈ Cobalt, Beryllium, AIAFSL, CLS.
   Dates are `YYYY-MM-DD` (gte / lte on `datePaid`). `sortBy`: `datePaid`, `-datePaid` (default), `netAmount`,
   `-netAmount`, `grossAmount`, …
-- Accounts are grouped by **account name** (else the number when there's no name); mapping one moves every transaction
-  of that account and remembers it for future imports (`RevenueClientAlias`). It also writes a client activity entry.
-- ⚠️ **Map only touches unmapped transactions.** Changing an already-mapped account straight to another client answers
-  **404 "No unmapped transactions found"**. The web's "Save" has this bug. Mobile does **unmap, then map**
-  (`useMapRevenueAccount` with `remap: true`).
+- Since CMS #122 (2026-10-08) an account is **product provider + account number** (case-insensitive; key
+  `p:<provider>|n:<number>`); a transaction without an account number is its own row (`t:<id>`, `transactionId` set) and
+  maps alone, without being remembered. Mapping an account moves every transaction of it, also from another client
+  (one call), and remembers it for future imports (`RevenueClientAlias`). It also writes a client activity entry.
+  Mapping to the client it already has answers 404 "already mapped" (the sheet prevents it).
 - The web's **product filter** isn't on mobile: its options are server-rendered (`getRevenueProductProviders`) and
   there's no API for them. Add one to the CMS if it's wanted.
 
