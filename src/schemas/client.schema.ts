@@ -26,7 +26,7 @@ export const clientFormSchema = z
     addressLine1: z.string().trim().max(200),
     addressTown: z.string().trim().max(120),
     addressPostcode: z.string().trim().max(10, "Postcode is too long"),
-    state: z.string().trim().max(10),
+    state: z.string().trim().max(80, "State is too long"),
   })
   .superRefine((data, ctx) => {
     if (data.type !== "individual") return;
