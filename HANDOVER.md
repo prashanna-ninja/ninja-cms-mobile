@@ -7,7 +7,7 @@ and what to build next. Keep it current at the end of every step.
 > organisation's **colour and logo** (`Advice.colorTheme` / `Advice.logo`). Read
 > [docs/07-ORG-THEMING.md](docs/07-ORG-THEMING.md) before building any signed-in screen.
 
-> **Status (2026-10-09):** ✅ Login + org selection, portal home (Notices), **Clients** (list + full client record,
+> **Status (2026-10-12):** ✅ Login + org selection, portal home (Notices), **Clients** (list + full client record,
 > add / edit / archive / delete, fact find edit + PDF), **Workflows** (list, board, add client, client on a board,
 > new workflow from templates), **Revenue** (My Revenue + Map Clients), Settings, per-org app icons (iOS + Android).
 > ⚠️ Most features were verified with mocked CMS responses on web. See §8 for the device-test checklist.
