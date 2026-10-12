@@ -5,7 +5,7 @@ import { Alert, LayoutAnimation, Pressable, Text, View } from "react-native";
 import { useClientFactFind } from "@/api/client-detail.api";
 import { C, ErrorNote, F, Loading, PillButton, text } from "@/components/client-detail/ui";
 import type { FactFindFieldDef } from "@/lib/fact-find/config";
-import { FACT_FIND_SECTIONS, type FactFindSectionDef } from "@/lib/fact-find/sections";
+import { FACT_FIND_SECTIONS, listFields, type FactFindSectionDef, type FieldContext } from "@/lib/fact-find/sections";
 import { SharingUnavailableError, shareFactFindPdf } from "@/lib/fact-find/pdf";
 import { isFieldVisible, isObj, str, type Obj } from "@/lib/fact-find/values";
 import { formatCalendarDate, formatMoney } from "@/lib/format";
@@ -15,6 +15,7 @@ import { useOrgTheme } from "@/providers/org-theme-provider";
 
 /** A field's display value from its definition (select → label, yes/no, money, date). Empty → null. */
 function display(def: FactFindFieldDef, raw: unknown): string | null {
+  if (def.type === "checkbox") return raw === true ? "Yes" : null;
   const v = str(raw);
   if (!v) return null;
   switch (def.type) {
@@ -63,29 +64,19 @@ function Rows({ items }: { items: { label: string; value: string; heading?: stri
 function summarise(def: FactFindSectionDef, value: unknown): string {
   if (!isObj(value)) return "Not filled in";
   let count = 0;
-  for (const person of ["client1", "client2"]) if (def.person && isObj(value[person])) count += rows(def.person, value[person] as Obj).length;
-  if (def.root) count += rows(def.root, value).length;
+  if (def.person && isObj(value.client1)) count += rows(def.person, value.client1).length;
   let items = 0;
   for (const list of def.lists ?? []) if (Array.isArray(value[list.key])) items += (value[list.key] as unknown[]).length;
   if (!count && !items) return "Not filled in";
   return [items ? `${items} item${items === 1 ? "" : "s"}` : null, count ? `${count} field${count === 1 ? "" : "s"}` : null].filter(Boolean).join(" · ");
 }
 
-function SectionBody({ def, value }: { def: FactFindSectionDef; value: Obj }) {
+function SectionBody({ def, value, ctx }: { def: FactFindSectionDef; value: Obj; ctx: FieldContext }) {
   const blocks: React.ReactNode[] = [];
 
   if (def.person) {
-    for (const [key, label] of [["client1", "Client 1"], ["client2", "Client 2"]] as const) {
-      const p = value[key];
-      const r = isObj(p) ? rows(def.person, p) : [];
-      if (!r.length) continue;
-      blocks.push(
-        <View key={key} style={{ gap: 8, borderWidth: 1, borderColor: C.hairline, borderRadius: 12, padding: 12 }}>
-          <Text style={{ fontFamily: F.semibold, fontSize: 14, color: C.ink }}>{label}</Text>
-          <Rows items={r} />
-        </View>,
-      );
-    }
+    const r = isObj(value.client1) ? rows(def.person, value.client1) : [];
+    if (r.length) blocks.push(<Rows key="client1" items={r} />);
   }
 
   for (const list of def.lists ?? []) {
@@ -99,7 +90,7 @@ function SectionBody({ def, value }: { def: FactFindSectionDef; value: Obj }) {
           items.map((item, i) => (
             <View key={str(item.id) || i} style={{ gap: 8, borderWidth: 1, borderColor: C.hairline, borderRadius: 12, padding: 12 }}>
               <Text style={{ fontFamily: F.semibold, fontSize: 13, color: C.muted }}>{`${list.itemLabel} ${i + 1}`}</Text>
-              <Rows items={rows(list.fields, item)} />
+              <Rows items={rows(listFields(list.fields, ctx), item)} />
             </View>
           ))
         )}
@@ -107,16 +98,11 @@ function SectionBody({ def, value }: { def: FactFindSectionDef; value: Obj }) {
     );
   }
 
-  if (def.root) {
-    const r = rows(def.root, value);
-    if (r.length) blocks.push(<Rows key="root" items={r} />);
-  }
-
   return blocks.length ? <View style={{ gap: 12 }}>{blocks}</View> : <Text style={text.meta}>Nothing recorded in this section yet.</Text>;
 }
 
 /**
- * Fact Find — the 15 web sections as collapsible cards (labels/options from the ported
+ * Fact Find — the 9 web sections as collapsible cards (labels/options from the ported
  * web config, lib/fact-find). "Edit" opens the section editor (clients/fact-find.tsx).
  */
 export function FactFindSection({ adviceId, clientId, clientName }: { adviceId: string; clientId: string; clientName: string }) {
@@ -137,6 +123,7 @@ export function FactFindSection({ adviceId, clientId, clientName }: { adviceId: 
   if (q.isPending) return <Loading />;
   if (q.isError) return <ErrorNote message={q.error.message} onRetry={() => void q.refetch()} />;
   const data = q.data;
+  const ctx: FieldContext = { clientName, factFind: data };
 
   const toggle = (key: string) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -184,7 +171,7 @@ export function FactFindSection({ adviceId, clientId, clientName }: { adviceId: 
             {isOpen ? (
               <View style={{ paddingHorizontal: 14, paddingBottom: 14 }}>
                 <View style={{ height: 1, backgroundColor: C.hairline, marginBottom: 12 }} />
-                <SectionBody def={def} value={isObj(value) ? value : {}} />
+                <SectionBody def={def} value={isObj(value) ? value : {}} ctx={ctx} />
                 <View style={{ alignItems: "flex-end", marginTop: 12 }}>
                   <PillButton
                     label={empty ? "Fill in" : "Edit"}

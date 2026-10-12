@@ -6,7 +6,7 @@ import { OptionSheet } from "@/components/clients/option-sheet";
 import { DateField } from "@/components/forms/date-field";
 import type { FactFindFieldDef } from "@/lib/fact-find/config";
 import { raw, sanitizeMoney } from "@/lib/fact-find/values";
-import { ChevronDown } from "@/lib/icons";
+import { Check, ChevronDown } from "@/lib/icons";
 import { useOrgTheme } from "@/providers/org-theme-provider";
 
 const inputStyle = {
@@ -24,9 +24,12 @@ const inputStyle = {
 /**
  * One fact-find input, driven by the ported web field definition (web FactFindField):
  * text · textarea · money ($, digits + one dot) · date (calendar sheet) · yes/no (chips, tap again to clear) ·
- * select (bottom sheet with "Not specified"). Values are strings, "" = not set.
+ * select (bottom sheet with "Not specified") · checkbox (true / false). Values are strings ("" = not set),
+ * except checkboxes (booleans).
  */
-export function FactFindField({ def, value, onChange }: { def: FactFindFieldDef; value: unknown; onChange: (v: string) => void }) {
+export type FieldValue = string | boolean;
+
+export function FactFindField({ def, value, onChange }: { def: FactFindFieldDef; value: unknown; onChange: (v: FieldValue) => void }) {
   const { theme } = useOrgTheme();
   const [sheet, setSheet] = React.useState(false);
   const v = raw(value);
@@ -63,6 +66,33 @@ export function FactFindField({ def, value, onChange }: { def: FactFindFieldDef;
         </View>
       );
       break;
+    case "checkbox": {
+      const on = value === true;
+      return (
+        <Pressable
+          accessibilityRole="checkbox"
+          accessibilityState={{ checked: on }}
+          onPress={() => onChange(!on)}
+          style={{ flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 4 }}
+        >
+          <View
+            style={{
+              width: 22,
+              height: 22,
+              borderRadius: 6,
+              borderWidth: 1.5,
+              borderColor: on ? theme.base : "#C5CFE0",
+              backgroundColor: on ? theme.base : "#FFFFFF",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {on ? <Check size={14} color={theme.onBase} strokeWidth={3} /> : null}
+          </View>
+          <Text style={{ fontFamily: F.medium, fontSize: 15, color: C.ink }}>{def.label}</Text>
+        </Pressable>
+      );
+    }
     case "date":
       return <DateField label={def.label} value={v.slice(0, 10)} onChange={onChange} placeholder="Not specified" />;
     case "yesno":

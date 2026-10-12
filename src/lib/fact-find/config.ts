@@ -1,7 +1,8 @@
-// ⚠️ Ported VERBATIM from the CMS: components/clients/fact-find/sectionConfig.ts (+ types.ts).
+// ⚠️ Ported VERBATIM from the CMS: components/clients/fact-find/sectionConfig.ts (+ types.ts), re-synced 2026-10-12
+// (CMS 9bb57f1: personal details moved to the client record, lists for income / expenses / entities, single client).
 // Keep in sync with the web — labels/options/field names must match the stored JSON.
 
-export type FactFindFieldType = "text" | "textarea" | "date" | "yesno" | "select" | "money";
+export type FactFindFieldType = "text" | "textarea" | "date" | "yesno" | "select" | "money" | "checkbox";
 
 export type FactFindFieldDependency =
   | { field: string; showWhen: string | string[]; unless?: never }
@@ -20,8 +21,7 @@ export type FactFindFieldDef = {
 };
 
 
-
-const AU_STATE_OPTIONS = [
+export const AU_STATE_OPTIONS = [
   { value: "nsw", label: "NSW" },
   { value: "vic", label: "VIC" },
   { value: "qld", label: "QLD" },
@@ -32,7 +32,24 @@ const AU_STATE_OPTIONS = [
   { value: "nt", label: "NT" },
 ];
 
-const MARITAL_STATUS_OPTIONS = [
+export const TITLE_OPTIONS = [
+  { value: "mr", label: "Mr" },
+  { value: "mrs", label: "Mrs" },
+  { value: "ms", label: "Ms" },
+  { value: "miss", label: "Miss" },
+  { value: "dr", label: "Dr" },
+  { value: "prof", label: "Prof" },
+  { value: "other", label: "Other" },
+];
+
+export const GENDER_OPTIONS = [
+  { value: "male", label: "Male" },
+  { value: "female", label: "Female" },
+  { value: "other", label: "Other" },
+  { value: "prefer_not_to_say", label: "Prefer not to say" },
+];
+
+export const MARITAL_STATUS_OPTIONS = [
   { value: "single", label: "Single" },
   { value: "married", label: "Married" },
   { value: "de_facto", label: "De facto" },
@@ -41,10 +58,31 @@ const MARITAL_STATUS_OPTIONS = [
   { value: "separated", label: "Separated" },
 ];
 
-const OWNER_OPTIONS = [
-  { value: "client1", label: "Client 1" },
-  { value: "client2", label: "Client 2" },
-  { value: "joint", label: "Joint" },
+export const FREQUENCY_OPTIONS = [
+  { value: "weekly", label: "Weekly" },
+  { value: "fortnightly", label: "Fortnightly" },
+  { value: "monthly", label: "Monthly" },
+  { value: "annually", label: "Annually" },
+];
+
+export const INCOME_TYPE_OPTIONS = [
+  { value: "gross_salary", label: "Gross salary" },
+  { value: "bonus", label: "Bonus" },
+  { value: "centrelink", label: "Centrelink" },
+  { value: "child_support", label: "Child support" },
+  { value: "long_service_leave", label: "Long service leave" },
+  { value: "redundancy", label: "Redundancy" },
+  { value: "family_assistance", label: "Family assistance" },
+  { value: "pension", label: "Pension" },
+  { value: "company", label: "Company" },
+  { value: "trust", label: "Trust" },
+];
+
+export const SUPER_TYPE_OPTIONS = [
+  { value: "accumulation", label: "Accumulation" },
+  { value: "pension", label: "Pension" },
+  { value: "defined_benefit", label: "Defined benefit" },
+  { value: "smsf", label: "SMSF" },
 ];
 
 const INSURANCE_TYPE_OPTIONS = [
@@ -55,36 +93,21 @@ const INSURANCE_TYPE_OPTIONS = [
   { value: "other", label: "Other" },
 ];
 
+export function clientOwnerOptions(clientName: string) {
+  const name = clientName.trim() || "Client";
+  return [
+    { value: "client", label: name },
+    { value: "joint", label: "Joint" },
+  ];
+}
+
 export const PERSONAL_DETAILS_FIELDS: FactFindFieldDef[] = [
-  {
-    name: "title",
-    label: "Title",
-    type: "select",
-    options: [
-      { value: "mr", label: "Mr" },
-      { value: "mrs", label: "Mrs" },
-      { value: "ms", label: "Ms" },
-      { value: "miss", label: "Miss" },
-      { value: "dr", label: "Dr" },
-      { value: "prof", label: "Prof" },
-      { value: "other", label: "Other" },
-    ],
-  },
+  { name: "title", label: "Title", type: "select", options: TITLE_OPTIONS },
   { name: "surname", label: "Surname", type: "text", placeholder: "e.g. Smith" },
   { name: "givenNames", label: "Given name(s)", type: "text", placeholder: "e.g. John" },
   { name: "preferredName", label: "Preferred name", type: "text", placeholder: "e.g. Johnny" },
   { name: "dateOfBirth", label: "Date of birth", type: "date" },
-  {
-    name: "gender",
-    label: "Gender",
-    type: "select",
-    options: [
-      { value: "male", label: "Male" },
-      { value: "female", label: "Female" },
-      { value: "other", label: "Other" },
-      { value: "prefer_not_to_say", label: "Prefer not to say" },
-    ],
-  },
+  { name: "gender", label: "Gender", type: "select", options: GENDER_OPTIONS },
   { name: "maritalStatus", label: "Marital status", type: "select", options: MARITAL_STATUS_OPTIONS },
   { name: "australianResident", label: "Australian resident", type: "yesno" },
   {
@@ -107,23 +130,10 @@ export const PERSONAL_DETAILS_FIELDS: FactFindFieldDef[] = [
     label: "Street",
     type: "text",
     placeholder: "e.g. 12 Example Street",
-    groupHeading: "Residential Address",
+    groupHeading: "Residential address",
   },
   { name: "addressSuburb", label: "Suburb", type: "text", placeholder: "e.g. Brisbane" },
-  {
-    name: "addressState",
-    label: "State",
-    type: "select",
-    options: AU_STATE_OPTIONS,
-    dependsOn: { field: "australianResident", showWhen: "yes" },
-  },
-  {
-    name: "addressState",
-    label: "State",
-    type: "text",
-    placeholder: "e.g. state or province",
-    dependsOn: { field: "australianResident", unless: "yes" },
-  },
+  { name: "addressState", label: "State", type: "text", placeholder: "e.g. QLD" },
   { name: "addressPostcode", label: "Postcode", type: "text", placeholder: "e.g. 4000" },
   { name: "mobile", label: "Mobile", type: "text", placeholder: "e.g. 0400 123 456" },
   { name: "email", label: "Email", type: "text", placeholder: "e.g. name@example.com" },
@@ -156,10 +166,42 @@ export const DEPENDANT_FIELDS: FactFindFieldDef[] = [
   { name: "dependant", label: "Dependant", type: "yesno" },
 ];
 
-export const ASSOCIATED_ENTITIES_FIELDS: FactFindFieldDef[] = [
-  { name: "hasBusinessEntity", label: "Do you have a business entity?", type: "yesno" },
-  { name: "hasSMSF", label: "Do you have a Self Managed Superannuation Fund (SMSF)?", type: "yesno" },
-  { name: "additionalDetails", label: "Additional details", type: "textarea", placeholder: "Any other relevant details" },
+export const ENTITY_FIELDS: FactFindFieldDef[] = [
+  { name: "name", label: "Name", type: "text", placeholder: "e.g. Smith Family Trust" },
+  {
+    name: "type",
+    label: "Type",
+    type: "select",
+    options: [
+      { value: "company", label: "Company" },
+      { value: "trust", label: "Trust" },
+      { value: "smsf", label: "SMSF" },
+    ],
+  },
+  {
+    name: "trustee",
+    label: "Trustee",
+    type: "checkbox",
+    dependsOn: { field: "type", showWhen: "company" },
+  },
+  {
+    name: "trading",
+    label: "Trading",
+    type: "checkbox",
+    dependsOn: { field: "type", showWhen: ["company", "trust"] },
+  },
+  {
+    name: "smsf",
+    label: "SMSF",
+    type: "checkbox",
+    dependsOn: { field: "type", showWhen: "trust" },
+  },
+  {
+    name: "familyTrust",
+    label: "Family trust",
+    type: "checkbox",
+    dependsOn: { field: "type", showWhen: "trust" },
+  },
 ];
 
 const EMPLOYMENT_STATUS_OPTIONS = [
@@ -207,105 +249,66 @@ export const EMPLOYMENT_FIELDS: FactFindFieldDef[] = [
     ],
     dependsOn: { field: "employmentStatus", showWhen: "self_employed" },
   },
-  { name: "additionalDetails", label: "Additional details", type: "textarea", placeholder: "Any other relevant details" },
 ];
 
 export const INCOME_FIELDS: FactFindFieldDef[] = [
-  { name: "grossSalary", label: "Gross salary excluding Superannuation Guarantee", type: "money" },
-  { name: "bonuses", label: "Bonuses", type: "money" },
-  { name: "bonusesIncludedForSG", label: "Are bonuses included for SG purposes?", type: "yesno" },
-  { name: "motorVehiclePackaged", label: "Motor vehicle (packaged)", type: "money" },
-  { name: "superGuarantee", label: "Superannuation Guarantee component", type: "money" },
-  { name: "centrelinkDva", label: "Centrelink/DVA", type: "money" },
-  { name: "familyAssistance", label: "Family Assistance", type: "money" },
-  { name: "childSupport", label: "Child support/Maintenance", type: "money" },
-  { name: "redundancyAmount", label: "Redundancy package (received/expected)", type: "money" },
-  { name: "longServiceAmount", label: "Long service payments (received/expected)", type: "money" },
-  { name: "otherIncome", label: "Others", type: "money" },
-  { name: "subTotal", label: "Sub-total", type: "money" },
+  { name: "type", label: "Type", type: "select", options: INCOME_TYPE_OPTIONS },
+  { name: "amount", label: "Amount", type: "money" },
+  { name: "frequency", label: "Frequency", type: "select", options: FREQUENCY_OPTIONS },
+  { name: "includesSuper", label: "Includes super", type: "yesno" },
 ];
 
-export const ADDITIONAL_DETAILS_ROOT_FIELDS: FactFindFieldDef[] = [
-  { name: "additionalDetails", label: "Additional details", type: "textarea", placeholder: "Any other relevant details" },
+export const EXPENSE_FIELDS: FactFindFieldDef[] = [
+  { name: "category", label: "Category", type: "text", placeholder: "e.g. General living" },
+  { name: "amount", label: "Amount", type: "money" },
+  { name: "frequency", label: "Frequency", type: "select", options: FREQUENCY_OPTIONS },
 ];
 
-export const PENSION_INCOME_FIELDS: FactFindFieldDef[] = [
-  { name: "pensionIncome", label: "Pension income (incl. SMSF if relevant)", type: "money" },
-  { name: "foreignPensions", label: "Foreign pensions (e.g. UK or NZ)", type: "money" },
-  { name: "otherIncome", label: "Other", type: "money" },
-  { name: "subTotal", label: "Sub-total", type: "money" },
-];
+export function assetFields(clientName: string): FactFindFieldDef[] {
+  return [
+    {
+      name: "category",
+      label: "Category",
+      type: "select",
+      options: [
+        { value: "lifestyle", label: "Lifestyle" },
+        { value: "financial", label: "Financial" },
+        { value: "other", label: "Other" },
+      ],
+    },
+    { name: "description", label: "Description", type: "text", placeholder: "e.g. Family Home" },
+    { name: "owners", label: "Owner", type: "select", options: clientOwnerOptions(clientName) },
+    { name: "dateAcquired", label: "Date acquired", type: "date" },
+    { name: "purchasePrice", label: "Purchase price", type: "money" },
+    { name: "currentValue", label: "Current value", type: "money" },
+    { name: "notes", label: "Notes", type: "textarea", placeholder: "Any other relevant details" },
+  ];
+}
 
-export const DISTRIBUTION_INCOME_FIELDS: FactFindFieldDef[] = [
-  { name: "distributionIncome", label: "Distribution income", type: "money" },
-  { name: "otherIncome", label: "Other", type: "money" },
-  { name: "subTotal", label: "Sub-total", type: "money" },
-  { name: "additionalDetails", label: "Additional details", type: "textarea", placeholder: "Any other relevant details" },
-];
-
-export const EXPENSES_SUMMARY_FIELDS: FactFindFieldDef[] = [
-  { name: "coreGeneral", label: "Core - General", type: "money" },
-  { name: "total", label: "Total (transfer to 5.1)", type: "money" },
-  { name: "additionalDetails", label: "Additional details", type: "textarea", placeholder: "Any other relevant details" },
-];
-
-export const ASSET_FIELDS: FactFindFieldDef[] = [
-  {
-    name: "category",
-    label: "Category",
-    type: "select",
-    options: [
-      { value: "lifestyle", label: "Lifestyle" },
-      { value: "financial", label: "Financial" },
-      { value: "other", label: "Other" },
-    ],
-  },
-  { name: "description", label: "Description", type: "text", placeholder: "e.g. Family Home" },
-  { name: "owners", label: "Owner(s)", type: "select", options: OWNER_OPTIONS },
-  { name: "dateAcquired", label: "Date acquired", type: "date" },
-  { name: "purchasePrice", label: "Purchase price", type: "money" },
-  { name: "currentValue", label: "Current value", type: "money" },
-  { name: "notes", label: "Notes", type: "textarea", placeholder: "Any other relevant details" },
-];
-
-export const LIABILITY_FIELDS: FactFindFieldDef[] = [
-  { name: "description", label: "Description/security", type: "text", placeholder: "e.g. Home Mortgage" },
-  { name: "owners", label: "Owner(s)", type: "select", options: OWNER_OPTIONS },
-  { name: "institution", label: "Institution", type: "text", placeholder: "e.g. Commonwealth Bank" },
-  {
-    name: "loanType",
-    label: "Loan type",
-    type: "select",
-    options: [
-      { value: "io", label: "Interest Only (IO)" },
-      { value: "p_and_i", label: "Principal & Interest (P&I)" },
-    ],
-  },
-  { name: "balance", label: "Balance", type: "money" },
-  { name: "interestRate", label: "Interest rate", type: "text", placeholder: "e.g. 6.20%" },
-  { name: "notes", label: "Notes", type: "textarea", placeholder: "Any other relevant details" },
-];
-
-export const ASSETS_LIABILITIES_TOTALS_FIELDS: FactFindFieldDef[] = [
-  { name: "totalAssets", label: "Total assets", type: "money" },
-  { name: "totalLiabilities", label: "Total liabilities", type: "money" },
-  { name: "netWorth", label: "Net worth", type: "money" },
-];
+export function liabilityFields(clientName: string): FactFindFieldDef[] {
+  return [
+    { name: "description", label: "Description/security", type: "text", placeholder: "e.g. Home Mortgage" },
+    { name: "owners", label: "Owner", type: "select", options: clientOwnerOptions(clientName) },
+    { name: "institution", label: "Institution", type: "text", placeholder: "e.g. Commonwealth Bank" },
+    {
+      name: "loanType",
+      label: "Loan type",
+      type: "select",
+      options: [
+        { value: "io", label: "Interest Only (IO)" },
+        { value: "p_and_i", label: "Principal & Interest (P&I)" },
+      ],
+    },
+    { name: "balance", label: "Balance", type: "money" },
+    { name: "interestRate", label: "Interest rate", type: "text", placeholder: "e.g. 6.20%" },
+    { name: "notes", label: "Notes", type: "textarea", placeholder: "Any other relevant details" },
+  ];
+}
 
 export const SUPERANNUATION_FIELDS: FactFindFieldDef[] = [
   { name: "fundName", label: "Fund name", type: "text", placeholder: "e.g. AustralianSuper" },
-  { name: "owners", label: "Owner(s)", type: "select", options: OWNER_OPTIONS },
-  { name: "value", label: "Value", type: "money" },
-  { name: "pensionAmount", label: "Pension amount (if applic.)", type: "money" },
-  { name: "insuranceType", label: "Insurance type", type: "select", options: INSURANCE_TYPE_OPTIONS },
-  { name: "sumInsured", label: "Sum insured", type: "money" },
-  { name: "premium", label: "Premium", type: "money" },
-];
-
-export const BENEFICIARY_FIELDS: FactFindFieldDef[] = [
-  { name: "name", label: "Name", type: "text", placeholder: "e.g. Jane Smith" },
-  { name: "type", label: "Type", type: "text", placeholder: "e.g. Spouse - binding nomination" },
-  { name: "notes", label: "Notes", type: "textarea", placeholder: "Any other relevant details" },
+  { name: "type", label: "Type", type: "select", options: SUPER_TYPE_OPTIONS },
+  { name: "balance", label: "Balance", type: "money" },
 ];
 
 export const ESTATE_PLANNING_FIELDS: FactFindFieldDef[] = [
@@ -313,19 +316,17 @@ export const ESTATE_PLANNING_FIELDS: FactFindFieldDef[] = [
   { name: "powerOfAttorneyInPlace", label: "Is there a Power of Attorney (PoA) in place?", type: "yesno" },
 ];
 
-export const EXISTING_INSURANCE_FIELDS: FactFindFieldDef[] = [
-  { name: "type", label: "Type", type: "select", options: INSURANCE_TYPE_OPTIONS },
-  { name: "owner", label: "Owner", type: "select", options: OWNER_OPTIONS },
-  { name: "sumInsured", label: "Sum insured", type: "money" },
-  { name: "keyFeatures", label: "Key features", type: "textarea", placeholder: "Key policy features" },
-  { name: "premium", label: "Premium", type: "money" },
-];
+export const INSURANCE_TYPE_FIELD_OPTIONS = INSURANCE_TYPE_OPTIONS;
 
-export const PREFERENCES_FIELDS: FactFindFieldDef[] = [
-  {
-    name: "insurersToExclude",
-    label: "Insurers you would not consider for new insurance",
-    type: "textarea",
-    placeholder: "List any insurers to exclude",
-  },
-];
+export function insuranceFields(
+  ownerOptions: { value: string; label: string }[],
+): FactFindFieldDef[] {
+  return [
+    { name: "type", label: "Type", type: "select", options: INSURANCE_TYPE_OPTIONS },
+    { name: "owner", label: "Owner", type: "select", options: ownerOptions },
+    { name: "sumInsured", label: "Sum insured", type: "money" },
+    { name: "keyFeatures", label: "Key features", type: "textarea", placeholder: "Key policy features" },
+    { name: "premium", label: "Premium", type: "money" },
+    { name: "premiumFrequency", label: "Premium frequency", type: "select", options: FREQUENCY_OPTIONS },
+  ];
+}
