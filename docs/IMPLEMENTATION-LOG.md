@@ -5,6 +5,30 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-10-13 — App review prep: privacy policy + review notes
+
+Added [15-PRIVACY-POLICY.md](15-PRIVACY-POLICY.md) (text to publish) and [16-APP-STORE-REVIEW.md](16-APP-STORE-REVIEW.md)
+(review notes, Q3–Q7, App Privacy labels, Play data safety, checklist, a prompt for the CMS team, risks). They follow
+the Ninja CRM submission, which passed review, especially the request-based account deletion and its justification
+that the organisation owns the records.
+
+What's different from the CRM:
+- **Password sign-in**, so a normal demo account is used and no reviewer bypass is needed.
+- **Larger App Privacy labels:** the fact find is Financial Info + Other Data, including TFNs, which get their own
+  policy section.
+- **Providers** from ref/cms: Vercel, Postgres (host to confirm), Cloudflare R2, legacy S3, Resend, and Entrust/Crazytel
+  (web only).
+
+Open:
+- The `[TO CONFIRM]` gaps: entity/ABN, inbox, database host, regions, backups, activity-history names.
+- The page must be public on the CMS.
+- A Settings → Privacy policy row (5.1.1(i)), added once the URL is live.
+- Risk R1: the licensee-branded domain may look single-company.
+
+No code changes.
+
+---
+
 ## 2026-10-12 — CMS sync: S3 → R2 storage, revenue mapping, consent arrangement, new fact find
 
 Re-checked every CMS commit since our screens were built (ref/cms HEAD `a3876ca`, 2026-10-09). Four changes broke or

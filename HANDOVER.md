@@ -153,6 +153,8 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
 > **`support@ninjacrm.com.au`** (the CRM inbox) for delete-account requests. **Change it to the Ninja CMS / Advice
 > Ninja support inbox before the App Store submission.**
 
+0. 🚧 **App review (2026-10-13):** privacy policy text in docs/15 and submission notes in docs/16. Next: fill in the
+   `[TO CONFIRM]` gaps, get the CMS to publish `/privacy` (docs/16 §6), add Settings → Privacy policy, seed the demo org.
 1. ✅ Foundation.
 2. ✅ Login + session guard (backend expo plugin ✅). ⚠️ Test a real sign-in on iOS + Android.
 3. ✅ Forgot password.
