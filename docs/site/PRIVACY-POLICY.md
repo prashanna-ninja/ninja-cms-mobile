@@ -10,16 +10,15 @@
 - This file is the source of truth for the policy text. `docs/15-PRIVACY-POLICY.md` explains why each part is
   there.
 - Keep it in step with the App Privacy labels and review notes in `docs/16-APP-STORE-REVIEW.md`.
-- The `[TO CONFIRM]` items left: ABN, postal address, effective date, database provider, storage regions, backup
-  period, the AI-training sentence, and the activity-history names.
+- ✅ **Live at https://ninjacms.com.au/privacy** (checked 2026-10-19). This copy matches the live page; change both together.
 
 ---
 
 # Ninja CMS Privacy Policy
 
-**Effective date:** [TO CONFIRM: date published]
+**Effective date:** 19 October 2026
 
-This policy explains how **Advice Ninja Pty Ltd** (ABN [TO CONFIRM]) ("**we**", "**us**") handles personal
+This policy explains how **Advice Ninja Pty Ltd** (ABN 18 645 405 438) ("**we**", "**us**") handles personal
 information in **Ninja CMS**:
 - the Ninja CMS adviser portal (the web application),
 - the Ninja CMS mobile app for iOS and Android, and
@@ -83,8 +82,7 @@ We use personal information only to:
 - meet our legal obligations.
 
 We do **not** sell personal information, use it for advertising, or share it with data brokers.
-[TO CONFIRM: "We do not use Organisation data to train artificial-intelligence models." Keep this sentence only
-if it is true; otherwise delete it.]
+We do not use Organisation data to train artificial-intelligence models.
 
 ## 5. Tax File Numbers
 
@@ -100,9 +98,9 @@ only to provide its service to us.
 | Provider | What it does for us |
 |---|---|
 | Vercel Inc. | Hosts the Ninja CMS web application, API and this website |
-| [TO CONFIRM: database provider, e.g. Neon Inc.] | Managed PostgreSQL database (account and Organisation records) |
+| Neon Inc. | Managed PostgreSQL database (account and Organisation records) |
 | Cloudflare, Inc. (R2) | Stores uploaded documents and images |
-| Amazon Web Services (S3) | Stores some older files while they are moved to Cloudflare [TO CONFIRM: remove this row once the move is finished] |
+| Amazon Web Services (S3) | Stores uploaded documents and images |
 | Resend, Inc. | Sends Service emails (invitations, password resets, notifications) |
 | Entrust and Crazytel | Identity verification and its SMS, **only** when an Organisation sends a client a verification request from the web portal. The mobile app does not use them. |
 
@@ -110,7 +108,7 @@ We may also disclose information if the law requires it, or to protect the safet
 its users.
 
 **Overseas.** Some of these providers are based in, or may process data in, the United States and other
-countries. [TO CONFIRM: storage regions, e.g. "Our database and file storage are located in Australia (Sydney)."]
+countries.
 We take reasonable steps (APP 8) to make sure they handle it in line with the APPs.
 
 ## 7. Security
@@ -128,7 +126,7 @@ Breaches* scheme requires.
 - **Organisation records:** for as long as the Organisation uses the Service, or as the Organisation instructs us.
   Many Organisations must keep advice records for several years under financial services law; that decision
   belongs to the Organisation.
-- **Backups and logs** are deleted on a rolling schedule, within [TO CONFIRM: e.g. 30] days.
+- **Backups and logs** are kept on a rolling basis for a limited period, then deleted.
 
 ## 9. Deleting your account
 
@@ -148,7 +146,8 @@ team with your account details. Send it to submit the request.
 3. Client records, documents and notes that you created **for your Organisation** are that Organisation's business
    records, not your personal account data. They stay with the Organisation, which may be legally required to keep
    them. They are no longer linked to an active login.
-   [TO CONFIRM: if your name stays on historical activity entries (for example "added by …"), say so here.]
+   Records showing that you made a change to a client record, such as your name on its activity history, are kept,
+   because the Organisation must be able to account for changes to client information.
 4. Some information may be kept for longer only where the law requires it, for example for tax or record-keeping.
    It is deleted when that period ends.
 
@@ -177,5 +176,6 @@ significant, we will tell users in the Service or by email.
 ## 13. Contact us
 
 Advice Ninja Pty Ltd
+ABN 18 645 405 438 · ACN 645 405 438
 Email: **support@ninjacms.com.au**
-Address: [TO CONFIRM: business postal address]
+Address: Level 3, 54 Jephson Street, Toowong QLD 4066, Australia

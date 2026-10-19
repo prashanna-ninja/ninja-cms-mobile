@@ -5,6 +5,35 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-10-19 — Store prep: in-app privacy + support links, Android permissions, submission pack
+
+- **The website is live** (checked by fetching it): `/`, `/support` and `/privacy` (with `#delete-account`) all
+  return 200, with no placeholders, and `support@ninjacms.com.au` is the only email. `/account-deletion` serves the
+  policy itself rather than redirecting, so Play gets the `#delete-account` link. `docs/site/PRIVACY-POLICY.md` now
+  matches the live text: Neon; S3 and R2 both listed as current storage; rolling backups; names kept on activity
+  history; ABN, ACN and address.
+- **Settings → App:** new **Help & support** (`/support`) and **Privacy policy** (`/privacy`) rows. They open in the
+  in-app browser, tinted with the org colour. This is Apple 5.1.1(i): the policy must be reachable inside the app.
+  New constants in `src/constants/env.ts`: `WEBSITE_URL`, `PRIVACY_POLICY_URL`, `SUPPORT_URL`.
+- **Native config:** `app.json` → `android.blockedPermissions` removes `SYSTEM_ALERT_WINDOW` and
+  `READ/WRITE_EXTERNAL_STORAGE`. The release manifest keeps `INTERNET` (+ `VIBRATE` from React Native). Checked with
+  `expo config --type introspect`. **Rebuild the Android dev client:**
+  `npx expo prebuild --clean && npx expo run:android`. iOS is unchanged and has no usage strings.
+- **docs/16 rewritten as the full submission pack:**
+  - listing copy: subtitle, promo text, keywords, description, What's New;
+  - screenshots;
+  - App Review notes (CRM format, sections 1–8);
+  - App Privacy labels;
+  - the permissions list;
+  - age rating and other App Store Connect answers;
+  - Play Console answers (data safety, financial features, app access);
+  - the full checklist (repo / demo data / App Store Connect / Play / after approval);
+  - risks.
+
+tsc ✅ lint ✅.
+
+---
+
 ## 2026-10-19 — Website brief (ninjacms.com.au) + support email
 
 - **`SUPPORT_EMAIL` → `support@ninjacms.com.au`** (`src/constants/env.ts`). It was temporarily the CRM inbox.

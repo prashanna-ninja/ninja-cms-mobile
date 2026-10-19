@@ -153,8 +153,9 @@ Folder conventions: [docs/02-SETUP-AND-STRUCTURE.md](docs/02-SETUP-AND-STRUCTURE
 > Ninja support inbox before the App Store submission.**
 
 0. 🚧 **App review:** submission notes in docs/16. The website **ninjacms.com.au** (landing, support, privacy) is briefed
-   for a build agent in `docs/site/` (2026-10-19). Next: fill in the policy's `[TO CONFIRM]` gaps, deploy the site, add
-   Settings → Privacy policy (`https://ninjacms.com.au/privacy`), seed the demo org.
+   for a build agent in `docs/site/` (2026-10-19). ✅ Site live; Settings → Help & support +
+   Privacy policy ✅; Android permissions trimmed ✅. Next: seed the demo org + reviewer account, take screenshots,
+   then work through the docs/16 §8 checklist and submit.
 1. ✅ Foundation.
 2. ✅ Login + session guard (backend expo plugin ✅). ⚠️ Test a real sign-in on iOS + Android.
 3. ✅ Forgot password.

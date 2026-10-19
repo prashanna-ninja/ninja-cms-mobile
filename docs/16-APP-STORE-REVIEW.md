@@ -1,229 +1,302 @@
-# 16 — App Store / Google Play review (submission copy)
+# 16 — App Store + Google Play submission pack
 
-Written 2026-10-13. It follows the Ninja CRM app, which passed review (`ref/ninja-crm-mobile/docs/APP-STORE-REVIEW-NOTES.md`
-and `apple-review-reply.txt`). What's different here:
-- Ninja CMS signs in with **email + password**, so there's **no reviewer bypass**. Apple gets a normal demo account.
-- The fact find holds **financial details and TFNs**, so the App Privacy labels are larger.
-- The API is on a licensee-branded domain (`login.cobaltlicenseesolutions.com.au`). See risk R1 in §7.
+Updated 2026-10-19. It follows the Ninja CRM submission, which passed review
+(`ref/ninja-crm-mobile/docs/APP-STORE-REVIEW-NOTES.md`, `apple-review-reply.txt`).
 
-The privacy policy text is in [15-PRIVACY-POLICY.md](15-PRIVACY-POLICY.md).
+What's different from the CRM:
+- **Email + password sign-in**, so there's no reviewer bypass, just a demo account.
+- **Larger privacy labels**, because the fact find holds financial details and TFNs.
+- **The website is live:** ninjacms.com.au (landing page, support, privacy).
 
----
+The privacy policy text is in [site/PRIVACY-POLICY.md](site/PRIVACY-POLICY.md). Why each part is there:
+[15-PRIVACY-POLICY.md](15-PRIVACY-POLICY.md).
 
-## 1. App Review notes — paste into *App Review Information → Notes*
-
-> **What this app is**
->
-> Ninja CMS is the mobile companion to the Ninja CMS adviser portal, a commercial SaaS platform used by
-> several Australian financial services licensees and the independent advice practices that work with them.
-> It is not an internal app for a single company. Each organisation provisions logins for its own advisers and
-> staff, which is why there is no public sign-up.
->
-> Advisers use it to read their licensee's notices, look up and update client records and fact finds, move
-> clients through workflow boards, and check their revenue, all from their phone.
->
-> **Signing in for review**
->
-> Sign-in is email and password. Please use this demo account:
->
-> Email: **[TO CONFIRM: reviewer email]**
-> Password: (in the Password field of this form)
->
-> The account belongs to a demo organisation with sample (fictitious) clients, workflows, notices and revenue, so
-> every screen has data. It does not expire.
->
-> **Account deletion**
->
-> Account deletion is in the app at **Settings → Delete account**. Tapping it shows a confirmation, then opens a
-> pre-filled email to our support team. Sending it submits a deletion request for the signed-in account and its
-> personal data. Our team actions the request and confirms the deletion by email.
->
-> It is a request rather than an immediate in-app deletion for a specific reason. Users cannot create their own
-> accounts: every login is provisioned by the user's organisation. The client records, fact finds, documents and
-> notes in the app belong to that organisation, which holds them as its business records and may be legally
-> required to keep them. A user deleting their own login can't decide on their own what happens to those
-> records. Processing the request lets us delete the person's account data while the organisation's records are
-> handled correctly.
->
-> **Data**
->
-> The app collects the user's name and email for sign-in and shows the organisation's client records. It has no
-> analytics, advertising or tracking SDKs. See our privacy policy.
-
-⚠️ **Describe the email step exactly as above.** The CRM lesson: never word it as if deletion completes in the
-app. Don't add a time promise (for example "within 24 hours").
+> ⚠️ **Three things must always agree:** the policy, the privacy labels (§4) and the review notes (§3). Apple and
+> Google cross-check them. Change all three together, and never word the notes as if deletion completes in the app.
 
 ---
 
-## 2. Follow-up questions (Q3–Q7) — paste if Apple asks
+## 0. Fixed facts
 
-### Q3 — Functions, audience, problem, value
-
-> Ninja CMS is the mobile app for the Ninja CMS adviser portal, used by Australian financial services licensees
-> and their advice practices. Each organisation provisions logins for its own people; there is no public sign-up.
->
-> **Who uses it:** financial advisers and their support staff (paraplanners, client-services and practice
-> staff).
->
-> **What it does (five tabs):**
-> • **Dashboard:** the licensee's notices and announcements, in the organisation's branding.
-> • **Clients:** a searchable list of the organisation's client records. Open one for Overview, Fact find,
->   Files, Workflows, Revenue, Ongoing client (annual consent and review) and Activity. Users can add and edit
->   clients, fill in the fact find, upload documents and add a client to a workflow.
-> • **Workflows:** the practice's boards (for example onboarding or annual review). Move a client card between
->   stages.
-> • **Revenue:** the adviser's own revenue statement by month, and matching revenue accounts to clients.
-> • **Settings:** account details, switch organisation, sign out and delete account.
->
-> **The problem it solves:** advisers run their practice from the web portal, which is a desktop tool. Between
-> client meetings they can't check a client's details, see where a client is in a workflow, or catch up on
-> licensee notices.
->
-> **The value:** the same records and boards on the phone, so details are checked and updated when they're
-> needed rather than later at a desk.
-
-### Q4 — Setup, access, credentials
-
-> No setup and no sample files are needed. Sign in with the demo account in the notes.
-> • If the account belongs to more than one organisation, pick one on the next screen. You can switch later in
->   Settings.
-> • **Dashboard** opens first. **Clients**: tap a client, then use the section tabs. **+** adds a client.
->   **Workflows**: open a board and swipe between stages. **Revenue**: My Revenue and Map clients.
->   **Settings**: account, sign out, delete account.
-
-### Q5 — External services
-
-> The app talks only to our own API at **https://login.cobaltlicenseesolutions.com.au** (the Ninja CMS
-> backend, operated by Advice Ninja Pty Ltd). It contains **no third-party SDKs**: no analytics, crash reporting,
-> advertising or tracking.
->
-> | Service | Provider | Used for |
-> |---|---|---|
-> | Ninja CMS API | Advice Ninja Pty Ltd, hosted on Vercel | All app data |
-> | Vercel | Vercel Inc. | Hosting the API |
-> | [TO CONFIRM: database] | [provider] | Managed PostgreSQL |
-> | Cloudflare R2 | Cloudflare, Inc. | Storing uploaded documents and images |
-> | Better Auth | Open-source library inside our API | Sign-in and sessions; no data leaves us |
-> | Resend | Resend, Inc. | Account emails (invitations, password reset) |
-> | Expo (EAS) | Expo | Build tooling only; not in the shipped app |
->
-> No payment processors, no AI services, no third-party data providers. All client information is entered by
-> our customers.
-
-⚠️ This table must match §6 of the privacy policy. If S3 is still in use, or Entrust / Crazytel are named there,
-make sure the two don't contradict each other. The policy can name more providers than this table, because the
-policy covers web-only features too.
-
-### Q6 — Regional differences
-
-> The app works the same in every region: no geo-gated features, no region-specific content and no
-> localisation. It is in English (Australian), with Australian dollars, phone formats and dd/mm/yyyy dates.
-
-### Q7 — Regulated industry / third-party material
-
-**Answer NO and leave the documentation blank** (same reasoning as the CRM). Guideline 5.1.1(ix) covers apps
-that *themselves* provide financial services. Ninja CMS is business software for licensees. No advice is given
-in the app, no product is offered, no transaction is made and no money is held. Answering YES would make Apple
-ask Advice Ninja for an AFSL and a letter of authorisation. Those licences belong to the customers.
-
-> No. Ninja CMS is business software sold to financial services organisations. In the app no financial advice is
-> given, no financial product is offered, no transaction is executed and no money is held or moved. Every user is
-> a staff member of a subscribing organisation; there are no consumer users. The regulated activity happens
-> outside the app, under our customers' own licences.
->
-> Protected third-party material: none. Fonts are SIL Open Font License (Bricolage Grotesque), icons are
-> lucide (ISC), and other libraries are MIT or Apache-2.0. All other content is our own interface or content
-> entered by our customers, who own it. Organisation logos are shown with permission from those organisations.
-
----
-
-## 3. App Privacy labels (App Store Connect → App Privacy)
-
-"Data collected" means it leaves the device and is kept, which is true of everything shown in the app. For
-**every** type below choose: purpose **App Functionality** · **Linked to the user** · **Not used for tracking**.
-
-| Apple category | Type | Why |
-|---|---|---|
-| Contact Info | **Name**, **Email Address** | The user's account + client records |
-| Contact Info | **Phone Number**, **Physical Address** | Client records |
-| Financial Info | **Other Financial Info** | Fact find (income, assets, liabilities, super), revenue/commissions |
-| User Content | **Other User Content** | Notes, fact-find answers, uploaded documents |
-| Identifiers | **User ID** | Account id |
-| Other Data | **Other Data Types** | Date of birth, TFN, employment, dependants, estate planning |
-
-Do **not** declare:
-- **Contacts**: that means the device address book, which the app never reads.
-- **Photos or Videos**: the app uses the document picker only, and only for files the user picks.
-- **Sensitive Info**: Apple means race, health, religion, biometrics and similar. The fact find has none of
-  these. Re-check if health or insurance-underwriting fields are ever added.
-- **Usage Data / Diagnostics / Location / Purchases**: none are collected.
-- **Tracking:** No.
-
-## 4. Google Play — Data safety + deletion
-
-Same data as §3, with *Collected · Not shared · Required · Purpose: App functionality / Account management*.
-Also declare:
-- **Encrypted in transit:** Yes.
-- **Users can request deletion:** Yes. The delete-account URL is the policy's `#delete-account` section (or a
-  `/account-deletion` page). **Play requires a URL that works without the app.**
-- Play maps the categories a bit differently: Personal info (name, email, address, phone, other info), Financial
-  info (other), Files and docs.
-
----
-
-## 5. Pre-submit checklist
-
-**Repo (the app):**
-- [ ] **Settings → Privacy policy row** that opens the published URL in the in-app browser (5.1.1(i): the policy
-      must also be reachable *inside* the app). Add `PRIVACY_POLICY_URL` next to `SUPPORT_EMAIL` in
-      `src/constants/env.ts`. Not built yet, because the page has to be live first.
-- [x] **`SUPPORT_EMAIL`** = `support@ninjacms.com.au` (2026-10-19), the same address as the policy.
-- [ ] Delete-account alert text still matches the policy and §1.
-- [ ] No single customer's name on sign-in / splash (checked 2026-10-13: the copy is generic ✅). Org logos
-      appear only after sign-in.
-- [ ] `ITSAppUsesNonExemptEncryption: false` ✅, `supportsTablet: false` ✅, no Face ID string ✅.
-- [ ] tsc, lint, expo-doctor clean; `app.json` version committed; tag the release (`git tag v1.0.0`).
-
-**CMS backend (must be true when the reviewer opens the app):**
-- [ ] ninjacms.com.au live with `/`, `/support`, `/privacy`, `/privacy#delete-account` (§6), with no `[TO CONFIRM]` left.
-- [ ] Demo organisation + reviewer user (adviser role) with **fictitious** clients, a fact find, files, a workflow
-      board, notices and revenue rows, so no tab is empty or hidden (a 2.1 risk). Clients and Revenue hide on
-      403, so the role must allow them.
-- [ ] The reviewer user has a password set, is not banned, and has a role that lands on the portal.
-- [ ] Unauthenticated API calls return 401, not 500.
-
-**App Store Connect:**
-- [ ] Privacy Policy URL · App Privacy (§3) · age rating · Notes (§1) + demo account in the Sign-in fields.
-- [ ] Screenshots from the **demo org only**. No real client data (the CRM had to ship 1.0.1 because of this).
-- [ ] Marketing and Support URLs work and describe this product.
-- [ ] Copyright = the developer account's legal entity, exactly.
-- [ ] *Manually release this version.*
-
----
-
-## 6. Website: ninjacms.com.au (replaces the CMS /privacy page idea, 2026-10-19)
-
-The policy, support and marketing pages are a separate small Next.js site at **https://ninjacms.com.au**. It is
-built by an agent from the brief in [site/](site/README.md) (prompt, design, page copy, policy text, assets).
-
-| App Store / Play field | URL |
+| Field | Value |
 |---|---|
+| App name | **Ninja CMS** |
+| Bundle ID / package | `com.adviceninja.ninjacms` (iOS + Android) |
+| Version | `1.0.0` (`app.json`; EAS sets the build number) |
+| Platforms | iPhone only (`supportsTablet: false`), Android phones |
+| Seller / copyright | **© 2026 Advice Ninja Pty Ltd**. This must match the developer account's legal entity exactly. |
+| Primary / secondary category | **Business** / **Productivity** |
 | Marketing URL | `https://ninjacms.com.au` |
 | Support URL | `https://ninjacms.com.au/support` |
 | Privacy Policy URL | `https://ninjacms.com.au/privacy` |
-| Play account-deletion URL | `https://ninjacms.com.au/privacy#delete-account` |
-
-Later and optional (the better fix for R2): a signed-in `DELETE /api/me/account` on the CMS, so the app can switch
-from email to real deletion.
+| Account-deletion URL (Play) | `https://ninjacms.com.au/privacy#delete-account` |
+| Support email | `support@ninjacms.com.au` (also the in-app delete-account address, `SUPPORT_EMAIL`) |
+| API the app talks to | `https://login.cobaltlicenseesolutions.com.au` (the Ninja CMS backend) |
+| In-app links | Settings → **Help & support** and **Privacy policy** (in-app browser), **Delete account** |
 
 ---
 
-## 7. Risks (decide, don't discover)
+## 1. Store listing copy
+
+**Subtitle** (iOS, 30 characters max):
+```
+Your adviser portal, on the go
+```
+
+**Short description** (Google Play, 80 max):
+```
+Your licensee's notices, client records, workflows and revenue, on your phone.
+```
+
+**Promotional text** (iOS, 170 max; it can be changed without a review):
+```
+Notices, client records, fact finds, workflows and revenue from your adviser portal, in your pocket. Your organisation's colours and logo as soon as you sign in.
+```
+
+**Keywords** (iOS, 100 max, comma-separated with no spaces; don't repeat words already in the name or subtitle):
+```
+financial,planner,advisor,practice,licensee,AFSL,clients,fact find,workflow,revenue,paraplanner
+```
+
+**Description** (iOS + Play full description):
+```
+Ninja CMS puts your adviser portal on your phone.
+
+Made for Australian financial services licensees and the advisers and staff who work with them, Ninja CMS brings the portal you use at your desk with you: between client meetings, on the road, or at home.
+
+NOTICES
+Read your licensee's announcements and updates, with images, links and documents.
+
+CLIENTS
+Search your client records and find everything in one place: contact details, the fact find, files, workflows, revenue, annual consent and ongoing reviews, and the full activity history. Add a client, update their details, fill in the fact find section by section, and upload documents from your phone.
+
+WORKFLOWS
+See the boards your practice runs on, such as onboarding and annual reviews, and move clients from stage to stage.
+
+REVENUE
+Check your revenue month by month, and match revenue accounts to the right clients.
+
+YOUR ORGANISATION
+The app takes on your organisation's colours and logo as soon as you sign in. If you belong to more than one organisation, switch between them in Settings.
+
+PRIVATE BY DESIGN
+No ads, no analytics, no tracking. The app only reads files you choose to upload, and your sign-in is kept in your device's secure storage.
+
+Ninja CMS is for organisations that use the Ninja CMS adviser portal. Accounts are provided by your organisation; there is no public sign-up.
+
+Support: support@ninjacms.com.au
+```
+
+**What's New** (1.0.0):
+```
+The first release of Ninja CMS for iPhone.
+```
+On Play, use "…for Android".
+
+⚠️ **Never name a licensee or practice** (Cobalt, Beryllium, AIAFSL, CLS, …) in the listing, screenshots or notes.
+It makes the app look like one company's internal tool (risk R1).
+
+---
+
+## 2. Screenshots
+
+- **iOS:** 6.9″ iPhone, 1320×2868 (or 1290×2796). 3 to 10 shots. No iPad, because the app is iPhone only.
+- **Play:** at least 2 phone screenshots (16:9 or 9:16, at least 1080px), an app icon 512×512, and a feature
+  graphic 1024×500 (the navy gradient with the white wordmark, from `docs/site/assets`).
+- **Demo organisation only, with fictitious names.** No real clients and no real TFNs. Real client data in
+  screenshots is what forced the CRM to ship 1.0.1.
+- Suggested order: Dashboard (notices) → Clients list → Client record (Overview) → Fact find → Workflow board →
+  Revenue → Settings.
+- The first three must be real app screens with data, not sign-in or splash.
+
+---
+
+## 3. App Review Information (App Store Connect → version → App Review)
+
+- **Sign-in required:** Yes
+- **User name:** `[the demo reviewer email]` · **Password:** `[its password]`. Create both on the CMS (§8).
+- **Contact:** your first and last name, phone and email. Apple calls this person if something blocks review.
+- **Attachment (recommended, as the CRM did):** a 1–2 minute screen recording on a real iPhone of sign-in →
+  choose an organisation → each tab → Settings → Delete account (stop at the email screen, don't send it).
+
+**Notes** (paste as is, with the email filled in):
+
+```
+1. SIGNING IN
+Sign-in is email and password. Use the demo account in the Sign-In Information fields. After signing in, choose "[Demo organisation name]" if a list of organisations appears. The account belongs to a demo organisation with fictitious clients, workflows, notices and revenue, so every screen has data. It does not expire. No setup or sample files are needed.
+
+2. WHAT THE APP IS AND WHO USES IT
+Ninja CMS is the mobile app for the Ninja CMS adviser portal, a commercial SaaS platform used by Australian financial services licensees and the independent advice practices that work with them. It is not an internal app for a single company. Each organisation provisions logins for its own advisers and staff, which is why there is no public sign-up, the same way any team product issues seats to its customers' staff. After sign-in the app shows the organisation's own colours and logo.
+
+3. MAIN FEATURES (five tabs)
+- Dashboard: the organisation's notices and announcements.
+- Clients: searchable client records. Tap a client for Overview, Fact find, Files, Workflows, Revenue, Ongoing client and Activity. "+" adds a client.
+- Workflows: the practice's boards. Open one and swipe between stages; move a client to another stage.
+- Revenue: the adviser's revenue by month, and Map clients (matching revenue accounts to clients).
+- Settings: account, switch organisation, help and support, privacy policy, sign out, delete account.
+
+4. EXTERNAL SERVICES
+The app talks only to our own API (the Ninja CMS backend at login.cobaltlicenseesolutions.com.au, operated by Advice Ninja Pty Ltd) and embeds no third-party SDKs: no analytics, crash reporting, advertising or tracking.
+- Vercel: hosts the API.
+- Neon: managed PostgreSQL database.
+- Cloudflare R2 and Amazon S3: storage for uploaded documents and images.
+- Resend: account emails (invitations, password resets).
+- Better Auth: open-source sign-in library inside our API; no data leaves us.
+- Expo (EAS): build tooling only, not used at runtime.
+No payment processors, AI services or data providers.
+
+5. PERMISSIONS
+The app requests no device permissions: no camera, photos, contacts, location, microphone, notifications or tracking. Files are uploaded only through the system document picker, which gives the app the single file the user chooses.
+
+6. REGIONAL DIFFERENCES
+The app works the same in every region, in English (Australian), with Australian dollars, phone formats and dd/mm/yyyy dates.
+
+7. REGULATED INDUSTRY AND PROTECTED MATERIAL
+No. Ninja CMS is business software sold to financial services organisations. No financial advice is given, no product offered, no transaction executed and no money held or moved. Every user is staff of a subscribing organisation; there are no consumer users. Regulated activity happens outside the app, under our customers' own licences.
+Protected third-party material: none. Fonts are SIL OFL, icons lucide (ISC), other libraries MIT or Apache-2.0. All other content is our own interface or content entered by our customers, who own it.
+
+8. ACCOUNT DELETION
+Available at Settings > Delete account. Tapping it shows a confirmation, then opens a pre-filled email to our support team (support@ninjacms.com.au). Sending it submits a deletion request for the signed-in account and its personal data. We action it and confirm by email. The same steps are in our privacy policy: https://ninjacms.com.au/privacy#delete-account
+It is a request rather than an immediate in-app action for a specific reason. Users cannot create their own accounts: every login is provisioned by the user's organisation. The client records, fact finds, documents and notes in the app belong to that organisation, which holds them as its business records and may be legally required to keep them. A staff member deleting their own login cannot decide on their own what happens to those records. Processing the request lets us delete that person's account data while the organisation's records stay with the organisation that owns them.
+```
+
+⚠️ **Section 8 must stay exactly this honest.** The user must send the email, and there's no time promise. This
+is the wording that got the CRM approved.
+
+---
+
+## 4. App Privacy (App Store Connect → App Privacy)
+
+- **Data collection:** Yes.
+- For **every** type below, choose: purpose **App Functionality** · **Linked to the user's identity: Yes** ·
+  **Used for tracking: No**.
+
+| Category | Type to tick | What it is in the app |
+|---|---|---|
+| Contact Info | **Name** | The user's account, client records |
+| Contact Info | **Email Address** | The user's account, client records |
+| Contact Info | **Phone Number** | Client records |
+| Contact Info | **Physical Address** | Client records |
+| Financial Info | **Other Financial Info** | Fact find (income, expenses, assets, liabilities, super), revenue and commissions |
+| User Content | **Other User Content** | Notes, fact-find answers, uploaded documents, workflow cards |
+| Identifiers | **User ID** | Account ID |
+| Other Data | **Other Data Types** | Date of birth, TFN, employment, dependants, estate planning |
+
+**Do not tick:**
+- **Contacts:** that means the phone's address book, which the app never reads.
+- **Photos or Videos:** the document picker only gives the app the file the user picks.
+- **Sensitive Info:** Apple means health, race, religion, biometrics and similar. The fact find has none.
+- **Health, Location, Browsing History, Search History, Usage Data, Diagnostics, Purchases, Payment Info, Credit
+  Info:** none of these are collected.
+- **Tracking:** No, everywhere. The app has no analytics, crash or ads SDKs. Keep it that way, or this changes.
+
+---
+
+## 5. Permissions: what the app asks for
+
+**iOS: none.** The build has no `NS…UsageDescription` strings, because the app doesn't use the camera, photos,
+contacts, location, microphone, Face ID, Bluetooth, local network, push or tracking (ATT). Notes:
+- **The document picker** (Files → Upload) needs no permission. The system shows the picker and hands over one
+  file. The app has no iCloud entitlement.
+- **The share sheet** (opening a stored file, fact-find PDF) is a system sheet, so no permission is needed.
+- **Keychain** (session via expo-secure-store) needs no permission. Face ID is off (`faceIDPermission: false`).
+- **Alternate app icon** (per-org icon): no permission. iOS shows its own "You have changed the icon" alert, which
+  is expected.
+- **Encryption export:** `ITSAppUsesNonExemptEncryption: false`, so App Store Connect won't ask.
+- **Privacy manifest:** Expo SDK 57 builds `PrivacyInfo.xcprivacy` from the packages. If Apple emails an
+  **ITMS-91053** warning ("missing API declaration") after upload, add the named reasons under
+  `ios.privacyManifests` in `app.json` and rebuild.
+
+**Android: only `INTERNET`** (plus `VIBRATE`, which React Native adds; it's a normal permission with no prompt).
+Since 2026-10-19, `app.json` → `android.blockedPermissions` removes `SYSTEM_ALERT_WINDOW`,
+`READ_EXTERNAL_STORAGE` and `WRITE_EXTERNAL_STORAGE`, which the template and libraries add but the app doesn't
+need. Check this in the release manifest after the first EAS build. No runtime permission prompts, and no
+sensitive-permission declarations in Play Console.
+
+---
+
+## 6. Other App Store Connect questions
+
+| Question | Answer |
+|---|---|
+| Age rating questionnaire | **None / No** to every content question. Unrestricted web access: **No** (links open specific pages in an in-app browser). User-generated content shared publicly: **No** (records are private to the organisation). Messaging or chat: **No**. Gambling, contests, loot boxes: **No**. The expected result is **4+**. The policy's "not for under 18" is about who gets accounts, not the content rating. |
+| Content rights: "contains, shows or accesses third-party content?" | **Yes**, with the rights. It shows content that customer organisations publish to their own users (notices, logos), under our customer agreements. |
+| "Highly regulated industry?" | **No**, documentation blank. Don't answer Yes: Apple would then ask Advice Ninja for an AFSL, which belongs to the customers. |
+| Sign in with Apple required? | **No.** Guideline 4.8 applies only to apps with third-party or social sign-in. Ours is our own email and password. |
+| In-app purchases / subscriptions | None. The service is licensed to organisations outside the app, which is which Guideline 3.1.3(c) (enterprise services) and 3.1.3(f) (free companion to a paid web tool) allow. There is no purchase or call to buy in the app. |
+| Distribution | Public App Store. **Manually release this version.** |
+| Pricing | Free, all countries (or Australia only; see R1). |
+
+---
+
+## 7. Google Play Console (App content)
+
+| Section | Answer |
+|---|---|
+| Privacy policy | `https://ninjacms.com.au/privacy` |
+| **App access** | "All or some functionality is restricted" → add the demo credentials: username, password, and "Choose [Demo organisation] after signing in". |
+| Ads | **No ads** |
+| Content rating (IARC) | Category **Utility, productivity, communication or other**. All content questions **No**, user interaction / sharing **No** → **Everyone / PEGI 3**. |
+| Target audience | **18 and over** only. The app is not designed for children. |
+| News app | No |
+| Government app | No |
+| **Financial features** | "My app doesn't provide any financial features." It's record-keeping: no loans, payments, trading, banking or crypto. |
+| Health apps | No |
+| Data safety → collects or shares | **Collects: Yes. Shares: No** (service providers that process on our behalf don't count as sharing). |
+| Data safety → encrypted in transit | Yes |
+| Data safety → deletion | "Users can request that data be deleted": Yes. URL: `https://ninjacms.com.au/privacy#delete-account` |
+| Data safety → account creation | "My app does not allow users to create an account" (accounts are provisioned). Play still requires the deletion URL above. |
+| Data types (all *Collected, not shared, required, App functionality + Account management*) | **Personal info:** name, email address, phone number, address, other info (date of birth, TFN) · **Financial info:** other financial info · **Files and docs** · **App activity:** other user-generated content (notes) · **Device or other IDs:** No |
+| Testing track | Play requires **closed testing with 12+ testers for 14 days** before production on new personal developer accounts. Check whether this applies to our account (organisation accounts are usually exempt). |
+
+---
+
+## 8. Pre-submit checklist
+
+**App (repo)**
+- [x] Settings → Help & support + Privacy policy (in-app browser), Delete account → `support@ninjacms.com.au` (2026-10-19)
+- [x] Android release manifest trimmed to `INTERNET` (`blockedPermissions`, 2026-10-19). ⚠️ Rebuild the dev client:
+      `npx expo prebuild --clean && npx expo run:android`.
+- [x] Sign-in copy is generic, with no customer names. The splash and default icon are Ninja CMS blue.
+- [ ] tsc, lint and `npx expo-doctor` clean; `app.json` version committed **before** `eas build` (an uncommitted bump
+      ships the old version: the CRM's ITMS-90062).
+- [ ] Tested on a **fresh install of the exact production build** (TestFlight), signed in as the reviewer.
+- [ ] Tag it: `git tag v1.0.0 <sha> && git push origin v1.0.0`.
+
+**CMS backend + demo data** (must be true when the reviewer opens the app)
+- [ ] The reviewer user exists, has a password set, isn't banned, and has the **adviser** role, so Clients, Workflows
+      and Revenue show. They hide on 403, and an empty tab invites a 2.1 rejection.
+- [ ] A **demo organisation** with a neutral name (for example "Demo Advice Practice"), its own colour and logo, and:
+      at least 2 notices; about 10 fictitious clients (one with a full fact find, files, a workflow card,
+      consent set up and a review); 1–2 workflow boards with cards in several stages; revenue rows over several
+      months, some mapped. **No real TFNs**: leave the field empty or use an obviously fake value.
+- [ ] Optional: a second demo org, so the organisation picker and Settings → Switch are visible.
+- [ ] Unauthenticated API calls return 401, not 500. Production has `expo()` + `ninjacms://` trusted (docs/10 §1).
+- [ ] Nobody changes or deletes the demo data during review.
+
+**App Store Connect**
+- [ ] App Information: name, subtitle, categories, Privacy Policy URL, content rights, age rating.
+- [ ] Version: screenshots (§2), promotional text, description, keywords, support and marketing URLs, copyright,
+      What's New.
+- [ ] App Privacy (§4) published.
+- [ ] App Review: sign-in details, contact, notes (§3), screen recording.
+- [ ] Build selected, export compliance auto-answered, **Manually release**.
+
+**Google Play** (when Android goes in)
+- [ ] App content sections (§7) all green; store listing (§1, §2); internal → closed testing → production.
+
+**After approval**
+- [ ] Update the website hero from "Coming soon" to the real store badges and links (docs/site).
+- [ ] Keep the reviewer account working for future updates; Apple reviews every version.
+
+---
+
+## 9. Risks (decide, don't discover)
 
 | # | Risk | What to do |
 |---|---|---|
-| R1 | **Looks single-company (3.2 / 4.2 → "use a Custom App").** The API domain is `cobaltlicenseesolutions.com.au` and the notes name licensee groups that may be related companies. | Make the notes say "several licensees and independent practices" only if that's true. If all the organisations are one corporate group, Apple may push for **Unlisted** or **Custom App** distribution, which is a valid outcome. Decide before submitting. A neutral API domain (for example `cms.adviceninja.com.au`) would help. |
-| R2 | **Deletion is a request by email** (5.1.1(v) says apps shouldn't require an email). | Accepted for the CRM, and the CRM passed with this exact justification. If rejected: ship CMS §6 step 6 and switch the app to it. Update §1 to match. |
-| R3 | **TFNs in the fact find.** | Covered by policy §5. Keep TFN visible only to roles the CMS allows; never put one in screenshots. |
-| R4 | **Empty tabs for the reviewer** (Clients / Revenue hide on 403). | Seeded demo org with the right role (§5). |
-| R5 | **Policy vs labels vs notes drift.** | One owner. Change all three together. |
+| R1 | **Looks single-company (3.2 / 4.2 → "Custom App")**, because the API is on `cobaltlicenseesolutions.com.au`. | The listing, notes and site name no customer. If Apple still asks, answer like the CRM did (licensed to several independent organisations). If they insist, **Unlisted** distribution is an acceptable fallback. A neutral API host (`api.ninjacms.com.au`) would remove the tell. |
+| R2 | **Deletion is by email** (5.1.1(v) says apps "should not require… send an email"). | The CRM passed with this exact justification. If rejected: a signed-in `DELETE /api/me/account` on the CMS → the app calls it, then signs out. Update §3 section 8 and the policy §9 together. |
+| R3 | **TFNs** | Policy §5 covers them. Never show one in screenshots. |
+| R4 | **Empty or hidden tabs** for the reviewer | Demo org + adviser role (§8). |
+| R5 | **Drift** between the policy, labels and notes | One owner. Change all three together. |
