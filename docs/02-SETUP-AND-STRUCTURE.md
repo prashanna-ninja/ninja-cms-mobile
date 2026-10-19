@@ -125,6 +125,7 @@ react-native-worklets.
 | 2026-10-07 | **Android per-org icons**: local module `modules/ninja-app-icon` + config plugin `plugins/with-android-icon-aliases.js` (manifest: `.MainActivityDefault` launcher alias) | Android icons commit | ❌ dev build only |
 | 2026-10-09 | Expo SDK 57 patch updates (expo 57.0.27, expo-constants, expo-linking, expo-router) | deps commit | ✅ |
 | 2026-10-06 | **expo-sharing** (Fact Find → Generate PDF). expo-file-system is now a direct dependency but already shipped inside `expo`, so it adds no native code | fact-find PDF commit | ✅ |
+| 2026-10-19 | `android.blockedPermissions`: SYSTEM_ALERT_WINDOW, READ/WRITE_EXTERNAL_STORAGE removed from the release manifest (the document picker and the share sheet don't need them; fewer Play permission questions) | store prep commit | — |
 
 ## 7. Order of work
 
