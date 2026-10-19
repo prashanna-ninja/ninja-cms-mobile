@@ -92,8 +92,7 @@ Separate steps if you prefer: `npm run build:ios`, then `npm run submit:ios` (su
 - **External TestFlight / App Store review:** see [15-PRIVACY-POLICY.md](15-PRIVACY-POLICY.md) and
   [16-APP-STORE-REVIEW.md](16-APP-STORE-REVIEW.md) (demo account, notes, App Privacy labels, checklist).
 - **Account deletion (5.1.1(v)):** ✅ Settings → Delete account → confirm → `mailto:` request (the CRM
-  pattern). ⚠️ **Change `SUPPORT_EMAIL` in `src/constants/env.ts`** — it is temporarily
-  `support@ninjacrm.com.au` (the CRM's inbox). ⚠️ Same risk the CRM recorded: Apple's guidance says apps
+  pattern). `SUPPORT_EMAIL` = `support@ninjacms.com.au` (since 2026-10-19). ⚠️ Same risk the CRM recorded: Apple's guidance says apps
   "should not require people to … send an email". The request flow is defensible (org-provisioned accounts,
   the org owns the records), but it's reviewer discretion. Describe it honestly in the review notes ("opens a
   pre-filled request our team processes"), never as in-app deletion. A real fix needs a CMS endpoint.

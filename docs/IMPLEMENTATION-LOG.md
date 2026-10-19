@@ -5,6 +5,24 @@ what changed, why, and anything worth remembering. This is our project memory.
 
 ---
 
+## 2026-10-19 — Website brief (ninjacms.com.au) + support email
+
+- **`SUPPORT_EMAIL` → `support@ninjacms.com.au`** (`src/constants/env.ts`). It was temporarily the CRM inbox.
+  This closes the ⏰ reminder.
+- **`docs/site/`**: everything a build agent needs for a small static Next.js site at **ninjacms.com.au**, which
+  serves as the App Store Marketing, Support and Privacy URLs and the Play deletion URL:
+  - `README.md`: the prompt (stack, routes, hard rules: no analytics, cookies, forms or customer names).
+  - `DESIGN.md`: the default Ninja CMS blue (no organisation branding).
+  - `LANDING-PAGE.md`: landing and support copy.
+  - `PRIVACY-POLICY.md`: the policy text, now the only copy (docs/15 points to it). It adds a "this website
+    collects nothing" clause and uses the new email.
+  - `assets/`: wordmark, app icon, favicon.
+- This replaces the idea of hosting `/privacy` on the CMS (docs/16 §6).
+- Still `[TO CONFIRM]` in the policy: ABN, address, effective date, database provider, regions, backups, AI
+  sentence, activity-history names.
+
+---
+
 ## 2026-10-13 — App review prep: privacy policy + review notes
 
 Added [15-PRIVACY-POLICY.md](15-PRIVACY-POLICY.md) (text to publish) and [16-APP-STORE-REVIEW.md](16-APP-STORE-REVIEW.md)

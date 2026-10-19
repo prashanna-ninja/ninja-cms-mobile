@@ -22,6 +22,7 @@ Feature docs (added as each page/feature is built):
 13. [13-WORKFLOWS.md](13-WORKFLOWS.md) — Workflows: list, board (stage rail + swipeable stages), add client, client on a board
 14. [14-REVENUE.md](14-REVENUE.md) — My Revenue (statement card, filters, monthly ledger) + Map Clients (account → client)
 15. [15-PRIVACY-POLICY.md](15-PRIVACY-POLICY.md) — ⭐ privacy policy text to publish (with `[TO CONFIRM]` gaps) + why each part is there
+- [site/README.md](site/README.md) — ⭐ brief + prompt for the ninjacms.com.au website (landing, support, privacy policy text)
 16. [16-APP-STORE-REVIEW.md](16-APP-STORE-REVIEW.md) — ⭐ App Review notes, Q3–Q7, App Privacy labels, Play data safety, checklist, CMS prompt, risks
 
 Living docs:

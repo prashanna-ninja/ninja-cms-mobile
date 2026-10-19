@@ -177,8 +177,7 @@ Also declare:
 - [ ] **Settings → Privacy policy row** that opens the published URL in the in-app browser (5.1.1(i): the policy
       must also be reachable *inside* the app). Add `PRIVACY_POLICY_URL` next to `SUPPORT_EMAIL` in
       `src/constants/env.ts`. Not built yet, because the page has to be live first.
-- [ ] ⏰ **`SUPPORT_EMAIL`** changed from `support@ninjacrm.com.au` to the Ninja CMS inbox, and the **same
-      address** used in the policy (§9, §13).
+- [x] **`SUPPORT_EMAIL`** = `support@ninjacms.com.au` (2026-10-19), the same address as the policy.
 - [ ] Delete-account alert text still matches the policy and §1.
 - [ ] No single customer's name on sign-in / splash (checked 2026-10-13: the copy is generic ✅). Org logos
       appear only after sign-in.
@@ -186,7 +185,7 @@ Also declare:
 - [ ] tsc, lint, expo-doctor clean; `app.json` version committed; tag the release (`git tag v1.0.0`).
 
 **CMS backend (must be true when the reviewer opens the app):**
-- [ ] `/privacy` (and the delete-account section or page) **public**, with no sign-in redirect (prompt in §6).
+- [ ] ninjacms.com.au live with `/`, `/support`, `/privacy`, `/privacy#delete-account` (§6), with no `[TO CONFIRM]` left.
 - [ ] Demo organisation + reviewer user (adviser role) with **fictitious** clients, a fact find, files, a workflow
       board, notices and revenue rows, so no tab is empty or hidden (a 2.1 risk). Clients and Revenue hide on
       403, so the role must allow them.
@@ -202,27 +201,20 @@ Also declare:
 
 ---
 
-## 6. Prompt for the CMS (web) repo — public privacy page
+## 6. Website: ninjacms.com.au (replaces the CMS /privacy page idea, 2026-10-19)
 
-`ref/cms` is read-only for us. Give this to whoever works on the CMS:
+The policy, support and marketing pages are a separate small Next.js site at **https://ninjacms.com.au**. It is
+built by an agent from the brief in [site/](site/README.md) (prompt, design, page copy, policy text, assets).
 
-> In the Ninja CMS Next.js app, add a **public** privacy policy page for the App Store and Google Play.
->
-> 1. Add the route `app/(public)/privacy/page.tsx`. It must render **without a session**. Check the auth
->    guard / proxy so `/privacy` is never redirected to `/login` on any brand host
->    (login.cobaltlicenseesolutions.com.au and the other brand login subdomains).
-> 2. Content: the "Policy text" section of `ninja_cms_mobile/docs/15-PRIVACY-POLICY.md`, with every
->    `[TO CONFIRM]` filled in. Plain, readable typography in the public pages' style, an effective date, and
->    no portal navigation.
-> 3. Give the "Deleting your account" heading `id="delete-account"` so `/privacy#delete-account` works. Google
->    Play uses this as the account-deletion URL. Optional: a short `/account-deletion` page with only that
->    section.
-> 4. Add a small "Privacy policy" link to the login page footer.
-> 5. Confirm with `curl -I https://login.cobaltlicenseesolutions.com.au/privacy` that it returns **200** (not
->    307 to /login), and that the page loads in a private window.
-> 6. Optional, the better long-term fix for Apple 5.1.1(v): a signed-in `DELETE /api/me/account` (or a signed-in
->    `/account/delete` page) that removes the user's login and personal data and keeps the organisation's
->    records. Then the mobile app can switch from email to real deletion. See `docs/16-APP-STORE-REVIEW.md` §7 R2.
+| App Store / Play field | URL |
+|---|---|
+| Marketing URL | `https://ninjacms.com.au` |
+| Support URL | `https://ninjacms.com.au/support` |
+| Privacy Policy URL | `https://ninjacms.com.au/privacy` |
+| Play account-deletion URL | `https://ninjacms.com.au/privacy#delete-account` |
+
+Later and optional (the better fix for R2): a signed-in `DELETE /api/me/account` on the CMS, so the app can switch
+from email to real deletion.
 
 ---
 
