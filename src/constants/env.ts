@@ -22,3 +22,8 @@ export const APP_SCHEME = "ninjacms";
  * (docs/site/PRIVACY-POLICY.md §9, §13).
  */
 export const SUPPORT_EMAIL = "support@ninjacms.com.au";
+
+/** The public Ninja CMS website (docs/site). Apple 5.1.1(i): the privacy policy must be reachable in the app. */
+export const WEBSITE_URL = "https://ninjacms.com.au";
+export const PRIVACY_POLICY_URL = `${WEBSITE_URL}/privacy`;
+export const SUPPORT_URL = `${WEBSITE_URL}/support`;

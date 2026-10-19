@@ -7,9 +7,9 @@ import { NinjaCmsLogo } from "@/components/brand/ninja-cms-logo";
 import { FadeIn } from "@/components/login/fade-in";
 import { MemberCard } from "@/components/settings/member-card";
 import { SettingsGroup, SettingsRow } from "@/components/settings/settings-group";
-import { API_BASE_URL, SUPPORT_EMAIL } from "@/constants/env";
+import { API_BASE_URL, PRIVACY_POLICY_URL, SUPPORT_EMAIL, SUPPORT_URL } from "@/constants/env";
 import { appVersion } from "@/lib/app-version";
-import { ArrowLeftRight, Info, KeyRound, LogOut, Mail, UserRound, UserX } from "@/lib/icons";
+import { ArrowLeftRight, CircleAlert, Info, KeyRound, LogOut, Mail, ShieldCheck, UserRound, UserX } from "@/lib/icons";
 import { openUrl } from "@/lib/open-url";
 import { roleLabel } from "@/lib/user-display";
 import { useOrgTheme } from "@/providers/org-theme-provider";
@@ -27,7 +27,7 @@ const FONT = {
  *   Member card (org-coloured pass: logo, monogram, name, email, role)
  *   Organisation   — current org (+ Switch when you belong to 2+)
  *   Account        — email, role, "Profile & password" (web portal settings)
- *   App            — version (build)
+ *   App            — version (build), Support + Privacy policy (ninjacms.com.au, in-app browser)
  *   Sign out       — confirm, then back to sign-in (session provider clears the cache)
  *   Delete account — confirm, then a pre-filled deletion-request email (Ninja CRM pattern)
  */
@@ -138,6 +138,19 @@ export default function SettingsScreen() {
         <FadeIn delay={240}>
           <SettingsGroup title="App">
             <SettingsRow icon={Info} label="Version" value={build ? `${version} (${build})` : version} />
+            <SettingsRow
+              icon={CircleAlert}
+              label="Help & support"
+              caption={SUPPORT_EMAIL}
+              trailing="external"
+              onPress={() => void openUrl(SUPPORT_URL, theme.base)}
+            />
+            <SettingsRow
+              icon={ShieldCheck}
+              label="Privacy policy"
+              trailing="external"
+              onPress={() => void openUrl(PRIVACY_POLICY_URL, theme.base)}
+            />
           </SettingsGroup>
         </FadeIn>
 
